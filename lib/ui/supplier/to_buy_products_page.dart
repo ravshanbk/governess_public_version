@@ -18,7 +18,9 @@ import 'package:provider/provider.dart';
 
 class ToBuyProductsPage extends StatefulWidget {
   ToBuyProductsPage({Key? key}) : super(key: key);
-  List<Product>? data;
+
+  List<Product>? dataw;
+
   @override
   State<ToBuyProductsPage> createState() => _ToBuyProductsPageState();
 }
@@ -36,6 +38,7 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
+
     return Scaffold(
       appBar: _appBar(context),
       body: CustomScrollView(
@@ -47,14 +50,32 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
               future: toBuyProducts,
               builder: (context, AsyncSnapshot<List<Product>> snap) {
                 List<Product> data = snap.data!;
-                widget.data = data;
+                widget.dataw = data;
                 Provider.of<FilterToBuyPageProvider>(context, listen: false)
                     .initN(Provider.of<FilterToBuyPageProvider>(context,
                                     listen: false)
                                 .currentFilterIndex ==
                             0
                         ? data.length
-                        : _getDataByDateTime(data));
+                        : (Provider.of<FilterToBuyPageProvider>(context,
+                                        listen: false)
+                                    .currentFilterIndex ==
+                                1
+                            ? Provider.of<FilterToBuyPageProvider>(context,
+                                    listen: false)
+                                .currentFilterIndex
+                            : _getDataByCompanyName(data, "sf")));
+////////////////////////////////////////////////////////////////////////
+                List<String> names = [];
+
+                for (var item in data) {
+                  if (!names.contains(item.companyName)) {
+                    names.add(item.companyName!);
+                  }
+                }
+                debugPrint("Names: " + names.toString());
+
+                /////////////////////////////////////////////////////////////////////////
 
                 return snap.hasData ? _body(data, context) : _indicator();
               },
@@ -74,7 +95,9 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
         Provider.of<FilterToBuyPageProvider>(context, listen: false)
             .dataByDate
             .length, (__) {
-     List<Product> dataByDate = Provider.of<FilterToBuyPageProvider>(context, listen: false).dataByDate;
+      List<Product> dataByDate =
+          Provider.of<FilterToBuyPageProvider>(context, listen: false)
+              .dataByDate;
       return Column(
         children: [
           Text(__.toString()),
@@ -88,7 +111,7 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
                 context.read<ToBuyProductPageProvider>().changeCurrent(-1);
               }
             },
-            data: dataByDate[__] ,
+            data: dataByDate[__],
           ),
         ],
       );
@@ -226,65 +249,114 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
           scrollDirection: Axis.horizontal,
           physics: const BouncingScrollPhysics(),
           itemBuilder: (_, __) {
-            return ElevatedButton(
-              focusNode: FocusNode(canRequestFocus: true),
-              onPressed: () {
-                debugPrint("Filter OnPressed $__");
-                if (__ == 0) {
-                  Provider.of<FilterToBuyPageProvider>(context, listen: false)
-                      .changeCurrentFilterIndex(0);
-                  setState(() {
-                    Provider.of<FilterToBuyPageProvider>(context, listen: false)
-                        .changeCurrentFilterIndex(0);
-                  });
-                } else if (__ == 1) {
-                  _showDataPicker(true);
-                } else if (__ == 2) {
-                  debugPrint("filter 2 bosildi");
-                  context
-                      .read<FilterToBuyPageProvider>()
-                      .changeCurrentFilterIndex(2);
-
-                  Scaffold.of(context).showBodyScrim(false, .3);
-                } else {
-                  debugPrint("Out of range:::");
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(0, 0),
-                  fixedSize: Size(double.infinity, gH(40.0)),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(gW(20.0)),
-                    side: BorderSide(color: whiteColor),
-                  ),
-                  visualDensity:
-                      const VisualDensity(horizontal: 0.0, vertical: 0.0),
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  primary: context
-                              .watch<FilterToBuyPageProvider>()
-                              .currentFilterIndex !=
-                          __
-                      ? greyColor
-                      : whiteColor,
-                  elevation: 0),
-              child: Text(
-                context.watch<FilterToBuyPageProvider>().filters[__],
-                style: TextStyle(
-                  fontWeight: context
-                              .watch<FilterToBuyPageProvider>()
-                              .currentFilterIndex !=
-                          __
-                      ? FontWeight.w300
-                      : FontWeight.bold,
-                  color: context
-                              .watch<FilterToBuyPageProvider>()
-                              .currentFilterIndex ==
-                          __
-                      ? mainColor
-                      : whiteColor,
-                ),
-              ),
-            );
+            return __ == 2
+                ? PopupMenuButton(
+                    iconSize: 200,
+                    child: Container(
+                      alignment: Alignment.center,
+                      width: gW(200),
+                      height: gH(40.0),
+                      decoration: BoxDecoration(
+                        backgroundBlendMode: BlendMode.color,
+                        color: context
+                                    .watch<FilterToBuyPageProvider>()
+                                    .currentFilterIndex !=
+                                __
+                            ? greyColor
+                            : whiteColor,
+                        border: Border.all(
+                          color: whiteColor,
+                        ),
+                        borderRadius: BorderRadius.circular(gW(20.0)),
+                      ),
+                      child: Text(
+                        context.watch<FilterToBuyPageProvider>().filters[__],
+                        style: TextStyle(
+                          fontWeight: context
+                                      .watch<FilterToBuyPageProvider>()
+                                      .currentFilterIndex !=
+                                  __
+                              ? FontWeight.w300
+                              : FontWeight.bold,
+                          color: context
+                                      .watch<FilterToBuyPageProvider>()
+                                      .currentFilterIndex ==
+                                  __
+                              ? mainColor
+                              : whiteColor,
+                        ),
+                      ),
+                    ),
+                    elevation: 0,
+                    color: Colors.red,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(gW(20.0)),
+                      side: BorderSide(color: whiteColor),
+                    ),
+                    initialValue: 2,
+                    itemBuilder: (context) {
+                      return List.generate(5, (index) {
+                        return PopupMenuItem(
+                          value: index,
+                          child: Text('button no $index'),
+                        );
+                      });
+                    },
+                  )
+                : ElevatedButton(
+                    focusNode: FocusNode(canRequestFocus: true),
+                    onPressed: () {
+                      debugPrint("Filter OnPressed $__");
+                      if (__ == 0) {
+                        Provider.of<FilterToBuyPageProvider>(context,
+                                listen: false)
+                            .changeCurrentFilterIndex(0);
+                        setState(() {
+                          Provider.of<FilterToBuyPageProvider>(context,
+                                  listen: false)
+                              .changeCurrentFilterIndex(0);
+                        });
+                      } else if (__ == 1) {
+                        _showDataPicker(true);
+                      } else {
+                        debugPrint("Out of range:::");
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(0, 0),
+                        fixedSize: Size(double.infinity, gH(40.0)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(gW(20.0)),
+                          side: BorderSide(color: whiteColor),
+                        ),
+                        visualDensity:
+                            const VisualDensity(horizontal: 0.0, vertical: 0.0),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        primary: context
+                                    .watch<FilterToBuyPageProvider>()
+                                    .currentFilterIndex !=
+                                __
+                            ? greyColor
+                            : whiteColor,
+                        elevation: 0),
+                    child: Text(
+                      context.watch<FilterToBuyPageProvider>().filters[__],
+                      style: TextStyle(
+                        fontWeight: context
+                                    .watch<FilterToBuyPageProvider>()
+                                    .currentFilterIndex !=
+                                __
+                            ? FontWeight.w300
+                            : FontWeight.bold,
+                        color: context
+                                    .watch<FilterToBuyPageProvider>()
+                                    .currentFilterIndex ==
+                                __
+                            ? mainColor
+                            : whiteColor,
+                      ),
+                    ),
+                  );
           },
         ),
       ),
@@ -592,13 +664,9 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
   }
 
   int _getDataByDateTime(List<Product> data) {
-    debugPrint("GEt by id ga kirdi");
     List<Product> list = [];
-
     int m = 0;
     for (int i = 0; i < data.length; i++) {
-      debugPrint("for $i");
-
       if (data[i].sendDate! <=
               Provider.of<FilterToBuyPageProvider>(context, listen: false)
                   .to!
@@ -607,30 +675,28 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
               Provider.of<FilterToBuyPageProvider>(context, listen: false)
                   .from!
                   .millisecondsSinceEpoch) {
-        debugPrint("if ichi $i");
+        list.add(data[i]);
         m++;
       }
     }
-    for (int n = 0; n < data.length; n++) {
-      debugPrint("for $n");
 
-      if (data[n].sendDate! <=
-              Provider.of<FilterToBuyPageProvider>(context, listen: false)
-                  .to!
-                  .millisecondsSinceEpoch &&
-          data[n].sendDate! >=
-              Provider.of<FilterToBuyPageProvider>(context, listen: false)
-                  .from!
-                  .millisecondsSinceEpoch) {
-        debugPrint("if ichi $n");
-        list.add(data[n]);
+    Provider.of<FilterToBuyPageProvider>(context, listen: false)
+        .generateByTimeData(list);
+    return m;
+  }
+
+  int _getDataByCompanyName(List<Product> data, String name) {
+    List<Product> list = [];
+    int m = 0;
+    for (int i = 0; i < data.length; i++) {
+      if (data[i].companyName! == name) {
+        list.add(data[i]);
+        m++;
       }
     }
 
-    debugPrint("N ning qiymati providerga : $m");
-    debugPrint(list.toString());
     Provider.of<FilterToBuyPageProvider>(context, listen: false)
-        .generateByTimeData(list);
+        .generateByCompanyNameData(list);
     return m;
   }
 
@@ -663,7 +729,7 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
               .initTo(date);
           Provider.of<FilterToBuyPageProvider>(context, listen: false)
               .changeCurrentFilterIndex(1);
-          _getDataByDateTime(widget.data!);
+          _getDataByDateTime(widget.dataw!);
         }
       },
       // currentTime: DateTime.now(),

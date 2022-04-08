@@ -4,8 +4,6 @@ import 'package:governess/consts/size_config.dart';
 import 'package:governess/models/supplier/product_model.dart';
 
 class FilterToBuyPageProvider extends ChangeNotifier {
-  List<PopupMenuItem>? companyNamesPopUpMenuItems;
-  String? currentCompName;
   List<Product> dataByDate = [];
 
   generateByTimeData(List<Product> list) {
@@ -13,44 +11,29 @@ class FilterToBuyPageProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  generatePopUpMenuItems(List<Product> data) {
-    List<String>? names;
+/////////////////////////////////////////////////
+  String? currentCompName;
+  List<String> availableCompanyNames = [];
+  List<Product> dataByCompanyName = [];
+
+  generateByCompanyNameData(List<Product> list) {
+    dataByCompanyName = list;
+    notifyListeners();
+  }
+
+  generateAvailableCompanyNames(List<Product> data) {
+    List<String> names = [];
 
     for (var item in data) {
-      if (!names!.contains(item.companyName)) {
+      if (!names.contains(item.companyName)) {
         names.add(item.companyName!);
       }
     }
-    if (names!.isNotEmpty) {
-      companyNamesPopUpMenuItems = List.generate(
-        names.length,
-        (index) {
-          return PopupMenuItem(
-            onTap: () {
-              currentCompName = names[index];
-              notifyListeners();
-            },
-            value: names[index],
-            child: Text(
-              names[index],
-              style: TextStyle(
-                fontSize: gW(18.0),
-              ),
-            ),
-          );
-        },
-      );
-    }
+    availableCompanyNames = names;
+    notifyListeners();
   }
 
 ///////////////////////////////////////////////////////////
-
-  int? n;
-  initN(int v) {
-    n = v;
-    print("inited n" + n.toString());
-    notifyListeners();
-  }
 
   DateTime? from;
   initFrom(DateTime v) {
@@ -61,6 +44,14 @@ class FilterToBuyPageProvider extends ChangeNotifier {
   DateTime? to;
   initTo(DateTime v) {
     to = v;
+    notifyListeners();
+  }
+
+/////////////////////////////////////////////////////////////////////
+  int? n;
+  initN(int v) {
+    n = v;
+    print("inited n" + n.toString());
     notifyListeners();
   }
 
