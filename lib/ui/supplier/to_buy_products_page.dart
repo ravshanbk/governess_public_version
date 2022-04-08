@@ -49,8 +49,12 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
                 List<Product> data = snap.data!;
                 widget.data = data;
                 Provider.of<FilterToBuyPageProvider>(context, listen: false)
-                    .initN(Provider.of<FilterToBuyPageProvider>(context, listen: false).currentFilterIndex == 0
-                    ?data.length:_getDataByDateTime(data));
+                    .initN(Provider.of<FilterToBuyPageProvider>(context,
+                                    listen: false)
+                                .currentFilterIndex ==
+                            0
+                        ? data.length
+                        : _getDataByDateTime(data));
 
                 return snap.hasData ? _body(data, context) : _indicator();
               },
@@ -66,13 +70,17 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
         .currentFilterIndex;
     int n = Provider.of<FilterToBuyPageProvider>(context, listen: false).n!;
     debugPrint("N ning qiymati : $n");
-    List<Widget> widgetsDate = List.generate(n, (__) {
+    List<Widget> widgetsDate = List.generate(
+        Provider.of<FilterToBuyPageProvider>(context, listen: false)
+            .dataByDate
+            .length, (__) {
+     List<Product> dataByDate = Provider.of<FilterToBuyPageProvider>(context, listen: false).dataByDate;
       return Column(
         children: [
           Text(__.toString()),
           ExpansionTileToShowProductWidget(
             isExpanded: context.watch<ToBuyProductPageProvider>().current == __,
-            children: _children(data![__], context),
+            children: _children(dataByDate[__], context),
             onChanged: (bool newState) {
               if (newState) {
                 context.read<ToBuyProductPageProvider>().changeCurrent(__);
@@ -80,12 +88,12 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
                 context.read<ToBuyProductPageProvider>().changeCurrent(-1);
               }
             },
-            data: data[__],
+            data: dataByDate[__] ,
           ),
         ],
       );
     });
- List<Widget> widgetsAll = List.generate(data!.length, (__) {
+    List<Widget> widgetsAll = List.generate(data!.length, (__) {
       return Column(
         children: [
           Text(__.toString()),
@@ -583,9 +591,11 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
         fontSize: 16.0);
   }
 
-int  _getDataByDateTime(List<Product> data){
+  int _getDataByDateTime(List<Product> data) {
     debugPrint("GEt by id ga kirdi");
-    int n = 0;
+    List<Product> list = [];
+
+    int m = 0;
     for (int i = 0; i < data.length; i++) {
       debugPrint("for $i");
 
@@ -598,13 +608,30 @@ int  _getDataByDateTime(List<Product> data){
                   .from!
                   .millisecondsSinceEpoch) {
         debugPrint("if ichi $i");
-        n++;
+        m++;
       }
     }
-    debugPrint("N ning qiymati providerga : $n");
+    for (int n = 0; n < data.length; n++) {
+      debugPrint("for $n");
 
+      if (data[n].sendDate! <=
+              Provider.of<FilterToBuyPageProvider>(context, listen: false)
+                  .to!
+                  .millisecondsSinceEpoch &&
+          data[n].sendDate! >=
+              Provider.of<FilterToBuyPageProvider>(context, listen: false)
+                  .from!
+                  .millisecondsSinceEpoch) {
+        debugPrint("if ichi $n");
+        list.add(data[n]);
+      }
+    }
 
-    return n ;
+    debugPrint("N ning qiymati providerga : $m");
+    debugPrint(list.toString());
+    Provider.of<FilterToBuyPageProvider>(context, listen: false)
+        .generateByTimeData(list);
+    return m;
   }
 
   _showDataPicker(bool isFrom) {
@@ -637,8 +664,6 @@ int  _getDataByDateTime(List<Product> data){
           Provider.of<FilterToBuyPageProvider>(context, listen: false)
               .changeCurrentFilterIndex(1);
           _getDataByDateTime(widget.data!);
-
-          setState(() {});
         }
       },
       // currentTime: DateTime.now(),

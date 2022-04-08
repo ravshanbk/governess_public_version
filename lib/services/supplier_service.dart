@@ -47,7 +47,7 @@ class SupplierService {
         "id": 6,
         "createDate": 1648726870584,
         "updateDate": 1648726870584,
-        "sendDate": 1648726870583,
+        "sendDate":   1651965687584,
         "orderNumber": "TEST ZAYAFKA",
         "price": null,
         "pack": 0.00,

@@ -6,6 +6,12 @@ import 'package:governess/models/supplier/product_model.dart';
 class FilterToBuyPageProvider extends ChangeNotifier {
   List<PopupMenuItem>? companyNamesPopUpMenuItems;
   String? currentCompName;
+  List<Product> dataByDate = [];
+
+  generateByTimeData(List<Product> list) {
+    dataByDate = list;
+    notifyListeners();
+  }
 
   generatePopUpMenuItems(List<Product> data) {
     List<String>? names;
@@ -42,7 +48,7 @@ class FilterToBuyPageProvider extends ChangeNotifier {
   int? n;
   initN(int v) {
     n = v;
-    print("inited n"+n.toString());
+    print("inited n" + n.toString());
     notifyListeners();
   }
 
