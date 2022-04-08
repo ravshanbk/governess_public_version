@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -17,7 +18,7 @@ import 'package:provider/provider.dart';
 
 class ToBuyProductsPage extends StatefulWidget {
   ToBuyProductsPage({Key? key}) : super(key: key);
-
+  List<Product>? data;
   @override
   State<ToBuyProductsPage> createState() => _ToBuyProductsPageState();
 }
@@ -46,6 +47,7 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
               future: toBuyProducts,
               builder: (context, AsyncSnapshot<List<Product>> snap) {
                 List<Product> data = snap.data!;
+                widget.data = data;
                 Provider.of<FilterToBuyPageProvider>(context, listen: false)
                     .initN(data.length);
 
@@ -59,123 +61,110 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
   }
 
   _body(List<Product>? data, BuildContext context) {
+    int current = Provider.of<FilterToBuyPageProvider>(context, listen: false)
+        .currentFilterIndex;
     return Center(
-      child: (Provider.of<FilterToBuyPageProvider>(context, listen: false)
-                      .currentFilterIndex ==
-                  0 &&
-              Provider.of<FilterToBuyPageProvider>(context, listen: false).n! >
-                  0)
-          ? _allBody(data,context)
-          : _noDataBody(context),
-    );
+        child: (current == 0
+            ? _allBody(data, context, "0")
+            : current == 1
+                ? _allBody(data, context, "1")
+                : (current == 2
+                    ? _allBody(data, context, "2")
+                    : _allBody(data, context, "no data"))));
   }
 
   Container _noDataBody(BuildContext context) {
     return Container(
-            alignment: Alignment.center,
-            height: gH(400.0),
-            child: RichText(
-              textAlign: TextAlign.center,
-              text: TextSpan(
-                  style: TextStyle(color: Colors.black, fontSize: gW(18.0)),
-                  children: context
-                              .watch<FilterToBuyPageProvider>()
-                              .currentFilterIndex ==
-                          0
-                      ? [
-                          const TextSpan(
-                              text: "Hozirda malumotlar mavjud emas")
-                        ]
-                      : [
-                           TextSpan(text: "Tanlangan "+(context
-                                          .watch<FilterToBuyPageProvider>()
-                                          .currentFilterIndex ==
-                                      1
-                                  ? "sana \n"
-                                  : "korxona nomi ")),
-                          
-                          TextSpan(
-                            text: context
+      alignment: Alignment.center,
+      height: gH(400.0),
+      child: RichText(
+        textAlign: TextAlign.center,
+        text: TextSpan(
+            style: TextStyle(color: Colors.black, fontSize: gW(18.0)),
+            children: context
+                        .watch<FilterToBuyPageProvider>()
+                        .currentFilterIndex ==
+                    0
+                ? [const TextSpan(text: "Hozirda malumotlar mavjud emas")]
+                : [
+                    TextSpan(
+                        text: "Tanlangan " +
+                            (context
                                         .watch<FilterToBuyPageProvider>()
                                         .currentFilterIndex ==
                                     1
-                                ? DTFM.maker(
-                                    Provider.of<FilterToBuyPageProvider>(
-                                            context,
-                                            listen: false)
-                                        .from!
-                                        .millisecondsSinceEpoch)
-                                : Provider.of<FilterToBuyPageProvider>(
-                                        context,
-                                        listen: false)
-                                    .currentCompName,
-                            style: TextStyle(
-                                color: Colors.red, fontSize: gW(22.0)),
-                          ),
-                           TextSpan(text: " / ",style: TextStyle(fontSize: gW(22.0))),
-                          TextSpan(
-                            text: context
-                                        .watch<FilterToBuyPageProvider>()
-                                        .currentFilterIndex ==
-                                    1
-                                ? DTFM.maker(
-                                    Provider.of<FilterToBuyPageProvider>(
-                                            context)
-                                        .to!
-                                        .millisecondsSinceEpoch)
-                                : Provider.of<FilterToBuyPageProvider>(
-                                        context,
-                                        listen: false)
-                                    .currentCompName,
-                            style: TextStyle(
-                                color: Colors.red, fontSize: gW(22.0)),
-                          ),
-                          const TextSpan(
-                              text: " bo'yicha ma'lumot topilmadi"),
-                        ]),
-            ),
-          );
+                                ? "sana \n"
+                                : "korxona nomi ")),
+                    TextSpan(
+                      text: context
+                                  .watch<FilterToBuyPageProvider>()
+                                  .currentFilterIndex ==
+                              1
+                          ? DTFM.maker(Provider.of<FilterToBuyPageProvider>(
+                                  context,
+                                  listen: false)
+                              .from!
+                              .millisecondsSinceEpoch)
+                          : Provider.of<FilterToBuyPageProvider>(context,
+                                  listen: false)
+                              .currentCompName,
+                      style: TextStyle(color: Colors.red, fontSize: gW(22.0)),
+                    ),
+                    TextSpan(text: " / ", style: TextStyle(fontSize: gW(22.0))),
+                    TextSpan(
+                      text: context
+                                  .watch<FilterToBuyPageProvider>()
+                                  .currentFilterIndex ==
+                              1
+                          ? DTFM.maker(
+                              Provider.of<FilterToBuyPageProvider>(context)
+                                  .to!
+                                  .millisecondsSinceEpoch)
+                          : Provider.of<FilterToBuyPageProvider>(context,
+                                  listen: false)
+                              .currentCompName,
+                      style: TextStyle(color: Colors.red, fontSize: gW(22.0)),
+                    ),
+                    const TextSpan(text: " bo'yicha ma'lumot topilmadi"),
+                  ]),
+      ),
+    );
   }
 
-  ListView _allBody(List<Product>? data, BuildContext context) {
+  ListView _allBody(List<Product>? data, BuildContext context, String text) {
     return ListView.separated(
-            separatorBuilder: (context, index) {
-              return SizedBox(
-                height: gH(14.0),
-              );
-            },
-            key: Key('builder ${data![0].productId}'),
-            padding:
-                const EdgeInsets.only(left: 20.0, right: 20.0, top: 25.0),
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: data.length,
-            itemBuilder: (_, __) {
-              return Column(
-                children: [
-                  Text(__.toString()),
-                  ExpansionTileToShowProductWidget(
-                    isExpanded:
-                        context.watch<ToBuyProductPageProvider>().current ==
-                            __,
-                    children: _children(data[__], context),
-                    onChanged: (bool newState) {
-                      if (newState) {
-                        context
-                            .read<ToBuyProductPageProvider>()
-                            .changeCurrent(__);
-                      } else {
-                        context
-                            .read<ToBuyProductPageProvider>()
-                            .changeCurrent(-1);
-                      }
-                    },
-                    data: data[__],
-                  ),
-                ],
-              );
-            },
-          );
+      separatorBuilder: (context, index) {
+        return SizedBox(
+          height: gH(14.0),
+          child: Text(text),
+        );
+      },
+      key: Key('builder ${data![0].productId}'),
+      padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 25.0),
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: data.length,
+      itemBuilder: (_, __) {
+        return Column(
+          children: [
+            Text(__.toString()),
+            ExpansionTileToShowProductWidget(
+              isExpanded:
+                  context.watch<ToBuyProductPageProvider>().current == __,
+              children: _children(data[__], context),
+              onChanged: (bool newState) {
+                if (newState) {
+                  context.read<ToBuyProductPageProvider>().changeCurrent(__);
+                } else {
+                  context.read<ToBuyProductPageProvider>().changeCurrent(-1);
+                }
+              },
+              data: data[__],
+            ),
+          ],
+        );
+      },
+    );
   }
 
   SliverAppBar _sliverAppBar() {
@@ -185,103 +174,121 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
       floating: true,
       flexibleSpace: Container(
         color: greyColor,
-        child: ListView.separated(
-          padding: EdgeInsets.symmetric(
-            horizontal: gW(20.0),
-          ),
-          separatorBuilder: (context, index) {
-            return SizedBox(width: gW(15.0));
-          },
+        child: ListView.builder(
           itemCount: context.watch<FilterToBuyPageProvider>().filters.length,
           shrinkWrap: true,
           scrollDirection: Axis.horizontal,
           physics: const BouncingScrollPhysics(),
           itemBuilder: (_, __) {
-            return Chip(
-              shape: RoundedRectangleBorder(
-                side: BorderSide(color: whiteColor),
-                borderRadius: BorderRadius.circular(
-                  gW(20.0),
-                ),
-              ),
-              backgroundColor:
-                  context.watch<FilterToBuyPageProvider>().currentFilterIndex !=
+            return ElevatedButton(
+              focusNode: FocusNode(canRequestFocus: true),
+              style: ElevatedButton.styleFrom(
+                  visualDensity:
+                      const VisualDensity(horizontal: 0.0, vertical: 0.0),
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  primary: Colors.transparent,
+                  elevation: 0),
+              onPressed: () {
+                debugPrint("Filter OnPressed $__");
+                if (__ == 0) {
+                  Provider.of<FilterToBuyPageProvider>(context, listen: false)
+                      .changeCurrentFilterIndex(0);
+                  setState(() {
+                    Provider.of<FilterToBuyPageProvider>(context, listen: false)
+                        .changeCurrentFilterIndex(0);
+                  });
+                } else if (__ == 1) {
+                  _showDataPicker(true);
+                } else if (__ == 2) {
+                  debugPrint("filter 2 bosildi");
+                  context
+                      .read<FilterToBuyPageProvider>()
+                      .changeCurrentFilterIndex(2);
+                  setState(() {
+                    context
+                        .read<FilterToBuyPageProvider>()
+                        .changeCurrentFilterIndex(2);
+                  });
+
+                  // showCupertinoModalPopup(
+                  //     context: context,
+                  //     builder: (context) {
+                  //       return ListView.builder(
+                  //           physics: const NeverScrollableScrollPhysics(),
+                  //           shrinkWrap: true,
+                  //           itemBuilder: (_, __) {
+                  //             return PopupMenuItem(
+                  //                 value: " $__", child: Text(__.toString()));
+                  //           });
+                  //     });
+                } else {
+                  debugPrint("Out of range:::");
+                }
+              },
+              child: Container(
+                alignment: Alignment.center,
+                height: gH(40.0),
+                padding: EdgeInsets.symmetric(horizontal: gW(15.0)),
+                decoration: BoxDecoration(
+                  border: Border.all(color: whiteColor),
+                  borderRadius: BorderRadius.circular(
+                    gW(20.0),
+                  ),
+                  color: context
+                              .watch<FilterToBuyPageProvider>()
+                              .currentFilterIndex !=
                           __
                       ? greyColor
                       : whiteColor,
-              label: __ == 2
-                  ? PopupMenuButton(
-                      child: Text(
-                        Provider.of<FilterToBuyPageProvider>(context,
-                                listen: false)
-                            .filters[2],
+                ),
+                child: __ == 2
+                    ? PopupMenuButton(
+                        child: Text(
+                          Provider.of<FilterToBuyPageProvider>(context,
+                                  listen: false)
+                              .filters[2],
+                          style: TextStyle(
+                              color: Provider.of<FilterToBuyPageProvider>(
+                                              context,
+                                              listen: false)
+                                          .currentFilterIndex ==
+                                      2
+                                  ? mainColor
+                                  : whiteColor),
+                        ),
+                        padding: EdgeInsets.zero,
+                        itemBuilder: (context) {
+                          debugPrint(Provider.of<FilterToBuyPageProvider>(
+                                  context,
+                                  listen: false)
+                              .companyNamesPopUpMenuItems!
+                              .elementAt(0)
+                              .toString());
+                          return Provider.of<FilterToBuyPageProvider>(context,
+                                  listen: false)
+                              .companyNamesPopUpMenuItems!
+                              .toList();
+                        })
+                    : Text(
+                        context.watch<FilterToBuyPageProvider>().filters[__],
                         style: TextStyle(
-                            color: Provider.of<FilterToBuyPageProvider>(context,
-                                            listen: false)
-                                        .currentFilterIndex ==
-                                    2
-                                ? mainColor
-                                : whiteColor),
+                          fontWeight: context
+                                      .watch<FilterToBuyPageProvider>()
+                                      .currentFilterIndex !=
+                                  __
+                              ? FontWeight.w300
+                              : FontWeight.bold,
+                          color: context
+                                      .watch<FilterToBuyPageProvider>()
+                                      .currentFilterIndex ==
+                                  __
+                              ? mainColor
+                              : whiteColor,
+                        ),
                       ),
-                      padding: EdgeInsets.zero,
-                      itemBuilder: (context) {
-                        debugPrint(Provider.of<FilterToBuyPageProvider>(context,
-                                listen: false)
-                            .companyNamesPopUpMenuItems!
-                            .elementAt(0)
-                            .toString());
-                        return Provider.of<FilterToBuyPageProvider>(context,
-                                listen: false)
-                            .companyNamesPopUpMenuItems!
-                            .toList();
-                      })
-                  : _filterOnPressed(__),
+              ),
             );
           },
-        ),
-      ),
-    );
-  }
-
-  GestureDetector _filterOnPressed(int __) {
-    return GestureDetector(
-      onTap: () {
-        if (__ == 0 &&
-            0 !=
-                Provider.of<FilterToBuyPageProvider>(context, listen: false)
-                    .currentFilterIndex) {
-          Provider.of<FilterToBuyPageProvider>(context, listen: false)
-              .changeCurrentFilterIndex(0);
-          setState(() {});
-        } else if (__ == 1) {
-          _showDataPicker(true);
-        } else if (__ == 2) {
-          // showCupertinoModalPopup(
-          //     context: context,
-          //     builder: (context) {
-          //       return ListView.builder(
-          //           physics: const NeverScrollableScrollPhysics(),
-          //           shrinkWrap: true,
-          //           itemBuilder: (_, __) {
-          //             return PopupMenuItem(
-          //                 value: " $__", child: Text(__.toString()));
-          //           });
-          //     });
-        } else {
-          debugPrint("Out of range:::");
-        }
-      },
-      child: Text(
-        context.watch<FilterToBuyPageProvider>().filters[__],
-        style: TextStyle(
-          fontWeight:
-              context.watch<FilterToBuyPageProvider>().currentFilterIndex != __
-                  ? FontWeight.w300
-                  : FontWeight.bold,
-          color:
-              context.watch<FilterToBuyPageProvider>().currentFilterIndex == __
-                  ? mainColor
-                  : whiteColor,
         ),
       ),
     );
@@ -639,6 +646,7 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
               .initTo(date);
           Provider.of<FilterToBuyPageProvider>(context, listen: false)
               .changeCurrentFilterIndex(1);
+          _getDataByDateTime(widget.data!);
 
           setState(() {});
         }
