@@ -40,8 +40,9 @@ class FilterToBuyPageProvider extends ChangeNotifier {
 ///////////////////////////////////////////////////////////
 
   int? n;
-  initN(v) {
+  initN(int v) {
     n = v;
+    print("inited n"+n.toString());
     notifyListeners();
   }
 

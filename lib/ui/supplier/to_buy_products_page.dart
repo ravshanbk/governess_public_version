@@ -41,7 +41,7 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
-          _sliverAppBar(),
+          _sliverAppBar(context),
           SliverToBoxAdapter(
             child: FutureBuilder<List<Product>>(
               future: toBuyProducts,
@@ -49,7 +49,8 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
                 List<Product> data = snap.data!;
                 widget.data = data;
                 Provider.of<FilterToBuyPageProvider>(context, listen: false)
-                    .initN(data.length);
+                    .initN(Provider.of<FilterToBuyPageProvider>(context, listen: false).currentFilterIndex == 0
+                    ?data.length:_getDataByDateTime(data));
 
                 return snap.hasData ? _body(data, context) : _indicator();
               },
@@ -63,14 +64,63 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
   _body(List<Product>? data, BuildContext context) {
     int current = Provider.of<FilterToBuyPageProvider>(context, listen: false)
         .currentFilterIndex;
+    int n = Provider.of<FilterToBuyPageProvider>(context, listen: false).n!;
+    debugPrint("N ning qiymati : $n");
+    List<Widget> widgetsDate = List.generate(n, (__) {
+      return Column(
+        children: [
+          Text(__.toString()),
+          ExpansionTileToShowProductWidget(
+            isExpanded: context.watch<ToBuyProductPageProvider>().current == __,
+            children: _children(data![__], context),
+            onChanged: (bool newState) {
+              if (newState) {
+                context.read<ToBuyProductPageProvider>().changeCurrent(__);
+              } else {
+                context.read<ToBuyProductPageProvider>().changeCurrent(-1);
+              }
+            },
+            data: data[__],
+          ),
+        ],
+      );
+    });
+ List<Widget> widgetsAll = List.generate(data!.length, (__) {
+      return Column(
+        children: [
+          Text(__.toString()),
+          ExpansionTileToShowProductWidget(
+            isExpanded: context.watch<ToBuyProductPageProvider>().current == __,
+            children: _children(data[__], context),
+            onChanged: (bool newState) {
+              if (newState) {
+                context.read<ToBuyProductPageProvider>().changeCurrent(__);
+              } else {
+                context.read<ToBuyProductPageProvider>().changeCurrent(-1);
+              }
+            },
+            data: data[__],
+          ),
+        ],
+      );
+    });
+
+    // current == 0
+    // ? :
+    // ( current == 1
+    //     ? _allBody(data, context, "1")
+    //     : (current == 2
+    //         ? _allBody(data, context, "2")
+    //         : _allBody(data, context, "no data"))));
+
     return Center(
         child: (current == 0
-            ? _allBody(data, context, "0")
+            ? _allBody(widgetsDate, context, "0")
             : current == 1
-                ? _allBody(data, context, "1")
+                ? _allBody(widgetsDate, context, "1")
                 : (current == 2
-                    ? _allBody(data, context, "2")
-                    : _allBody(data, context, "no data"))));
+                    ? _allBody(widgetsDate, context, "2")
+                    : _allBody(widgetsDate, context, "no data"))));
   }
 
   Container _noDataBody(BuildContext context) {
@@ -131,7 +181,7 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
     );
   }
 
-  ListView _allBody(List<Product>? data, BuildContext context, String text) {
+  ListView _allBody(List<Widget>? data, BuildContext context, String text) {
     return ListView.separated(
       separatorBuilder: (context, index) {
         return SizedBox(
@@ -139,42 +189,30 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
           child: Text(text),
         );
       },
-      key: Key('builder ${data![0].productId}'),
+      key: Key(DateTime.now().toString()),
       padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 25.0),
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: data.length,
+      itemCount: data!.length,
       itemBuilder: (_, __) {
-        return Column(
-          children: [
-            Text(__.toString()),
-            ExpansionTileToShowProductWidget(
-              isExpanded:
-                  context.watch<ToBuyProductPageProvider>().current == __,
-              children: _children(data[__], context),
-              onChanged: (bool newState) {
-                if (newState) {
-                  context.read<ToBuyProductPageProvider>().changeCurrent(__);
-                } else {
-                  context.read<ToBuyProductPageProvider>().changeCurrent(-1);
-                }
-              },
-              data: data[__],
-            ),
-          ],
-        );
+        return data[__];
       },
     );
   }
 
-  SliverAppBar _sliverAppBar() {
+  SliverAppBar _sliverAppBar(BuildContext context) {
     return SliverAppBar(
       elevation: 0,
       backgroundColor: Colors.white,
       floating: true,
       flexibleSpace: Container(
         color: greyColor,
-        child: ListView.builder(
+        child: ListView.separated(
+          separatorBuilder: (index, context) {
+            return SizedBox(width: gW(15.0));
+          },
+          padding:
+              EdgeInsets.symmetric(horizontal: gW(20.0), vertical: gH(10.0)),
           itemCount: context.watch<FilterToBuyPageProvider>().filters.length,
           shrinkWrap: true,
           scrollDirection: Axis.horizontal,
@@ -182,12 +220,6 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
           itemBuilder: (_, __) {
             return ElevatedButton(
               focusNode: FocusNode(canRequestFocus: true),
-              style: ElevatedButton.styleFrom(
-                  visualDensity:
-                      const VisualDensity(horizontal: 0.0, vertical: 0.0),
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  primary: Colors.transparent,
-                  elevation: 0),
               onPressed: () {
                 debugPrint("Filter OnPressed $__");
                 if (__ == 0) {
@@ -204,88 +236,45 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
                   context
                       .read<FilterToBuyPageProvider>()
                       .changeCurrentFilterIndex(2);
-                  setState(() {
-                    context
-                        .read<FilterToBuyPageProvider>()
-                        .changeCurrentFilterIndex(2);
-                  });
 
-                  // showCupertinoModalPopup(
-                  //     context: context,
-                  //     builder: (context) {
-                  //       return ListView.builder(
-                  //           physics: const NeverScrollableScrollPhysics(),
-                  //           shrinkWrap: true,
-                  //           itemBuilder: (_, __) {
-                  //             return PopupMenuItem(
-                  //                 value: " $__", child: Text(__.toString()));
-                  //           });
-                  //     });
+                  Scaffold.of(context).showBodyScrim(false, .3);
                 } else {
                   debugPrint("Out of range:::");
                 }
               },
-              child: Container(
-                alignment: Alignment.center,
-                height: gH(40.0),
-                padding: EdgeInsets.symmetric(horizontal: gW(15.0)),
-                decoration: BoxDecoration(
-                  border: Border.all(color: whiteColor),
-                  borderRadius: BorderRadius.circular(
-                    gW(20.0),
+              style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(0, 0),
+                  fixedSize: Size(double.infinity, gH(40.0)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(gW(20.0)),
+                    side: BorderSide(color: whiteColor),
                   ),
-                  color: context
+                  visualDensity:
+                      const VisualDensity(horizontal: 0.0, vertical: 0.0),
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  primary: context
                               .watch<FilterToBuyPageProvider>()
                               .currentFilterIndex !=
                           __
                       ? greyColor
                       : whiteColor,
+                  elevation: 0),
+              child: Text(
+                context.watch<FilterToBuyPageProvider>().filters[__],
+                style: TextStyle(
+                  fontWeight: context
+                              .watch<FilterToBuyPageProvider>()
+                              .currentFilterIndex !=
+                          __
+                      ? FontWeight.w300
+                      : FontWeight.bold,
+                  color: context
+                              .watch<FilterToBuyPageProvider>()
+                              .currentFilterIndex ==
+                          __
+                      ? mainColor
+                      : whiteColor,
                 ),
-                child: __ == 2
-                    ? PopupMenuButton(
-                        child: Text(
-                          Provider.of<FilterToBuyPageProvider>(context,
-                                  listen: false)
-                              .filters[2],
-                          style: TextStyle(
-                              color: Provider.of<FilterToBuyPageProvider>(
-                                              context,
-                                              listen: false)
-                                          .currentFilterIndex ==
-                                      2
-                                  ? mainColor
-                                  : whiteColor),
-                        ),
-                        padding: EdgeInsets.zero,
-                        itemBuilder: (context) {
-                          debugPrint(Provider.of<FilterToBuyPageProvider>(
-                                  context,
-                                  listen: false)
-                              .companyNamesPopUpMenuItems!
-                              .elementAt(0)
-                              .toString());
-                          return Provider.of<FilterToBuyPageProvider>(context,
-                                  listen: false)
-                              .companyNamesPopUpMenuItems!
-                              .toList();
-                        })
-                    : Text(
-                        context.watch<FilterToBuyPageProvider>().filters[__],
-                        style: TextStyle(
-                          fontWeight: context
-                                      .watch<FilterToBuyPageProvider>()
-                                      .currentFilterIndex !=
-                                  __
-                              ? FontWeight.w300
-                              : FontWeight.bold,
-                          color: context
-                                      .watch<FilterToBuyPageProvider>()
-                                      .currentFilterIndex ==
-                                  __
-                              ? mainColor
-                              : whiteColor,
-                        ),
-                      ),
               ),
             );
           },
@@ -594,7 +583,7 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
         fontSize: 16.0);
   }
 
-  _getDataByDateTime(List<Product> data) async {
+int  _getDataByDateTime(List<Product> data){
     debugPrint("GEt by id ga kirdi");
     int n = 0;
     for (int i = 0; i < data.length; i++) {
@@ -612,9 +601,10 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
         n++;
       }
     }
-    Provider.of<FilterToBuyPageProvider>(context, listen: false).initN(n);
+    debugPrint("N ning qiymati providerga : $n");
 
-    return n > 0;
+
+    return n ;
   }
 
   _showDataPicker(bool isFrom) {
@@ -623,7 +613,7 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
       showTitleActions: true,
       theme: DatePickerTheme(
         backgroundColor: mainColor,
-        containerHeight: gH(100.0),
+        containerHeight: gH(200.0),
         headerColor: whiteColor,
         itemStyle: const TextStyle(
             color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
