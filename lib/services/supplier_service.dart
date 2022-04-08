@@ -1,8 +1,11 @@
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:governess/models/other/post_res_model.dart';
 import 'package:governess/models/supplier/send_product_model.dart';
 import 'package:governess/models/supplier/product_model.dart';
+import 'package:governess/providers/filter_to_buy_page_provider.dart';
+import 'package:provider/provider.dart';
 
 class SupplierService {
   Future<List<Product>> getToBuyProducts() async {
@@ -37,7 +40,7 @@ class SupplierService {
         "weightPack": 3900.00,
         "status": "YANGI",
         "measurementType": "gramm",
-        "companyName": "Yengil Yechim",
+        "companyName": "Yengi Yechim",
         "companyId": 3,
         "productId": 38,
         "productName": "Kartoshka",
@@ -47,7 +50,7 @@ class SupplierService {
         "id": 6,
         "createDate": 1648726870584,
         "updateDate": 1648726870584,
-        "sendDate":   1651965687584,
+        "sendDate": 1651965687584,
         "orderNumber": "TEST ZAYAFKA",
         "price": null,
         "pack": 0.00,
@@ -55,7 +58,7 @@ class SupplierService {
         "weightPack": 1306.40,
         "status": "YANGI",
         "measurementType": "gramm",
-        "companyName": "Starlink",
+        "companyName": "Starlin",
         "companyId": 3,
         "productId": 95,
         "productName": "Smetana",
@@ -73,7 +76,7 @@ class SupplierService {
         "weightPack": 15000.00,
         "status": "YANGI",
         "measurementType": "gramm",
-        "companyName": "Starlink",
+        "companyName": "Starli",
         "companyId": 3,
         "productId": 18,
         "productName": "Baliq (boshsiz, tozalangan)",
@@ -83,7 +86,7 @@ class SupplierService {
         "id": 8,
         "createDate": 1648726870600,
         "updateDate": 1648726870600,
-        "sendDate":1651965687584,
+        "sendDate": 1651965687584,
         "orderNumber": "TEST ZAYAFKA",
         "price": null,
         "pack": 0.00,
@@ -91,7 +94,7 @@ class SupplierService {
         "weightPack": 3438.00,
         "status": "YANGI",
         "measurementType": "gramm",
-        "companyName": "Starlink",
+        "companyName": "Starl",
         "companyId": 3,
         "productId": 58,
         "productName": "Non",
@@ -109,7 +112,7 @@ class SupplierService {
         "weightPack": 27950.00,
         "status": "YANGI",
         "measurementType": "gramm",
-        "companyName": "Starlink",
+        "companyName": "Star",
         "companyId": 3,
         "productId": 11,
         "productName": "Mol go`shti",
@@ -127,7 +130,7 @@ class SupplierService {
         "weightPack": 1498.70,
         "status": "YANGI",
         "measurementType": "gramm",
-        "companyName": "Starlink",
+        "companyName": "Sta",
         "companyId": 3,
         "productId": 103,
         "productName": "Tuzlangan bodring",
@@ -145,7 +148,7 @@ class SupplierService {
         "weightPack": 5500.00,
         "status": "YANGI",
         "measurementType": "gramm",
-        "companyName": "Starlink",
+        "companyName": "St",
         "companyId": 3,
         "productId": 45,
         "productName": "Lavlagi",
@@ -181,7 +184,7 @@ class SupplierService {
         "weightPack": 4500.00,
         "status": "YANGI",
         "measurementType": "gramm",
-        "companyName": "Starlink",
+        "companyName": "S",
         "companyId": 3,
         "productId": 35,
         "productName": "Karam",
@@ -199,7 +202,7 @@ class SupplierService {
         "weightPack": 800.00,
         "status": "YANGI",
         "measurementType": "gramm",
-        "companyName": "Starlink",
+        "companyName": "tarlink",
         "companyId": 3,
         "productId": 15,
         "productName": "Tomat pastasi",
@@ -217,7 +220,7 @@ class SupplierService {
         "weightPack": 4092.00,
         "status": "YANGI",
         "measurementType": "gramm",
-        "companyName": "Starlink",
+        "companyName": "arlink",
         "companyId": 3,
         "productId": 14,
         "productName": "Piyoz",
@@ -235,7 +238,7 @@ class SupplierService {
         "weightPack": 8890.00,
         "status": "YANGI",
         "measurementType": "gramm",
-        "companyName": "Starlink",
+        "companyName": "rlink",
         "companyId": 3,
         "productId": 13,
         "productName": "Guruch",
@@ -253,7 +256,7 @@ class SupplierService {
         "weightPack": 399.50,
         "status": "YANGI",
         "measurementType": "gramm",
-        "companyName": "Starlink",
+        "companyName": "link",
         "companyId": 3,
         "productId": 92,
         "productName": "Shakar",
@@ -271,7 +274,7 @@ class SupplierService {
         "weightPack": 1859.00,
         "status": "YANGI",
         "measurementType": "gramm",
-        "companyName": "Starlink",
+        "companyName": "ink",
         "companyId": 3,
         "productId": 90,
         "productName": "Saryogʼ",
@@ -289,7 +292,7 @@ class SupplierService {
         "weightPack": 2568.80,
         "status": "YANGI",
         "measurementType": "dona",
-        "companyName": "Starlink",
+        "companyName": "nk",
         "companyId": 3,
         "productId": 102,
         "productName": "Tuxum",
@@ -307,7 +310,7 @@ class SupplierService {
         "weightPack": 1800.00,
         "status": "QISMAN TUGALLANDI",
         "measurementType": "gramm",
-        "companyName": "Starlink",
+        "companyName": "k",
         "companyId": 3,
         "productId": 21,
         "productName": "Bexi",
@@ -343,7 +346,7 @@ class SupplierService {
         "weightPack": 3039.70,
         "status": "QISMAN TUGALLANDI",
         "measurementType": "gramm",
-        "companyName": "Starlink",
+        "companyName": "Starflink",
         "companyId": 3,
         "productId": 61,
         "productName": "Noʼxat konservasi",
@@ -361,7 +364,7 @@ class SupplierService {
         "weightPack": 350.00,
         "status": "QISMAN TUGALLANDI",
         "measurementType": "gramm",
-        "companyName": "Starlink",
+        "companyName": "Starlidnk",
         "companyId": 3,
         "productId": 16,
         "productName": "Tuz",
@@ -379,7 +382,7 @@ class SupplierService {
         "weightPack": 331.80,
         "status": "QISMAN TUGALLANDI",
         "measurementType": "gramm",
-        "companyName": "Starlink",
+        "companyName": "Staralink",
         "companyId": 3,
         "productId": 106,
         "productName": "Un (1-sort)",
@@ -397,7 +400,7 @@ class SupplierService {
         "weightPack": 75.00,
         "status": "YANGI",
         "measurementType": "gramm",
-        "companyName": "Starlink",
+        "companyName": "Sstarlink",
         "companyId": 3,
         "productId": 22,
         "productName": "Bodring",
@@ -415,7 +418,7 @@ class SupplierService {
         "weightPack": 135.00,
         "status": "YANGI",
         "measurementType": "gramm",
-        "companyName": "Starlink",
+        "companyName": "Staarlink",
         "companyId": 3,
         "productId": 24,
         "productName": "Bulgʼor qalampiri (svetofor)",
@@ -437,8 +440,7 @@ class SupplierService {
       //   throw Exception("From json Error: " + e.toString());
       // }
       List<Product> data = hardData.map((e) => Product.fromJson(e)).toList();
-
-      return data;
+         return data;
     } catch (e) {
       throw Exception("Get To Buy Products Supplier: " + e.toString());
     }

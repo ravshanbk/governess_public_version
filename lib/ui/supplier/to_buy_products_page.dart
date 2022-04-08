@@ -50,6 +50,9 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
               future: toBuyProducts,
               builder: (context, AsyncSnapshot<List<Product>> snap) {
                 List<Product> data = snap.data!;
+                Provider.of<FilterToBuyPageProvider>(context, listen: false)
+                    .generateAvailableCompanyNames(data);
+
                 widget.dataw = data;
                 Provider.of<FilterToBuyPageProvider>(context, listen: false)
                     .initN(Provider.of<FilterToBuyPageProvider>(context,
@@ -92,65 +95,91 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
     int n = Provider.of<FilterToBuyPageProvider>(context, listen: false).n!;
     debugPrint("N ning qiymati : $n");
     List<Widget> widgetsDate = List.generate(
-        Provider.of<FilterToBuyPageProvider>(context, listen: false)
-            .dataByDate
-            .length, (__) {
-      List<Product> dataByDate =
-          Provider.of<FilterToBuyPageProvider>(context, listen: false)
-              .dataByDate;
-      return Column(
-        children: [
-          Text(__.toString()),
-          ExpansionTileToShowProductWidget(
-            isExpanded: context.watch<ToBuyProductPageProvider>().current == __,
-            children: _children(dataByDate[__], context),
-            onChanged: (bool newState) {
-              if (newState) {
-                context.read<ToBuyProductPageProvider>().changeCurrent(__);
-              } else {
-                context.read<ToBuyProductPageProvider>().changeCurrent(-1);
-              }
-            },
-            data: dataByDate[__],
-          ),
-        ],
-      );
-    });
-    List<Widget> widgetsAll = List.generate(data!.length, (__) {
-      return Column(
-        children: [
-          Text(__.toString()),
-          ExpansionTileToShowProductWidget(
-            isExpanded: context.watch<ToBuyProductPageProvider>().current == __,
-            children: _children(data[__], context),
-            onChanged: (bool newState) {
-              if (newState) {
-                context.read<ToBuyProductPageProvider>().changeCurrent(__);
-              } else {
-                context.read<ToBuyProductPageProvider>().changeCurrent(-1);
-              }
-            },
-            data: data[__],
-          ),
-        ],
-      );
-    });
+      Provider.of<FilterToBuyPageProvider>(context, listen: false)
+          .dataByDate
+          .length,
+      (__) {
+        List<Product> dataByDate =
+            Provider.of<FilterToBuyPageProvider>(context, listen: false)
+                .dataByDate;
+        return Column(
+          children: [
+            Text(__.toString()),
+            ExpansionTileToShowProductWidget(
+              isExpanded:
+                  context.watch<ToBuyProductPageProvider>().current == __,
+              children: _children(dataByDate[__], context),
+              onChanged: (bool newState) {
+                if (newState) {
+                  context.read<ToBuyProductPageProvider>().changeCurrent(__);
+                } else {
+                  context.read<ToBuyProductPageProvider>().changeCurrent(-1);
+                }
+              },
+              data: dataByDate[__],
+            ),
+          ],
+        );
+      },
+    );
+    List<Widget> widgetsByCompanyName = List.generate(
+      Provider.of<FilterToBuyPageProvider>(context, listen: false)
+                .dataByCompanyName.length,
+      (n) {
+        List<Product> dataByCompName =
+            Provider.of<FilterToBuyPageProvider>(context, listen: false)
+                .dataByCompanyName;
+        return Column(
+          children: [
+            Text(n.toString()),
+            ExpansionTileToShowProductWidget(
+              isExpanded:
+                  context.watch<ToBuyProductPageProvider>().current == n,
+              children: _children(dataByCompName[n], context),
+              onChanged: (bool newState) {
+                if (newState) {
+                  context.read<ToBuyProductPageProvider>().changeCurrent(n);
+                } else {
+                  context.read<ToBuyProductPageProvider>().changeCurrent(-1);
+                }
+              },
+              data: dataByCompName[n],
+            ),
+          ],
+        );
+      },
+    );
 
-    // current == 0
-    // ? :
-    // ( current == 1
-    //     ? _allBody(data, context, "1")
-    //     : (current == 2
-    //         ? _allBody(data, context, "2")
-    //         : _allBody(data, context, "no data"))));
-
+    List<Widget>widgetsAll  = List.generate(
+     data!.length,
+      (__) {
+        return Column(
+          children: [
+            Text(__.toString()),
+            ExpansionTileToShowProductWidget(
+              isExpanded:
+                  context.watch<ToBuyProductPageProvider>().current == __,
+              children: _children(data[__], context),
+              onChanged: (bool newState) {
+                if (newState) {
+                  context.read<ToBuyProductPageProvider>().changeCurrent(__);
+                } else {
+                  context.read<ToBuyProductPageProvider>().changeCurrent(-1);
+                }
+              },
+              data: data[__],
+            ),
+          ],
+        );
+      },
+    );
     return Center(
         child: (current == 0
-            ? _allBody(widgetsDate, context, "0")
+            ? _allBody(widgetsAll, context, "0")
             : current == 1
                 ? _allBody(widgetsDate, context, "1")
                 : (current == 2
-                    ? _allBody(widgetsDate, context, "2")
+                    ? _allBody(widgetsByCompanyName, context, "2")
                     : _allBody(widgetsDate, context, "no data"))));
   }
 
@@ -212,8 +241,8 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
     );
   }
 
-  ListView _allBody(List<Widget>? data, BuildContext context, String text) {
-    return ListView.separated(
+  _allBody(List<Widget>? data, BuildContext context, String text) {
+    return data!.isNotEmpty? ListView.separated(
       separatorBuilder: (context, index) {
         return SizedBox(
           height: gH(14.0),
@@ -224,14 +253,16 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
       padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 25.0),
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: data!.length,
+      itemCount: data.length,
       itemBuilder: (_, __) {
         return data[__];
       },
-    );
+    ):_noDataBody(context);
   }
 
-  SliverAppBar _sliverAppBar(BuildContext context) {
+  SliverAppBar _sliverAppBar(
+    BuildContext context,
+  ) {
     return SliverAppBar(
       elevation: 0,
       backgroundColor: Colors.white,
@@ -251,19 +282,28 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
           itemBuilder: (_, __) {
             return __ == 2
                 ? PopupMenuButton(
+                    onSelected: (String v) {
+                      debugPrint("men on selectedning valuesiman: $v");
+                      Provider.of<FilterToBuyPageProvider>(context,
+                              listen: false)
+                          .initCurrentCompanyname(v);
+                      _getDataByCompanyName(widget.dataw!, v);
+                      Provider.of<FilterToBuyPageProvider>(context,
+                              listen: false)
+                          .changeCurrentFilterIndex(2);
+                    },
                     iconSize: 200,
                     child: Container(
                       alignment: Alignment.center,
                       width: gW(200),
                       height: gH(40.0),
                       decoration: BoxDecoration(
-                        backgroundBlendMode: BlendMode.color,
                         color: context
                                     .watch<FilterToBuyPageProvider>()
-                                    .currentFilterIndex !=
-                                __
-                            ? greyColor
-                            : whiteColor,
+                                    .currentFilterIndex ==
+                                2
+                            ? whiteColor
+                            : greyColor,
                         border: Border.all(
                           color: whiteColor,
                         ),
@@ -293,12 +333,23 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
                       borderRadius: BorderRadius.circular(gW(20.0)),
                       side: BorderSide(color: whiteColor),
                     ),
-                    initialValue: 2,
+                    initialValue: Provider.of<FilterToBuyPageProvider>(context,
+                            listen: false)
+                        .availableCompanyNames[0],
                     itemBuilder: (context) {
-                      return List.generate(5, (index) {
+                      return List.generate(
+                          Provider.of<FilterToBuyPageProvider>(context,
+                                  listen: false)
+                              .availableCompanyNames
+                              .length, (index) {
                         return PopupMenuItem(
-                          value: index,
-                          child: Text('button no $index'),
+                          value: Provider.of<FilterToBuyPageProvider>(context,
+                                  listen: false)
+                              .availableCompanyNames[index],
+                          child: Text(Provider.of<FilterToBuyPageProvider>(
+                                  context,
+                                  listen: false)
+                              .availableCompanyNames[index]),
                         );
                       });
                     },

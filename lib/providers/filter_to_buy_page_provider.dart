@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:governess/consts/size_config.dart';
 import 'package:governess/models/supplier/product_model.dart';
 
 class FilterToBuyPageProvider extends ChangeNotifier {
@@ -11,15 +10,20 @@ class FilterToBuyPageProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-/////////////////////////////////////////////////
+///////////////////////////////////////
   String? currentCompName;
-  List<String> availableCompanyNames = [];
+  initCurrentCompanyname(String v) {
+    currentCompName = v;
+  }
+
   List<Product> dataByCompanyName = [];
 
   generateByCompanyNameData(List<Product> list) {
     dataByCompanyName = list;
     notifyListeners();
   }
+
+  List<String> availableCompanyNames = [];
 
   generateAvailableCompanyNames(List<Product> data) {
     List<String> names = [];
@@ -30,10 +34,13 @@ class FilterToBuyPageProvider extends ChangeNotifier {
       }
     }
     availableCompanyNames = names;
+
+    debugPrint("Men Generate Available Company names ichidagi printman: " +
+        availableCompanyNames.toString());
     notifyListeners();
   }
 
-///////////////////////////////////////////////////////////
+////////////////////////////////////////
 
   DateTime? from;
   initFrom(DateTime v) {
@@ -47,7 +54,7 @@ class FilterToBuyPageProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-/////////////////////////////////////////////////////////////////////
+//////////////////////////////////////
   int? n;
   initN(int v) {
     n = v;
