@@ -49,34 +49,14 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
             child: FutureBuilder<List<Product>>(
               future: toBuyProducts,
               builder: (context, AsyncSnapshot<List<Product>> snap) {
+                //////////////////////////////////////////////////////////
+
                 List<Product> data = snap.data!;
+
                 Provider.of<FilterToBuyPageProvider>(context, listen: false)
                     .generateAvailableCompanyNames(data);
 
                 widget.dataw = data;
-                Provider.of<FilterToBuyPageProvider>(context, listen: false)
-                    .initN(Provider.of<FilterToBuyPageProvider>(context,
-                                    listen: false)
-                                .currentFilterIndex ==
-                            0
-                        ? data.length
-                        : (Provider.of<FilterToBuyPageProvider>(context,
-                                        listen: false)
-                                    .currentFilterIndex ==
-                                1
-                            ? Provider.of<FilterToBuyPageProvider>(context,
-                                    listen: false)
-                                .currentFilterIndex
-                            : _getDataByCompanyName(data, "sf")));
-////////////////////////////////////////////////////////////////////////
-                List<String> names = [];
-
-                for (var item in data) {
-                  if (!names.contains(item.companyName)) {
-                    names.add(item.companyName!);
-                  }
-                }
-                debugPrint("Names: " + names.toString());
 
                 /////////////////////////////////////////////////////////////////////////
 
@@ -92,8 +72,6 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
   _body(List<Product>? data, BuildContext context) {
     int current = Provider.of<FilterToBuyPageProvider>(context, listen: false)
         .currentFilterIndex;
-    int n = Provider.of<FilterToBuyPageProvider>(context, listen: false).n!;
-    debugPrint("N ning qiymati : $n");
     List<Widget> widgetsDate = List.generate(
       Provider.of<FilterToBuyPageProvider>(context, listen: false)
           .dataByDate
@@ -124,7 +102,8 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
     );
     List<Widget> widgetsByCompanyName = List.generate(
       Provider.of<FilterToBuyPageProvider>(context, listen: false)
-                .dataByCompanyName.length,
+          .dataByCompanyName
+          .length,
       (n) {
         List<Product> dataByCompName =
             Provider.of<FilterToBuyPageProvider>(context, listen: false)
@@ -150,8 +129,8 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
       },
     );
 
-    List<Widget>widgetsAll  = List.generate(
-     data!.length,
+    List<Widget> widgetsAll = List.generate(
+      data!.length,
       (__) {
         return Column(
           children: [
@@ -242,22 +221,24 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
   }
 
   _allBody(List<Widget>? data, BuildContext context, String text) {
-    return data!.isNotEmpty? ListView.separated(
-      separatorBuilder: (context, index) {
-        return SizedBox(
-          height: gH(14.0),
-          child: Text(text),
-        );
-      },
-      key: Key(DateTime.now().toString()),
-      padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 25.0),
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: data.length,
-      itemBuilder: (_, __) {
-        return data[__];
-      },
-    ):_noDataBody(context);
+    return data!.isNotEmpty
+        ? ListView.separated(
+            separatorBuilder: (context, index) {
+              return SizedBox(
+                height: gH(14.0),
+                child: Text(text),
+              );
+            },
+            key: Key(DateTime.now().toString()),
+            padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 25.0),
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: data.length,
+            itemBuilder: (_, __) {
+              return data[__];
+            },
+          )
+        : _noDataBody(context);
   }
 
   SliverAppBar _sliverAppBar(
@@ -328,7 +309,7 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
                       ),
                     ),
                     elevation: 0,
-                    color: Colors.red,
+                    color: whiteColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(gW(20.0)),
                       side: BorderSide(color: whiteColor),
@@ -346,10 +327,23 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
                           value: Provider.of<FilterToBuyPageProvider>(context,
                                   listen: false)
                               .availableCompanyNames[index],
-                          child: Text(Provider.of<FilterToBuyPageProvider>(
-                                  context,
-                                  listen: false)
-                              .availableCompanyNames[index]),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: gW(15.0), vertical: gH(5.0)),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: mainColor_02),
+                              color: mainColor_02,
+                              borderRadius: BorderRadius.circular(
+                                gW(7.0),
+                              ),
+                            ),
+                            child: Text(
+                              Provider.of<FilterToBuyPageProvider>(context,
+                                      listen: false)
+                                  .availableCompanyNames[index],
+                              style: TextStyle(color: Colors.black),
+                            ),
+                          ),
                         );
                       });
                     },
@@ -426,13 +420,11 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
       actions: [
         IconButton(
           onPressed: () {
-            debugPrint("");
-
             context.read<ToBuyProductPageProvider>().changeCurrent(-1);
             initState();
           },
           icon: const Icon(
-            Icons.filter_list,
+            Icons.refresh,
           ),
         )
       ],
@@ -740,12 +732,13 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
     List<Product> list = [];
     int m = 0;
     for (int i = 0; i < data.length; i++) {
+      debugPrint(data[i].companyName.toString() + " " + name);
       if (data[i].companyName! == name) {
         list.add(data[i]);
         m++;
       }
     }
-
+    debugPrint("Length of comp name list: " + list.length.toString());
     Provider.of<FilterToBuyPageProvider>(context, listen: false)
         .generateByCompanyNameData(list);
     return m;

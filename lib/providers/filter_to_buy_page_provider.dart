@@ -55,12 +55,6 @@ class FilterToBuyPageProvider extends ChangeNotifier {
   }
 
 //////////////////////////////////////
-  int? n;
-  initN(int v) {
-    n = v;
-    print("inited n" + n.toString());
-    notifyListeners();
-  }
 
   int currentFilterIndex = 0;
   List<String> filters = ["Hammasi", "Sana bo'yicha", "Korxona nomi bo'yicha"];
