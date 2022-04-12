@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -731,6 +730,7 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
   int _getDataByCompanyName(List<Product> data, String name) {
     List<Product> list = [];
     int m = 0;
+
     for (int i = 0; i < data.length; i++) {
       debugPrint(data[i].companyName.toString() + " " + name);
       if (data[i].companyName! == name) {
@@ -749,14 +749,14 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
       context,
       showTitleActions: true,
       theme: DatePickerTheme(
-        backgroundColor: mainColor,
+        backgroundColor: lightGreyColor,
         containerHeight: gH(200.0),
-        headerColor: whiteColor,
+        headerColor: mainColor,
         itemStyle: const TextStyle(
-            color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+            color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18),
         doneStyle: TextStyle(
-            color: greyColor,
-            fontSize: 16,
+            color: whiteColor,
+            fontSize: 18,
             fontWeight: FontWeight.bold,
             letterSpacing: gW(1.5),
             decoration: TextDecoration.underline),
@@ -776,7 +776,7 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
           _getDataByDateTime(widget.dataw!);
         }
       },
-      // currentTime: DateTime.now(),
+      // pickerModel: DateTimePickerModel(),
       locale: LocaleType.en,
     );
   }

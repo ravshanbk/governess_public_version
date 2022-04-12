@@ -1,9 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:governess/consts/colors.dart';
-import 'package:governess/consts/decorations.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/models/supplier/product_model.dart';
@@ -11,6 +8,7 @@ import 'package:governess/providers/get_shipped_products_provider.dart';
 import 'package:governess/providers/to_buy_products_page_provider.dart.dart';
 import 'package:governess/services/supplier_service.dart';
 import 'package:governess/ui/widgets/expansion_tile_to_show_product_widget.dart';
+import 'package:governess/ui/widgets/text_in_row_widget.dart';
 import 'package:provider/provider.dart';
 
 class GetShippedProductPage extends StatefulWidget {
@@ -113,21 +111,21 @@ class _GetShippedProductPageState extends State<GetShippedProductPage> {
           ),
         ),
         child: Column(children: [
-          _textInRow("Korxona nomi", data.companyName.toString()),
+          TextInRowWidget("Korxona nomi", data.companyName.toString()),
           _divider(),
-          _textInRow("Zayavka nomi", data.orderNumber.toString()),
+          TextInRowWidget("Zayavka nomi", data.orderNumber.toString()),
           _divider(),
-          _textInRow("Yuborilgan Sana", DTFM.maker(data.sendDate!).toString()),
+          TextInRowWidget("Yuborilgan Sana", DTFM.maker(data.sendDate!).toString()),
           _divider(),
-          _textInRow("O'lchov birligi", data.measurementType.toString()),
+          TextInRowWidget("O'lchov birligi", data.measurementType.toString()),
           _divider(),
-          _textInRow("Holati", data.status.toString()),
+          TextInRowWidget("Holati", data.status.toString()),
           _divider(),
-          _textInRow("Yaxlitlash miqdori", data.pack.toString()),
+          TextInRowWidget("Yaxlitlash miqdori", data.pack.toString()),
           _divider(),
-          _textInRow("Qadoqlar soni", data.numberPack.toString()),
+          TextInRowWidget("Qadoqlar soni", data.numberPack.toString()),
           _divider(),
-          _textInRow("Qadoqlangandan so'ng (miq)", data.weightPack.toString()),
+          TextInRowWidget("Qadoqlangandan so'ng (miq)", data.weightPack.toString()),
           _divider(),
           SizedBox(
             height: gH(10.0),
@@ -143,30 +141,6 @@ class _GetShippedProductPageState extends State<GetShippedProductPage> {
         endIndent: gW(15.0),
       );
 
-  _textInRow(String title, String text) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: gW(10.0)),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            "$title:",
-            style: TextStyle(
-              color: greyColor,
-              fontSize: gW(14.0),
-            ),
-          ),
-          Text(
-            text.length > 18 ? text.substring(0, 17) : text,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: gW(18.0),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   Scaffold _indicator() {
     return Scaffold(

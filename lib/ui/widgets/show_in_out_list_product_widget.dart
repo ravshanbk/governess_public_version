@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/size_config.dart';
-import 'package:governess/models/supplier/product_model.dart';
+import 'package:governess/models/in_out_list_product_model.dart';
 
-class ExpansionTileToShowProductWidget extends StatelessWidget {
+class ShowInOutListProductWidget extends StatelessWidget {
   final bool isExpanded;
   final List<Widget> children;
   final Function(bool) onChanged;
-  final Product data;
-  const ExpansionTileToShowProductWidget({
+  final InoutListProduct data;
+  const ShowInOutListProductWidget({
     Key? key,
     required this.isExpanded,
     required this.children,
@@ -20,13 +20,14 @@ class ExpansionTileToShowProductWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Ink(
       decoration: BoxDecoration(
-        color:  mainColor_02,
+        color: isExpanded ? lightGreyColor : mainColor_02,
         borderRadius: BorderRadius.circular(
           gW(10.0),
         ),
       ),
       child: ExpansionTile(
-        textColor: mainColor,
+        
+        textColor: Colors.black,
         key: Key(DateTime.now().toString()),
         initiallyExpanded: isExpanded,
         title: _title(),
@@ -56,22 +57,18 @@ class ExpansionTileToShowProductWidget extends StatelessWidget {
     return Row(
       children: [
         Text(
-          "Holati:",
+          "Miqdor:",
           style: TextStyle(color: greyColor, fontSize: gW(14.0)),
         ),
         SizedBox(
           width: gW(5.0),
         ),
         Text(
-          data.status.toString(),
+          data.weight.toString(),
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: gW(14.0),
-            color: data.status == "YANGI"
-                ? Colors.green
-                : (data.status == "QISMAN TUGALLANDI"
-                    ? Colors.orange
-                    : Colors.black),
+            color: Colors.red,
           ),
         ),
       ],

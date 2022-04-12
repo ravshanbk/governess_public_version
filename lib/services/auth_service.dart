@@ -2,19 +2,29 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:governess/local_storage/user_storage.dart';
 import 'package:governess/models/other/place_user.dart';
-import 'package:governess/models/user_model.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:governess/models/other/post_res_model.dart';
+import 'package:governess/models/user/user_model.dart';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
 class AuthService {
+  Future<PostResModel> applyAsAUser(bool success) async {
+    try {
+      return PostResModel(
+          text: "Arizangiz muvaffaqiyatli yuborildi",
+          success: success,
+          object: null);
+    } catch (e) {
+      throw Exception("Auth Service applyAsUser: " + e.toString());
+    }
+  }
+
   Future<User> getUser(String login, String password) async {
     Response user;
     User decodedUser;
 
     try {
-
       user = await Dio().post(
         "http://64.227.134.50:7788/out/api/user/signIn",
         data: {"login": login, "password": password},
@@ -32,7 +42,6 @@ class AuthService {
         token: decodedUser.token,
         username: decodedUser.username,
       );
-
     } catch (e) {
       throw Exception("Getting User:::" + e.toString());
     }
@@ -44,17 +53,17 @@ class AuthService {
     debugPrint(login);
     debugPrint(password);
 
-   var response;
+    var response;
     User decodedUser;
     try {
       var url = Uri.parse("http://64.227.134.50:7788/out/api/user/signIn");
 
       response =
           await http.post(url, body: {"login": login, "password": password});
-    debugPrint("body::: "+response.body);
-    debugPrint("headers::: "+response.headers.toString());
+      debugPrint("body::: " + response.body);
+      debugPrint("headers::: " + response.headers.toString());
 
-      decodedUser =  User.fromJson(jsonDecode(response.body));
+      decodedUser = User.fromJson(jsonDecode(response.body));
     } catch (e) {
       throw Exception("Http Service::" + e.toString());
     }
