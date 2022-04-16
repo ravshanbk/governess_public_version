@@ -4,8 +4,8 @@ import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/models/supplier/product_model.dart';
-import 'package:governess/providers/get_shipped_products_provider.dart';
-import 'package:governess/providers/to_buy_products_page_provider.dart.dart';
+import 'package:governess/providers/supplier/get_shipped_products_provider.dart';
+import 'package:governess/providers/supplier/to_buy_products_page_provider.dart.dart';
 import 'package:governess/services/supplier_service.dart';
 import 'package:governess/ui/widgets/expansion_tile_to_show_product_widget.dart';
 import 'package:governess/ui/widgets/text_in_row_widget.dart';
@@ -56,7 +56,6 @@ class _GetShippedProductPageState extends State<GetShippedProductPage> {
                                     isExpanded: current == __,
                                     children: _children(data[__], context),
                                     onChanged: (bool newState) {
-                                      debugPrint(newState.toString());
                                       if (newState) {
                                         Provider.of<ToBuyProductPageProvider>(
                                                 context,

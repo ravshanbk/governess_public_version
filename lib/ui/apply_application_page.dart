@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/size_config.dart';
-import 'package:governess/providers/apply_application_page_provider.dart';
+import 'package:governess/providers/auth/apply_application_page_provider.dart';
 import 'package:governess/services/auth_service.dart';
 import 'package:provider/provider.dart';
 
@@ -56,7 +56,7 @@ class _ApplyAplicationPageState extends State<ApplyAplicationPage> {
                           .currentState!
                           .validate() &&
                       which == 1) {
-                    await AuthService().applyAsAUser(true).then((value) {
+                    await AuthService().signUpUser(true).then((value) {
                       if (value.success!) {
                         _showToast(value.text!, value.success!);
                         Navigator.pushAndRemoveUntil(

@@ -4,7 +4,7 @@ import 'package:governess/consts/decorations.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/models/hamshira_models/number_of_children_model.dart';
 import 'package:governess/models/hamshira_models/v_model.dart';
-import 'package:governess/providers/editing_children_page_provider.dart';
+import 'package:governess/providers/nurse/editing_children_page_provider.dart';
 import 'package:governess/services/nurse_service.dart';
 import 'package:governess/ui/nurse/nurse_home_page.dart';
 import 'package:governess/ui/widgets/add_button_widget.dart';

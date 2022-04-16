@@ -1,14 +1,12 @@
-
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:governess/models/other/post_res_model.dart';
+import 'package:governess/models/supplier/product_with_available_company_names_model.dart';
 import 'package:governess/models/supplier/send_product_model.dart';
 import 'package:governess/models/supplier/product_model.dart';
-import 'package:governess/providers/filter_to_buy_page_provider.dart';
-import 'package:provider/provider.dart';
+import 'package:governess/providers/supplier/filter_to_buy_page_provider.dart';
 
 class SupplierService {
-  Future<List<Product>> getToBuyProducts() async {
+  Future<ProductWithAvailableCompnayNames> getToBuyProducts() async {
     List<Map<String, dynamic>> hardData = [
       {
         "id": 4,
@@ -426,7 +424,7 @@ class SupplierService {
       }
     ];
     debugPrint("To buy products servicega kirdi:");
-
+    List<Product> data;
     try {
       // var res = await Dio()
       //     .get("http://192.168.1.6:7788/out/api/supplier/getRequiredProduct",
@@ -439,8 +437,9 @@ class SupplierService {
       // } catch (e) {
       //   throw Exception("From json Error: " + e.toString());
       // }
-      List<Product> data = hardData.map((e) => Product.fromJson(e)).toList();
-         return data;
+      data = hardData.map((e) => Product.fromJson(e)).toList();
+     
+      return ProductWithAvailableCompnayNames(availables: availables(data),product: data);
     } catch (e) {
       throw Exception("Get To Buy Products Supplier: " + e.toString());
     }
@@ -508,4 +507,14 @@ class SupplierService {
       throw Exception("Get Shipped Product Service" + e.toString());
     }
   }
+ List<String> availables(List<Product> data) {
+    List<String> names = [];
+
+    for (var item in data) {
+      if (!names.contains(item.companyName)) {
+        names.add(item.companyName!);
+      }
+    }
+    return names;}
+    
 }

@@ -1,9 +1,17 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/decorations.dart';
 import 'package:governess/consts/size_config.dart';
-import 'package:governess/providers/auth_page_provider.dart';
+import 'package:governess/providers/auth/auth_page_provider.dart';
+import 'package:governess/providers/supplier/to_buy_products_page_provider.dart.dart';
+import 'package:governess/services/auth_service.dart';
+import 'package:governess/ui/apply_application_page.dart';
+import 'package:governess/ui/cooker/home_cooker_page.dart';
+import 'package:governess/ui/manager/home_manager_page.dart';
 import 'package:governess/ui/nurse/nurse_home_page.dart';
+import 'package:governess/ui/supplier/home_supplier_page.dart';
+import 'package:governess/ui/supplier/to_buy_products_page.dart';
 import 'package:provider/provider.dart';
 
 class AuthPage extends StatelessWidget {
@@ -24,9 +32,19 @@ class AuthPage extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                SizedBox(
+                  height: gH(50.0),
+                  child: context.watch<AuthPageProvider>().isInProgress
+                      ? CupertinoActivityIndicator(
+                          radius: gW(20.0),
+                        )
+                      : const Text(""),
+                ),
                 _loginInput(context),
                 SizedBox(height: gH(20.0)),
                 _passwordInput(context),
+                SizedBox(height: gH(20.0)),
+                _textButton(context),
                 SizedBox(height: gH(20.0)),
                 _submitButton(context),
               ],
@@ -37,44 +55,104 @@ class AuthPage extends StatelessWidget {
     );
   }
 
+  TextButton _textButton(BuildContext context) {
+    return TextButton(
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const ApplyAplicationPage(),
+          ),
+        );
+      },
+      child: RichText(
+        textAlign: TextAlign.center,
+        text: TextSpan(
+          style: TextStyle(color: greyColor, fontSize: gW(20.0)),
+          children: const [
+            TextSpan(text: "Ro'yhatdan o'tmagan bo'lsangiz\n"),
+            TextSpan(text: "bu yerga ", style: TextStyle(color: Colors.red)),
+            TextSpan(text: " bosing"),
+          ],
+        ),
+      ),
+    );
+  }
+
   ElevatedButton _submitButton(BuildContext context) {
     return ElevatedButton(
-      onPressed: () async {
-        Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const NurseHomePage(),
-            ),
-            (route) => false);
-        // if (Provider.of<AuthPageProvider>(context, listen: false)
-        //     .formKey
-        //     .currentState!
-        //     .validate()) {
-        //        await AuthService()
-        //         .getUser(
-        //             Provider.of<AuthPageProvider>(context, listen: false)
-        //                 .loginController
-        //                 .text,
-        //             Provider.of<AuthPageProvider>(context, listen: false)
-        //                 .passwordController
-        //                 .text)
-        //         .then(
-        //       (value) {
-        //         switch (value.role) {
-        //           case "ROLE_HAMSHIRA":
-        //             Navigator.pushAndRemoveUntil(
-        //                 context,
-        //                 MaterialPageRoute(
-        //                   builder: (context) => const HamshiraHomePage(),
-        //                 ),
-        //                 (route) => false);
-        //             break;
-        //           default:
-        //         }
-        //       },
-        //     );
-        // }
-      },
+      onPressed: context.watch<AuthPageProvider>().isInProgress
+          ? null
+          : () async {
+              Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          //  const NurseHomePage(),
+                          // const ManagerHomePage()
+                          const SupplierHomePage()
+                          //  const CookerHomePage()
+                      ),
+                  (route) => false);
+              // if (Provider.of<AuthPageProvider>(context, listen: false)
+              //     .formKey
+              //     .currentState!
+              //     .validate()) {
+              //   Provider.of<AuthPageProvider>(context, listen: false)
+              //       .changeIsInProgress(true);
+
+              //   AuthService()
+              //       .getUser(
+              //           Provider.of<AuthPageProvider>(context, listen: false)
+              //               .loginController
+              //               .text,
+              //           Provider.of<AuthPageProvider>(context, listen: false)
+              //               .passwordController
+              //               .text)
+              //       .then(
+              //     (value) {
+              //       Provider.of<AuthPageProvider>(context, listen: false)
+              //           .changeIsInProgress(false);
+
+              //       switch (value.role) {
+              //         case "ROLE_HAMSHIRA":
+              //           Navigator.pushAndRemoveUntil(
+              //               context,
+              //               MaterialPageRoute(
+              //                 builder: (context) => const NurseHomePage(),
+              //               ),
+              //               (route) => false);
+              //           break;
+              //         case "ROLE_MUDIRA":
+              //           Navigator.pushAndRemoveUntil(
+              //               context,
+              //               MaterialPageRoute(
+              //                 builder: (context) => const ManagerHomePage(),
+              //               ),
+              //               (route) => false);
+              //           break;
+              //         case "ROLE_TAMINOT":
+              //           Navigator.pushAndRemoveUntil(
+              //               context,
+              //               MaterialPageRoute(
+              //                 builder: (context) => ToBuyProductsPage(),
+              //               ),
+              //               (route) => false);
+              //           break;
+              //         case "ROLE_OSHPAZ":
+              //           Navigator.pushAndRemoveUntil(
+              //               context,
+              //               MaterialPageRoute(
+              //                 builder: (context) => const CookerHomePage(),
+              //               ),
+              //               (route) => false);
+              //           break;
+              //         default:
+              //       }
+              //     },
+              //   );
+              // }
+            },
       style: _elevatedButtonStyle(),
       child: const Text("Kirish"),
     );
@@ -86,7 +164,7 @@ class AuthPage extends StatelessWidget {
         if (v!.isEmpty) return "Parolni kiriting !!!";
       },
       controller: context.read<AuthPageProvider>().passwordController,
-      decoration: DecorationMy.inputDecoration("Parol...",null),
+      decoration: DecorationMy.inputDecoration("Parol...", null),
     );
   }
 
@@ -96,7 +174,7 @@ class AuthPage extends StatelessWidget {
         if (v!.isEmpty) return "Loginni kiriting !!!";
       },
       controller: context.read<AuthPageProvider>().loginController,
-      decoration:DecorationMy.inputDecoration("Login...",null),
+      decoration: DecorationMy.inputDecoration("Login...", null),
     );
   }
 

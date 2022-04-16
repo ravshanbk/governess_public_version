@@ -157,8 +157,15 @@ class InOutListProductService {
       }
     ];
     try {
-      // var res = await Dio()
-      //     .get("http://192.168.1.38:7788/out/api/cook/getProductBalancer");
+      // var res = await Dio().get(
+      //   "http://192.168.1.38:7788/out/api/cook/getProductBalancer",
+      //   options: Options(
+      //     headers: {
+      //       "Authorization":
+      //           "Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6IlJPTEVfT1NIUEFaIiwic3ViIjoiMThvc2hwYXoiLCJpYXQiOjE2NDk1NzY5NjQsImV4cCI6MTY1MDQ0MDk2NH0.fAWfFnlwwdiwDSNKzckyt00gjyIOMQaJt_VtGpt2Gc4"
+      //     },
+      //   ),
+      // );
       // debugPrint("getAvailableProductsInStorage function ichi: " +
       //     res.data.toString());
       // return (res.data as List)

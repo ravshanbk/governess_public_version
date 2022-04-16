@@ -14,6 +14,7 @@ class FilterToBuyPageProvider extends ChangeNotifier {
   String? currentCompName;
   initCurrentCompanyname(String v) {
     currentCompName = v;
+    notifyListeners();
   }
 
   List<Product> dataByCompanyName = [];
@@ -25,7 +26,7 @@ class FilterToBuyPageProvider extends ChangeNotifier {
 
   List<String> availableCompanyNames = [];
 
-  generateAvailableCompanyNames(List<Product> data) {
+  generateAvailableCompanyNames(List<Product> data) async {
     List<String> names = [];
 
     for (var item in data) {
@@ -61,5 +62,12 @@ class FilterToBuyPageProvider extends ChangeNotifier {
   changeCurrentFilterIndex(int v) {
     currentFilterIndex = v;
     notifyListeners();
+  }
+}
+
+class SubClassOfToBuyProductsFilterProvider {
+  generateAvailableCompanyNames(List<Product> data) {
+    debugPrint("SubClass");
+    FilterToBuyPageProvider().generateAvailableCompanyNames(data);
   }
 }

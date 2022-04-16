@@ -18,9 +18,10 @@ class ExpansionTileToShowProductWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Ink(
+    return Container(
       decoration: BoxDecoration(
-        color:  mainColor_02,
+        // backgroundBlendMode: BlendMode.screen,
+        color:  isExpanded?whiteColor:mainColor_02,
         borderRadius: BorderRadius.circular(
           gW(10.0),
         ),

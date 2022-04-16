@@ -3,14 +3,15 @@ import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/local_storage/boxes.dart';
 import 'package:governess/models/hive_models/user_h_model.dart';
+import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/ui/show_menu_daily_page.dart';
 import 'package:governess/ui/show_number_of_children_nurse_page.dart';
 import 'package:governess/ui/widgets/big_elevate_button_home_page.dart';
 import 'package:governess/ui/widgets/text_span_grey_16_widget.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-class NurseHomePage extends StatelessWidget {
-  const NurseHomePage({Key? key}) : super(key: key);
+class ManagerHomePage extends StatelessWidget {
+  const ManagerHomePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -31,11 +32,10 @@ class NurseHomePage extends StatelessWidget {
     return ValueListenableBuilder<Box<UserH>>(
         valueListenable: Boxes.getUser().listenable(),
         builder: (context, box, __) {
-          final UserH data = box.getAt(0)!;
+          // final UserH data = box.getAt(0)!;
+          final UserH data = UserH()..fatherName="familya"..id=09..name="Ism"..role="ROLE_OF_USER"..surname="surname"..username="userName"..success=true;
 
-          return data.box!.isEmpty
-              ? const Text("Malumotlar mavjud emas")
-              : Drawer(
+          return  Drawer(
                   child: Padding(
                     padding: EdgeInsets.only(top: gH(50.0), left: gW(20.0)),
                     child: Column(
@@ -93,7 +93,6 @@ class NurseHomePage extends StatelessWidget {
         itemCount: doings.length,
         itemBuilder: (_, __) {
           return BigElevatedButtonHomePage(
-            title: doings[__],
             onPressed: () {
               Navigator.push(
                 context,
@@ -106,12 +105,14 @@ class NurseHomePage extends StatelessWidget {
                         return const ShowNumberOfChildrenPage();
 
                       default:
-                        return const NurseHomePage();
+                        return const ManagerHomePage();
                     }
                   },
                 ),
               );
             },
+            title: doings[__],
+            
           );
         },
       ),
@@ -124,8 +125,8 @@ class NurseHomePage extends StatelessWidget {
       backgroundColor: mainColor,
       elevation: 0,
       title: const Text(
-        "Hamshira Ismi",
-        style: TextStyle(
+       "Mudira home page",
+        style:  TextStyle(
           color: Colors.white,
         ),
       ),

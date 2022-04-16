@@ -3,21 +3,24 @@ import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/local_storage/boxes.dart';
 import 'package:governess/models/hive_models/user_h_model.dart';
+import 'package:governess/providers/supplier/to_buy_products_page_provider.dart.dart';
 import 'package:governess/ui/show_menu_daily_page.dart';
 import 'package:governess/ui/show_number_of_children_nurse_page.dart';
+import 'package:governess/ui/supplier/get_shipped_product_page.dart';
+import 'package:governess/ui/supplier/to_buy_products_page.dart';
 import 'package:governess/ui/widgets/big_elevate_button_home_page.dart';
 import 'package:governess/ui/widgets/text_span_grey_16_widget.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-class NurseHomePage extends StatelessWidget {
-  const NurseHomePage({Key? key}) : super(key: key);
+class SupplierHomePage extends StatelessWidget {
+  const SupplierHomePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     List<String> doings = [
-      "Kunlik menyuni ko'rish",
-      "Bolalar Soni",
+      "Harid Qilinadigan Mahsulotlar",
+      "Yetkazilgan Mahsulotlar",
     ];
 
     return Scaffold(
@@ -101,12 +104,12 @@ class NurseHomePage extends StatelessWidget {
                   builder: (context) {
                     switch (__) {
                       case 0:
-                        return const ShowDailyMenuPage();
+                        return  ToBuyProductsPage();
                       case 1:
-                        return const ShowNumberOfChildrenPage();
+                        return const GetShippedProductPage();
 
                       default:
-                        return const NurseHomePage();
+                        return const SupplierHomePage();
                     }
                   },
                 ),
@@ -124,7 +127,7 @@ class NurseHomePage extends StatelessWidget {
       backgroundColor: mainColor,
       elevation: 0,
       title: const Text(
-        "Hamshira Ismi",
+        "Supplier home page",
         style: TextStyle(
           color: Colors.white,
         ),

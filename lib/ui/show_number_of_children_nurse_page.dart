@@ -2,43 +2,61 @@ import 'package:flutter/material.dart';
 import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/models/hamshira_models/number_of_children_model.dart';
-import 'package:governess/providers/editing_children_page_provider.dart';
+import 'package:governess/providers/nurse/editing_children_page_provider.dart';
 import 'package:governess/ui/nurse/sub_pages/edit_daily_childred_page.dart';
 import 'package:governess/ui/widgets/number_of_children_widget.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:governess/services/nurse_service.dart';
 
-class ShowDailyChildrenPage extends StatelessWidget {
-  final NumberOfChildren data;
-  const ShowDailyChildrenPage(this.data, {Key? key}) : super(key: key);
+class ShowNumberOfChildrenPage extends StatelessWidget {
+  const ShowNumberOfChildrenPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        elevation: 0,
-        backgroundColor: mainColor,
-        title: Text(data.perDayList![0].kindergartenName!),
-      ),
-      body: Padding(
-        padding: EdgeInsets.only(
-          left: gW(20.0),
-          right: gW(20.0),
-          top: gH(20.0),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            NumberOfChildrenWidget(data: data),
-            SizedBox(height: gH(20.0)),
-            _editButton(context),
-          ],
-        ),
-      ),
+    return FutureBuilder<NumberOfChildren>(
+      future: NurseService().getChildrenNumber(),
+      builder: (context, AsyncSnapshot<NumberOfChildren> snap) {
+        if (snap.connectionState == ConnectionState.waiting) {
+          return Scaffold(
+            body: Center(
+              child: CupertinoActivityIndicator(
+                radius: gW(50.0),
+              ),
+            ),
+          );
+        } else {
+          NumberOfChildren data = snap.data!;
+
+          return Scaffold(
+            appBar: AppBar(
+              centerTitle: true,
+              elevation: 0,
+              backgroundColor: mainColor,
+              title: Text(data.perDayList![0].kindergartenName!),
+            ),
+            body: Padding(
+              padding: EdgeInsets.only(
+                left: gW(20.0),
+                right: gW(20.0),
+                top: gH(20.0),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  NumberOfChildrenWidget(data: data),
+                  SizedBox(height: gH(20.0)),
+                  _editButton(context,data),
+                ],
+              ),
+            ),
+          );
+        }
+      },
     );
   }
 
-  _editButton(BuildContext context) {
+  _editButton(BuildContext context,NumberOfChildren data) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         shape: RoundedRectangleBorder(
