@@ -26,7 +26,7 @@ class ShowInOutListProductWidget extends StatelessWidget {
         ),
       ),
       child: ExpansionTile(
-        
+        iconColor: Colors.grey,
         textColor: Colors.black,
         key: Key(DateTime.now().toString()),
         initiallyExpanded: isExpanded,

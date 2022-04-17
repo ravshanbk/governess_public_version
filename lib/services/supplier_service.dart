@@ -437,9 +437,18 @@ class SupplierService {
       // } catch (e) {
       //   throw Exception("From json Error: " + e.toString());
       // }
+      List<String> container = [];
       data = hardData.map((e) => Product.fromJson(e)).toList();
-     
-      return ProductWithAvailableCompnayNames(availables: availables(data),product: data);
+      for (var item in data) {
+        if (!container.contains(item.companyName)) {
+          container.add(item.companyName!);
+        }
+      }
+     await Future.delayed(const Duration(seconds: 1), () {
+        debugPrint("FutureDelayed");
+      });
+      return ProductWithAvailableCompnayNames(
+          availables: container, product: data);
     } catch (e) {
       throw Exception("Get To Buy Products Supplier: " + e.toString());
     }
@@ -507,14 +516,16 @@ class SupplierService {
       throw Exception("Get Shipped Product Service" + e.toString());
     }
   }
- List<String> availables(List<Product> data) {
-    List<String> names = [];
 
-    for (var item in data) {
-      if (!names.contains(item.companyName)) {
-        names.add(item.companyName!);
-      }
-    }
-    return names;}
-    
+  Future<List<String>> availables(List<Product> data) {
+    debugPrint("Men Availablesning ichidagi Printman");
+
+    Future<List<String>>? names;
+    List<String> container = [];
+
+    Future.delayed(const Duration(microseconds: 300),
+        () => (names = container as Future<List<String>>?)!);
+    debugPrint(names.toString());
+    return names!;
+  }
 }

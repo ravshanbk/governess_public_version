@@ -64,7 +64,7 @@ class ShowNumberOfChildrenPage extends StatelessWidget {
         primary: mainColor,
         elevation: 0,
         fixedSize: Size(
-          gW(150.0),
+          gW(180.0),
           gH(52.0),
         ),
       ),
@@ -90,7 +90,7 @@ class ShowNumberOfChildrenPage extends StatelessWidget {
               });
             },
       child: Text(
-        "Edit",
+        "O'zgartirish",
         style: TextStyle(letterSpacing: gW(2.0), fontSize: gW(20.0)),
       ),
     );

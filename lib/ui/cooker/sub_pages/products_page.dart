@@ -3,7 +3,7 @@ import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/ui/cooker/sub_pages/accept_product_page.dart';
 import 'package:governess/ui/cooker/sub_pages/show_products_in_storage_page.dart';
-import 'package:governess/ui/cooker/sub_pages/wast_product_page.dart';
+import 'package:governess/ui/cooker/sub_pages/waste_product_page.dart';
 import 'package:governess/ui/cooker/sub_pages/wastes_cooker_page.dart';
 
 class CookerProductsPage extends StatelessWidget {
@@ -42,7 +42,7 @@ class CookerProductsPage extends StatelessWidget {
                       case 2:
                         return const CookerWastProductPage();
                       case 3:
-                        return const CookerWastedProductsPage();
+                        return const CookerShowProductsInStoragePage();
 
                       default:
                         return const CookerProductsPage();

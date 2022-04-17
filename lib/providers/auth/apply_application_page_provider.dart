@@ -2,17 +2,25 @@ import 'package:flutter/cupertino.dart';
 
 class ApplyApplicationPageProvider extends ChangeNotifier {
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
   List<StringedController> companyInfoControllers = List.generate(
     companyInfoControllerNames.length,
     (i) => StringedController(
-        companyInfoControllerNames[i], TextEditingController(),
-        keyboardType: i > 2 ? TextInputType.phone : TextInputType.name),
+      key: companyInfoControllerNames[i],
+      controller: TextEditingController(),
+      keyboardType: i > 2 ? TextInputType.phone : TextInputType.name,
+      node: FocusNode(),
+    ),
   );
+
   List<StringedController> leaderInfoControllers = List.generate(
     leaderInfoControllerNames.length,
     (index) => StringedController(
-        leaderInfoControllerNames[index], TextEditingController(),
-        keyboardType: index == 4 ? TextInputType.phone : TextInputType.name),
+      key: leaderInfoControllerNames[index],
+      controller: TextEditingController(),
+      keyboardType: index == 4 ? TextInputType.phone : TextInputType.name,
+      node: FocusNode(),
+    ),
   );
 
   static List<String> companyInfoControllerNames = [
@@ -23,8 +31,6 @@ class ApplyApplicationPageProvider extends ChangeNotifier {
     "MFO",
     "Hisob raqami",
     "Telefon raqami",
-
-    
   ];
   static List<String> leaderInfoControllerNames = [
     "Ismi",
@@ -50,8 +56,13 @@ class ApplyApplicationPageProvider extends ChangeNotifier {
 //   "password": "123456789",
 //   "userName": "taminottest"
 class StringedController {
+  final FocusNode node;
   final TextInputType keyboardType;
   final String key;
   final TextEditingController controller;
-  StringedController(this.key, this.controller, {required this.keyboardType});
+  StringedController(
+      {required this.key,
+      required this.controller,
+      required this.keyboardType,
+      required this.node});
 }

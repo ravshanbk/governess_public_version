@@ -27,6 +27,7 @@ class ExpansionTileToShowProductWidget extends StatelessWidget {
         ),
       ),
       child: ExpansionTile(
+        iconColor: Colors.grey,
         textColor: mainColor,
         key: Key(DateTime.now().toString()),
         initiallyExpanded: isExpanded,

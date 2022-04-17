@@ -1,20 +1,22 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:provider/provider.dart';
+
 import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/decorations.dart';
 import 'package:governess/consts/size_config.dart';
+import 'package:governess/main.dart';
 import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
+import 'package:governess/models/supplier/product_model.dart';
 import 'package:governess/models/supplier/product_with_available_company_names_model.dart';
 import 'package:governess/models/supplier/send_product_model.dart';
-import 'package:governess/models/supplier/product_model.dart';
 import 'package:governess/providers/supplier/filter_to_buy_page_provider.dart';
 import 'package:governess/providers/supplier/to_buy_products_page_provider.dart.dart';
 import 'package:governess/services/supplier_service.dart';
 import 'package:governess/ui/widgets/expansion_tile_to_show_product_widget.dart';
 import 'package:governess/ui/widgets/show_toast_function.dart';
 import 'package:governess/ui/widgets/submit_button_widger.dart.dart';
-import 'package:provider/provider.dart';
 
 class ToBuyProductsPage extends StatefulWidget {
   ToBuyProductsPage({Key? key}) : super(key: key);
@@ -32,24 +34,12 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
 
     return Scaffold(
       appBar: _appBar(context),
-      body: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          _sliverAppBar(context),
-          SliverToBoxAdapter(
-            child: FutureBuilder<ProductWithAvailableCompnayNames>(
-              future: SupplierService().getToBuyProducts(),
-              builder: (context,
-                  AsyncSnapshot<ProductWithAvailableCompnayNames> snap) {
-                //////////////////////////////////////////////////////////
-
-                /////////////////////////////////////////////////////////////////////////
-
-                return snap.hasData ? _body(snap.data!, context) : _indicator();
-              },
-            ),
-          ),
-        ],
+      body: FutureBuilder<ProductWithAvailableCompnayNames>(
+        future: SupplierService().getToBuyProducts(),
+        builder:
+            (context, AsyncSnapshot<ProductWithAvailableCompnayNames> snap) {
+          return snap.hasData ? _body(snap.data!, context) : _indicator();
+        },
       ),
     );
   }
@@ -57,8 +47,6 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
   _body(ProductWithAvailableCompnayNames datas, BuildContext context) {
     List<Product> data = datas.product;
     widget.dataw = datas.product;
-    Provider.of<FilterToBuyPageProvider>(context, listen: false)
-        .generateAvailableCompanyNames(data);
     int current = Provider.of<FilterToBuyPageProvider>(context, listen: false)
         .currentFilterIndex;
     List<Widget> widgetsDate = List.generate(
@@ -123,26 +111,31 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
         );
       },
     );
-    return Center(
-        child: (current == 0
-            ? _allBody(
-                widgetsAll,
-                context,
-              )
-            : current == 1
+    return CustomScrollView(slivers: [
+      _sliverAppBar(context, datas),
+      SliverToBoxAdapter(
+        child: Center(
+            child: (current == 0
                 ? _allBody(
-                    widgetsDate,
+                    widgetsAll,
                     context,
                   )
-                : (current == 2
+                : current == 1
                     ? _allBody(
-                        widgetsByCompanyName,
-                        context,
-                      )
-                    : _allBody(
                         widgetsDate,
                         context,
-                      ))));
+                      )
+                    : (current == 2
+                        ? _allBody(
+                            widgetsByCompanyName,
+                            context,
+                          )
+                        : _allBody(
+                            widgetsDate,
+                            context,
+                          )))),
+      ),
+    ]);
   }
 
   Container _noDataBody(BuildContext context) {
@@ -225,8 +218,7 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
   }
 
   SliverAppBar _sliverAppBar(
-    BuildContext context,
-  ) {
+      BuildContext context, ProductWithAvailableCompnayNames data) {
     return SliverAppBar(
       automaticallyImplyLeading: false,
       elevation: 0,
@@ -246,7 +238,7 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
           physics: const BouncingScrollPhysics(),
           itemBuilder: (_, __) {
             return __ == 2
-                ? _popUpMenuButton(context, __)
+                ? _popUpMenuButton(context, __, data)
                 : _elevatedButton(__, context);
           },
         ),
@@ -267,8 +259,9 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
                 .changeCurrentFilterIndex(0);
           });
         } else if (__ == 1) {
-          _showDataPicker(true);
-          showToast("Qachondan ?", false, isCentr: true);
+          _showDialogDate(context);
+          // _showDataPicker(true);
+          // showToast("Qachondan ?", false, isCentr: true);
         } else {
           debugPrint("Out of range:::");
         }
@@ -303,13 +296,15 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
     );
   }
 
-  PopupMenuButton<String> _popUpMenuButton(BuildContext context, int __) {
+  PopupMenuButton<String> _popUpMenuButton(
+      BuildContext context, int __, ProductWithAvailableCompnayNames data) {
     return PopupMenuButton(
       onSelected: (String v) {
         debugPrint("men on selectedning valuesiman: $v");
         Provider.of<FilterToBuyPageProvider>(context, listen: false)
             .initCurrentCompanyname(v);
-        _getDataByCompanyName(widget.dataw!, v);
+        Provider.of<FilterToBuyPageProvider>(context, listen: false)
+            .generateByCompanyNameData(widget.dataw!, v);
         Provider.of<FilterToBuyPageProvider>(context, listen: false)
             .changeCurrentFilterIndex(2);
       },
@@ -350,35 +345,32 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
         borderRadius: BorderRadius.circular(gW(20.0)),
         side: BorderSide(color: whiteColor),
       ),
-      initialValue: Provider.of<FilterToBuyPageProvider>(context, listen: false)
-          .availableCompanyNames[0],
+      initialValue: data.availables[0],
       itemBuilder: (context) {
         return List.generate(
-            Provider.of<FilterToBuyPageProvider>(context, listen: false)
-                .availableCompanyNames
-                .length, (index) {
-          return PopupMenuItem(
-            key: Key("$index"),
-            value: Provider.of<FilterToBuyPageProvider>(context, listen: false)
-                .availableCompanyNames[index],
-            child: Container(
-              padding:
-                  EdgeInsets.symmetric(horizontal: gW(15.0), vertical: gH(5.0)),
-              decoration: BoxDecoration(
-                border: Border.all(color: mainColor_02),
-                color: mainColor_02,
-                borderRadius: BorderRadius.circular(
-                  gW(7.0),
+          data.availables.length,
+          (index) {
+            return PopupMenuItem(
+              key: Key("$index"),
+              value: data.availables[index],
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                    horizontal: gW(15.0), vertical: gH(5.0)),
+                decoration: BoxDecoration(
+                  border: Border.all(color: mainColor_02),
+                  color: mainColor_02,
+                  borderRadius: BorderRadius.circular(
+                    gW(7.0),
+                  ),
+                ),
+                child: Text(
+                  data.availables[index],
+                  style: const TextStyle(color: Colors.black),
                 ),
               ),
-              child: Text(
-                Provider.of<FilterToBuyPageProvider>(context, listen: false)
-                    .availableCompanyNames[index],
-                style: const TextStyle(color: Colors.black),
-              ),
-            ),
-          );
-        });
+            );
+          },
+        );
       },
     );
   }
@@ -438,7 +430,7 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
               : () {
                   Provider.of<ToBuyProductPageProvider>(context, listen: false)
                       .clear();
-                  _showDialog(data, context);
+                  _showDialogSend(data, context);
                 }),
           SizedBox(
             height: gH(10.0),
@@ -448,7 +440,7 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
     ];
   }
 
-  Future<dynamic> _showDialog(Product data, BuildContext context) {
+  Future<dynamic> _showDialogSend(Product data, BuildContext context) {
     return showDialog(
       useSafeArea: true,
       context: context,
@@ -472,6 +464,7 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
               ),
             ),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 _richTextInRow(["Nomi:  ", data.productName!.toString()]),
                 _richTextInRow(
@@ -488,6 +481,16 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
             ),
           ),
         );
+      },
+    );
+  }
+
+  Future<dynamic> _showDialogDate(BuildContext context) {
+    return showDialog(
+      useSafeArea: true,
+      context: context,
+      builder: (BuildContext alertContext) {
+        return _ShowDialogContent(widget.dataw);
       },
     );
   }
@@ -632,47 +635,119 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
       ),
     );
   }
+}
 
-  int _getDataByDateTime(List<Product> data) {
-    List<Product> list = [];
-    int m = 0;
-    for (int i = 0; i < data.length; i++) {
-      if (data[i].sendDate! <=
-              Provider.of<FilterToBuyPageProvider>(context, listen: false)
-                  .to!
-                  .millisecondsSinceEpoch &&
-          data[i].sendDate! >=
-              Provider.of<FilterToBuyPageProvider>(context, listen: false)
-                  .from!
-                  .millisecondsSinceEpoch) {
-        list.add(data[i]);
-        m++;
-      }
-    }
-
-    Provider.of<FilterToBuyPageProvider>(context, listen: false)
-        .generateByTimeData(list);
-    return m;
+class _ShowDialogContent extends StatelessWidget {
+  List<Product>? dataw;
+  _ShowDialogContent(
+    this.dataw, {
+    Key? key,
+  }) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      type: MaterialType.transparency,
+      child: Container(
+        padding: EdgeInsets.all(gW(20.0)),
+        margin: EdgeInsets.only(
+          top: gH(250.0),
+          left: gW(10.0),
+          right: gW(10.0),
+          bottom: gH(350.0),
+        ),
+        decoration: BoxDecoration(
+          color: whiteColor,
+          border: Border.all(color: greyColor),
+          borderRadius: BorderRadius.circular(
+            gW(10.0),
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            ElevatedButton(
+                onPressed: () {
+                  Provider.of<FilterToBuyPageProvider>(context, listen: false)
+                      .changeCurrentFilterIndex(1);
+                  Navigator.pop(context);
+                },
+                style: ElevatedButton.styleFrom(
+                  primary: mainColor_02,
+                  elevation: 0,
+                  shadowColor: Colors.transparent,
+                  shape: RoundedRectangleBorder(
+                    side: BorderSide(color: mainColor),
+                    borderRadius: BorderRadius.circular(
+                      gW(7.0),
+                    ),
+                  ),
+                ),
+                child: Text(
+                  "Ko'rish",
+                  style: TextStyle(color: mainColor),
+                )),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Text(
+                  context.watch<FilterToBuyPageProvider>().fromStr,
+                  style: TextStyle(
+                    fontSize: gW(20.0),
+                    letterSpacing: gW(1.0),
+                  ),
+                ),
+                Text(
+                  context.watch<FilterToBuyPageProvider>().toStr,
+                  style: TextStyle(
+                    fontSize: gW(20.0),
+                    letterSpacing: gW(1.0),
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SizedBox(
+                  height: gH(40.0),
+                  width: gW(150.0),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: mainColor,
+                      elevation: 0,
+                      shadowColor: Colors.transparent,
+                    ),
+                    child: const Text("dan..."),
+                    onPressed: () {
+                      _showDataPicker(true, context);
+                    },
+                  ),
+                ),
+                SizedBox(
+                  height: gH(40.0),
+                  width: gW(150.0),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: mainColor,
+                      elevation: 0,
+                      shadowColor: Colors.transparent,
+                    ),
+                    child: const Text("gacha..."),
+                    onPressed: () {
+                      _showDataPicker(false, context);
+                    },
+                  ),
+                ),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
   }
 
-  int _getDataByCompanyName(List<Product> data, String name) {
-    List<Product> list = [];
-    int m = 0;
-
-    for (int i = 0; i < data.length; i++) {
-      debugPrint(data[i].companyName.toString() + " " + name);
-      if (data[i].companyName! == name) {
-        list.add(data[i]);
-        m++;
-      }
-    }
-    debugPrint("Length of comp name list: " + list.length.toString());
-    Provider.of<FilterToBuyPageProvider>(context, listen: false)
-        .generateByCompanyNameData(list);
-    return m;
-  }
-
-  _showDataPicker(bool isFrom) {
+  _showDataPicker(bool isFrom, BuildContext context) {
     DatePicker.showPicker(
       context,
       showTitleActions: true,
@@ -696,17 +771,35 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
         if (isFrom) {
           Provider.of<FilterToBuyPageProvider>(context, listen: false)
               .initFrom(date);
-          _showDataPicker(false);
-          showToast("Qachongacha ?", true, isCentr: true);
         } else {
           Provider.of<FilterToBuyPageProvider>(context, listen: false)
               .initTo(date);
-          Provider.of<FilterToBuyPageProvider>(context, listen: false)
-              .changeCurrentFilterIndex(1);
-          _getDataByDateTime(widget.dataw!);
+          _getDataByDateTime(dataw!, context);
         }
       },
       locale: LocaleType.en,
     );
+  }
+
+  int _getDataByDateTime(List<Product> data, BuildContext context) {
+    List<Product> list = [];
+    int m = 0;
+    for (int i = 0; i < data.length; i++) {
+      if (data[i].sendDate! <=
+              Provider.of<FilterToBuyPageProvider>(context, listen: false)
+                  .to!
+                  .millisecondsSinceEpoch &&
+          data[i].sendDate! >=
+              Provider.of<FilterToBuyPageProvider>(context, listen: false)
+                  .from!
+                  .millisecondsSinceEpoch) {
+        list.add(data[i]);
+        m++;
+      }
+    }
+
+    Provider.of<FilterToBuyPageProvider>(context, listen: false)
+        .generateByTimeData(list);
+    return m;
   }
 }

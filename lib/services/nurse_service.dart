@@ -231,7 +231,7 @@ class NurseService {
   Future<bool> editDailyChildrenNumber(List<V> v) async {
     try {
       Response res = await Dio().patch(
-        "http://64.227.134.50:7788/out/api/perDay/1'",
+        "http://64.227.134.50:7788/out/api/perDay/1",
         data: {
           "numberOfChildrenDTOList": [v]
         },

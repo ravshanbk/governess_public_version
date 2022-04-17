@@ -4,14 +4,9 @@ import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/decorations.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/providers/auth/auth_page_provider.dart';
-import 'package:governess/providers/supplier/to_buy_products_page_provider.dart.dart';
-import 'package:governess/services/auth_service.dart';
 import 'package:governess/ui/apply_application_page.dart';
 import 'package:governess/ui/cooker/home_cooker_page.dart';
-import 'package:governess/ui/manager/home_manager_page.dart';
-import 'package:governess/ui/nurse/nurse_home_page.dart';
 import 'package:governess/ui/supplier/home_supplier_page.dart';
-import 'package:governess/ui/supplier/to_buy_products_page.dart';
 import 'package:provider/provider.dart';
 
 class AuthPage extends StatelessWidget {
@@ -70,7 +65,7 @@ class AuthPage extends StatelessWidget {
         text: TextSpan(
           style: TextStyle(color: greyColor, fontSize: gW(20.0)),
           children: const [
-            TextSpan(text: "Ro'yhatdan o'tmagan bo'lsangiz\n"),
+            TextSpan(text: "Ta'minotchi bo'lib ro'yxatdan o'tish\n uchun "),
             TextSpan(text: "bu yerga ", style: TextStyle(color: Colors.red)),
             TextSpan(text: " bosing"),
           ],
@@ -91,7 +86,7 @@ class AuthPage extends StatelessWidget {
                           //  const NurseHomePage(),
                           // const ManagerHomePage()
                           const SupplierHomePage()
-                          //  const CookerHomePage()
+                      //  const CookerHomePage()
                       ),
                   (route) => false);
               // if (Provider.of<AuthPageProvider>(context, listen: false)

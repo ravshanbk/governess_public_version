@@ -26,54 +26,61 @@ class _ApplyAplicationPageState extends State<ApplyAplicationPage> {
           .companyInfoControllers
     ];
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text("Governess"),
-        actions: [
-          Padding(
-            padding:
-                EdgeInsets.only(top: gH(8), right: gW(15.0), bottom: gH(8)),
-            child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  fixedSize: Size(gW(100.0), gH(50.0)),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(gW(15.0)),
-                      side: const BorderSide(color: Colors.black)),
-                  primary: Colors.white,
-                ),
-                onPressed: () async {
-                  if (Provider.of<ApplyApplicationPageProvider>(context,
-                              listen: false)
-                          .formKey
-                          .currentState!
-                          .validate() &&
-                      which == 0) {
-                    which = 1;
-                    setState(() {});
-                  } else if (Provider.of<ApplyApplicationPageProvider>(context,
-                              listen: false)
-                          .formKey
-                          .currentState!
-                          .validate() &&
-                      which == 1) {
-                    await AuthService().signUpUser(true).then((value) {
-                      if (value.success!) {
-                        _showToast(value.text!, value.success!);
-                        Navigator.pushAndRemoveUntil(
-                            context, MaterialPageRoute(builder: (context)=>const EntryPage()), (route) => false);
-                      }
-                    },);
-                  }
-                },
-                child: Text(
-                  "Submit",
-                  style:
-                      TextStyle(color: mainColor, fontWeight: FontWeight.bold),
-                )),
-          )
-        ],
-      ),
+      appBar: _appBar(context),
       body: _body(context, data[which]),
+    );
+  }
+
+  _appBar(BuildContext context) {
+    return AppBar(
+      title: const Text("Governess"),
+      actions: [
+        Padding(
+          padding: EdgeInsets.only(top: gH(8), right: gW(15.0), bottom: gH(8)),
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              fixedSize: Size(gW(100.0), gH(50.0)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(gW(15.0)),
+                  side: const BorderSide(color: Colors.black)),
+              primary: Colors.white,
+            ),
+            onPressed: () async {
+              if (Provider.of<ApplyApplicationPageProvider>(context,
+                          listen: false)
+                      .formKey
+                      .currentState!
+                      .validate() &&
+                  which == 0) {
+                which = 1;
+                setState(() {});
+              } else if (Provider.of<ApplyApplicationPageProvider>(context,
+                          listen: false)
+                      .formKey
+                      .currentState!
+                      .validate() &&
+                  which == 1) {
+                await AuthService().signUpUser(true).then(
+                  (value) {
+                    if (value.success!) {
+                      _showToast(value.text!, value.success!);
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const EntryPage()),
+                          (route) => false);
+                    }
+                  },
+                );
+              }
+            },
+            child: Text(
+              "Submit",
+              style: TextStyle(color: mainColor, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -81,12 +88,29 @@ class _ApplyAplicationPageState extends State<ApplyAplicationPage> {
     return Form(
       key: Provider.of<ApplyApplicationPageProvider>(context, listen: false)
           .formKey,
-      child: ListView.builder(
+      child: ListView.separated(
+        separatorBuilder: (context, index) {
+          return SizedBox(
+            height: gH(15.0),
+          );
+        },
         padding: EdgeInsets.symmetric(horizontal: gW(20.0)),
         shrinkWrap: true,
         physics: const BouncingScrollPhysics(),
         itemBuilder: (_, __) {
           return TextFormField(
+            autofocus: true,
+            focusNode: data[__].node,
+            enabled: true,
+            onFieldSubmitted: (v) {
+              if (__ < data.length - 1) {
+                data[__].node.unfocus();
+                FocusScope.of(context).requestFocus(data[__ + 1].node);
+              } else {
+                data[__].node.unfocus();
+                FocusScope.of(context).requestFocus(data[0].node);
+              }
+            },
             keyboardType: data[__].keyboardType,
             validator: (v) {
               if (v!.isEmpty) {
@@ -95,12 +119,13 @@ class _ApplyAplicationPageState extends State<ApplyAplicationPage> {
             },
             controller: data[__].controller,
             decoration: InputDecoration(
+                border: OutlineInputBorder(),
                 label: Text(
-              data[__].key,
-              style: TextStyle(
-                color: mainColor,
-              ),
-            )),
+                  data[__].key,
+                  style: TextStyle(
+                    color: mainColor,
+                  ),
+                )),
           );
         },
         itemCount:
@@ -123,15 +148,15 @@ class _ApplyAplicationPageState extends State<ApplyAplicationPage> {
   }
 }
 
-extension StringExtension on String {
-  String capitalize() {
-    return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
-  }
-}class EntryPage extends StatelessWidget {
-  const EntryPage({ Key? key }) : super(key: key);
+class EntryPage extends StatelessWidget {
+  const EntryPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: Text("Entry Page"),),);
+    return const Scaffold(
+      body: Center(
+        child: Text("Entry Page"),
+      ),
+    );
   }
 }

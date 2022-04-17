@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:governess/models/supplier/product_model.dart';
 
 class ToBuyProductPageProvider extends ChangeNotifier {
   TextEditingController numberController = TextEditingController();
