@@ -15,7 +15,6 @@ class ManagerShowDailyMenuPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint("Data:" + DateTime.now().millisecondsSinceEpoch.toString());
 
     SizeConfig().init(context);
     return Scaffold(

@@ -250,7 +250,6 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
     return ElevatedButton(
       focusNode: FocusNode(canRequestFocus: true),
       onPressed: () {
-        debugPrint("Filter OnPressed $__");
         if (__ == 0) {
           Provider.of<FilterToBuyPageProvider>(context, listen: false)
               .changeCurrentFilterIndex(0);
@@ -263,7 +262,6 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
           // _showDataPicker(true);
           // showToast("Qachondan ?", false, isCentr: true);
         } else {
-          debugPrint("Out of range:::");
         }
       },
       style: ElevatedButton.styleFrom(
@@ -300,7 +298,6 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
       BuildContext context, int __, ProductWithAvailableCompnayNames data) {
     return PopupMenuButton(
       onSelected: (String v) {
-        debugPrint("men on selectedning valuesiman: $v");
         Provider.of<FilterToBuyPageProvider>(context, listen: false)
             .initCurrentCompanyname(v);
         Provider.of<FilterToBuyPageProvider>(context, listen: false)
@@ -527,7 +524,6 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
                     .numberController
                     .text) *
             (data.pack! > 0 ? data.pack! : 1);
-        debugPrint("show dialog if ga kirdi ");
 
         await SupplierService()
             .sendProduct(
@@ -550,10 +546,8 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
           ),
         )
             .then((value) {
-          debugPrint("show dialog then ga kirdi ");
 
           if (value.success!) {
-            debugPrint("if if ga kirdi ");
 
             showToast(value.text!.toString(), value.success!);
 
@@ -562,12 +556,10 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
                 .changeCurrent(-1);
             Navigator.pop(con);
           } else {
-            debugPrint("if else ga kirdi ");
             showToast(value.text!.toString(), value.success!);
           }
         });
       } else {
-        debugPrint("show dialog else ga kirdi ");
         showToast("Miqdorni kiriting, nol bolmasin", false);
       }
     });
