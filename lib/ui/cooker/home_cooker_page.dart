@@ -8,6 +8,7 @@ import 'package:governess/ui/cooker/sub_pages/products_page.dart';
 import 'package:governess/ui/show_menu_daily_page.dart';
 import 'package:governess/ui/show_number_of_children_nurse_page.dart';
 import 'package:governess/ui/widgets/big_elevate_button_home_page.dart';
+import 'package:governess/ui/widgets/fake_drawer_widget.dart';
 import 'package:governess/ui/widgets/text_span_grey_16_widget.dart';
 import 'package:hive_flutter/adapters.dart';
 
@@ -23,7 +24,9 @@ class CookerHomePage extends StatelessWidget {
     SizeConfig().init(context);
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      drawer: _drawer(),
+      drawer:const FakeDrawerWidget(),
+      
+      //  _drawer(),
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: mainColor,

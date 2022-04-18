@@ -75,57 +75,91 @@ class CookerWastProductPage extends StatelessWidget {
     );
   }
 
-  ExpansionTile _inOutListProductChild(
+  _inOutListProductChild(
       List<InoutListProduct> data, int __, int index, BuildContext context) {
-    return ExpansionTile(
-      textColor: Colors.black,
-      iconColor: Colors.grey,
-      controlAffinity: ListTileControlAffinity.platform,
-      onExpansionChanged: (v) {},
-      title: Text(
-        DTFM.maker(data[__].inOutList![index].enterDate!),
-        textAlign: TextAlign.center,
+    return Container(
+      margin: EdgeInsets.symmetric(
+        horizontal: 10.0,
+        vertical: gH(5.0),
       ),
-      subtitle: SizedBox(
-        height: gH(40.0),
-        width: gW(150.0),
-        child: ElevatedButton(
-          key: UniqueKey(),
-          style: ElevatedButton.styleFrom(
-            primary: mainColor,
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              side: BorderSide(color: whiteColor),
-              borderRadius: BorderRadius.circular(
-                gW(7.0),
-              ),
-            ),
-          ),
-          child: Text(
-            "Chiqarish",
-            style: TextStyle(color: whiteColor),
-          ),
-          onPressed: () {
-            context.read<WasteProductCookerPageProvider>().clear();
-            _showInputDialog(context, data[__].inOutList![index].id);
-          },
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.black),
+        borderRadius: BorderRadius.circular(
+          gW(7.0),
         ),
       ),
-      children: [
-        TextInRowWidget(
-            "O'lchov birligi", data[__].inOutList![index].measurementType!),
-        _divider(),
-        TextInRowWidget(
-            "Yaxlitlashi", data[__].inOutList![index].pack.toString()),
-        _divider(),
-        TextInRowWidget("Yaxlitlangan qiymati",
-            data[__].inOutList![index].weightPack.toString()),
-        _divider(),
-        TextInRowWidget(
-            "Soni", data[__].inOutList![index].numberPack.toString()),
-        _divider(),
-        SizedBox(height: gH(10.0)),
-      ],
+      child: ExpansionTile(
+        textColor: Colors.black,
+        iconColor: Colors.grey,
+        controlAffinity: ListTileControlAffinity.platform,
+        onExpansionChanged: (v) {},
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              DTFM.maker(data[__].inOutList![index].enterDate!),
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: gW(18.0)),
+            ),
+            Container(
+              margin: EdgeInsets.only(bottom: gW(10.0)),
+              height: gH(40.0),
+              width: gW(130.0),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  primary: mainColor,
+                  elevation: 0,
+                ),
+                onPressed: () {},
+                child: const Text("Bekor qilish"),
+              ),
+            ),
+          ],
+        ),
+        subtitle: SizedBox(
+          height: gH(40.0),
+          width: gW(150.0),
+          child: ElevatedButton(
+            key: UniqueKey(),
+            style: ElevatedButton.styleFrom(
+              primary: mainColor,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                side: BorderSide(color: whiteColor),
+                borderRadius: BorderRadius.circular(
+                  gW(7.0),
+                ),
+              ),
+            ),
+            child: Text(
+              "Chiqarish",
+              style: TextStyle(
+                  color: whiteColor,
+                  letterSpacing: gW(2.0),
+                  fontSize: gW(18.0)),
+            ),
+            onPressed: () {
+              context.read<WasteProductCookerPageProvider>().clear();
+              _showInputDialog(context, data[__].inOutList![index].id);
+            },
+          ),
+        ),
+        children: [
+          TextInRowWidget(
+              "O'lchov birligi", data[__].inOutList![index].measurementType!),
+          _divider(),
+          TextInRowWidget(
+              "Yaxlitlashi", data[__].inOutList![index].pack.toString()),
+          _divider(),
+          TextInRowWidget("Yaxlitlangan qiymati",
+              data[__].inOutList![index].weightPack.toString()),
+          _divider(),
+          TextInRowWidget(
+              "Soni", data[__].inOutList![index].numberPack.toString()),
+          _divider(),
+          SizedBox(height: gH(10.0)),
+        ],
+      ),
     );
   }
 

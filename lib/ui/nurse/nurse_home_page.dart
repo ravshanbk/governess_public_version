@@ -6,6 +6,7 @@ import 'package:governess/models/hive_models/user_h_model.dart';
 import 'package:governess/ui/show_menu_daily_page.dart';
 import 'package:governess/ui/show_number_of_children_nurse_page.dart';
 import 'package:governess/ui/widgets/big_elevate_button_home_page.dart';
+import 'package:governess/ui/widgets/fake_drawer_widget.dart';
 import 'package:governess/ui/widgets/text_span_grey_16_widget.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -21,7 +22,8 @@ class NurseHomePage extends StatelessWidget {
     ];
 
     return Scaffold(
-      drawer: _drawer(),
+      drawer: const FakeDrawerWidget(),
+      // _drawer(),
       appBar: _appBar(),
       body: _body(doings, context),
     );

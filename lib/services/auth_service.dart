@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:governess/config/env.dart';
 import 'package:governess/local_storage/user_storage.dart';
 import 'package:governess/models/other/post_res_model.dart';
 import 'package:governess/models/user/user_model.dart';
@@ -22,7 +23,7 @@ class AuthService {
 
     try {
       user = await Dio().post(
-        "http://64.227.134.50:7788/out/api/user/signIn",
+        "${Secret.api_key}/out/api/user/signIn",
         data: {"login": login, "password": password},
       );
       debugPrint(user.data);

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/decorations.dart';
+import 'package:governess/consts/print_my.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/models/hamshira_models/number_of_children_model.dart';
 import 'package:governess/models/hamshira_models/v_model.dart';
@@ -9,6 +10,7 @@ import 'package:governess/services/nurse_service.dart';
 import 'package:governess/ui/nurse/nurse_home_page.dart';
 import 'package:governess/ui/widgets/add_button_widget.dart';
 import 'package:governess/ui/widgets/cancel_button_widget.dart';
+import 'package:governess/ui/widgets/show_toast_function.dart';
 import 'package:provider/provider.dart';
 
 class EditDailyChildrenPage extends StatelessWidget {
@@ -22,6 +24,7 @@ class EditDailyChildrenPage extends StatelessWidget {
         context.read<EditingChildrenNumberPageProvider>().controllers!.length,
         (__) {
       return TextFormField(
+        keyboardType: TextInputType.number,
         cursorColor: mainColor,
         validator: (v) {
           if (v!.isEmpty) {
@@ -95,34 +98,41 @@ class EditDailyChildrenPage extends StatelessWidget {
           );
         });
 
-        Future<bool> res = NurseService().editDailyChildrenNumber(v);
-        if (await res) {
-          context.read<EditingChildrenNumberPageProvider>().clearControllers();
-          Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => const NurseHomePage()),
-              (route) => false);
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(_snackbar("message"));
-        }
+        NurseService().editDailyChildrenNumber(v).then((value) {
+          if (value) {
+            showToast("Muvaffaqiyatli O'zgartirildi!", true,false);
+            context
+                .read<EditingChildrenNumberPageProvider>()
+                .clearControllers();
+
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => const NurseHomePage()),
+                (route) => false);
+          } else {
+            p("Something");
+            return  showToast("Message", false,false);
+            // ScaffoldMessenger.of(context).showSnackBar(_snackbar("message"));
+          }
+        });
       }
     });
   }
 
-  _snackbar(String message) {
-    return SnackBar(
-      margin: EdgeInsets.only(
-        bottom: gH(500.0),
-        right: gW(30.0),
-        left: gW(30.0),
-      ),
-      behavior: SnackBarBehavior.floating,
-      content: Container(
-        alignment: Alignment.center,
-        height: gH(200.0),
-        width: gW(300.0),
-        child: Text(message,style: TextStyle(color: whiteColor,fontSize: gW(18.0)),),
-      ),
-    );
-  }
+  // _snackbar(String message) {
+  //   return SnackBar(
+  //     margin: EdgeInsets.only(
+  //       bottom: gH(500.0),
+  //       right: gW(30.0),
+  //       left: gW(30.0),
+  //     ),
+  //     behavior: SnackBarBehavior.floating,
+  //     content: Container(
+  //       alignment: Alignment.center,
+  //       height: gH(200.0),
+  //       width: gW(300.0),
+  //       child: Text(message,style: TextStyle(color: whiteColor,fontSize: gW(18.0)),),
+  //     ),
+  //   );
+  // }
 }

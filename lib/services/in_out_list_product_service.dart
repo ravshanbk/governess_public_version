@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:governess/config/env.dart';
 import 'package:governess/models/in_out_list_product_model.dart';
 
 class InOutListProductService {
@@ -158,7 +159,7 @@ class InOutListProductService {
     ];
     try {
       // var res = await Dio().get(
-      //   "http://192.168.1.38:7788/out/api/cook/getProductBalancer",
+      //   "${Secret.api_key}/out/api/cook/getProductBalancer",
       //   options: Options(
       //     headers: {
       //       "Authorization":

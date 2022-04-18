@@ -1,4 +1,3 @@
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:governess/models/hamshira_models/daily_menu_model.dart';
@@ -230,22 +229,24 @@ class NurseService {
 
   Future<bool> editDailyChildrenNumber(List<V> v) async {
     try {
-      Response res = await Dio().patch(
-        "http://64.227.134.50:7788/out/api/perDay/1",
-        data: {
-          "numberOfChildrenDTOList": [v]
-        },
-        options: Options(
-          headers: {
-            "Authorization":
-                "Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6IlJPTEVfSEFNU0hJUkEiLCJzdWIiOiJoYW1zaGlyYSIsImlhdCI6MTY0OTA1MTgyMCwiZXhwIjoxNjQ5OTE1ODIwfQ.cLvQL3WHazmir1MTK4xf9C6oGJLEUlL4-T6BQgJV4Qk"
-          },
-        ),
-      );
-    return  res.statusCode == 200 ? true : false;
+      // Response res = await Dio().patch(
+      //   "http://64.227.134.50:7788/out/api/perDay/1",
+      //   data: {
+      //     "numberOfChildrenDTOList": [v]
+      //   },
+      //   options: Options(
+      //     headers: {
+      //       "Authorization":
+      //           "Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6IlJPTEVfSEFNU0hJUkEiLCJzdWIiOiJoYW1zaGlyYSIsImlhdCI6MTY0OTA1MTgyMCwiZXhwIjoxNjQ5OTE1ODIwfQ.cLvQL3WHazmir1MTK4xf9C6oGJLEUlL4-T6BQgJV4Qk"
+      //     },
+      //   ),
+      // );
+      // return  res.statusCode == 200 ? true : false;
+      return await Future.delayed(const Duration(seconds: 1), () {
+        return true;
+      });
     } catch (e) {
-      return false;
-      // throw Exception("Edit Number Of Children: " + e.toString());
+      throw Exception("Edit Number Of Children: " + e.toString());
     }
   }
 }

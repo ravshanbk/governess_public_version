@@ -1,9 +1,10 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:governess/config/env.dart';
 import 'package:governess/models/other/post_res_model.dart';
 import 'package:governess/models/supplier/product_with_available_company_names_model.dart';
 import 'package:governess/models/supplier/send_product_model.dart';
 import 'package:governess/models/supplier/product_model.dart';
-import 'package:governess/providers/supplier/filter_to_buy_page_provider.dart';
 
 class SupplierService {
   Future<ProductWithAvailableCompnayNames> getToBuyProducts() async {
@@ -423,30 +424,28 @@ class SupplierService {
         "comment": null
       }
     ];
-    debugPrint("To buy products servicega kirdi:");
     List<Product> data;
     try {
-      // var res = await Dio()
-      //     .get("http://192.168.1.6:7788/out/api/supplier/getRequiredProduct",
-      //         options: Options(headers: {
-      //           "Authorization":
-      //               "Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6IlJPTEVfVEFgTUlOT1RDSEkiLCJzdWIiOiJ0YW1pbm90IiwiaWF0IjoxNjQ5MTQwMTcyLCJleHAiOjE2NTAwMDQxNzJ9.vNqjOpO60WNLMpd9I59EXxClBLmD-eK2bUYuCHPCuGs"
-      //         }));
-      // try {
-      //   a = (res.data as List).map((e) => ToBuyProducts.fromJson(e)).toList();
-      // } catch (e) {
-      //   throw Exception("From json Error: " + e.toString());
-      // }
+      //   var res = await Dio()
+      //       .get("${Secret.api_key}/out/api/supplier/getRequiredProduct",
+      //           options: Options(headers: {
+      //             "Authorization":
+      //                 "Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6IlJPTEVfVEFgTUlOT1RDSEkiLCJzdWIiOiJ0YW1pbm90IiwiaWF0IjoxNjQ5MTQwMTcyLCJleHAiOjE2NTAwMDQxNzJ9.vNqjOpO60WNLMpd9I59EXxClBLmD-eK2bUYuCHPCuGs"
+      //           }));
+
+      //   List<String> container = [];
+      //   data = (res.data as List).map((e) => Product.fromJson(e)).toList();
+
+      /////////////////////////////////////
       List<String> container = [];
+
       data = hardData.map((e) => Product.fromJson(e)).toList();
       for (var item in data) {
         if (!container.contains(item.companyName)) {
           container.add(item.companyName!);
         }
       }
-     await Future.delayed(const Duration(seconds: 1), () {
-        debugPrint("FutureDelayed");
-      });
+
       return ProductWithAvailableCompnayNames(
           availables: container, product: data);
     } catch (e) {
@@ -515,17 +514,5 @@ class SupplierService {
     } catch (e) {
       throw Exception("Get Shipped Product Service" + e.toString());
     }
-  }
-
-  Future<List<String>> availables(List<Product> data) {
-    debugPrint("Men Availablesning ichidagi Printman");
-
-    Future<List<String>>? names;
-    List<String> container = [];
-
-    Future.delayed(const Duration(microseconds: 300),
-        () => (names = container as Future<List<String>>?)!);
-    debugPrint(names.toString());
-    return names!;
   }
 }

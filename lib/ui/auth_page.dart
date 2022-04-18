@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/decorations.dart';
@@ -6,7 +7,11 @@ import 'package:governess/consts/size_config.dart';
 import 'package:governess/providers/auth/auth_page_provider.dart';
 import 'package:governess/ui/apply_application_page.dart';
 import 'package:governess/ui/cooker/home_cooker_page.dart';
+import 'package:governess/ui/manager/home_manager_page.dart';
+import 'package:governess/ui/nurse/nurse_home_page.dart';
 import 'package:governess/ui/supplier/home_supplier_page.dart';
+import 'package:governess/ui/widgets/cancel_button_widget.dart';
+import 'package:http/retry.dart';
 import 'package:provider/provider.dart';
 
 class AuthPage extends StatelessWidget {
@@ -81,11 +86,10 @@ class AuthPage extends StatelessWidget {
           : () async {
               Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          //  const NurseHomePage(),
-                          // const ManagerHomePage()
-                          const SupplierHomePage()
+                  MaterialPageRoute(builder: (context) => const FakePage()
+                      //  const NurseHomePage(),
+                      // const ManagerHomePage()
+                      // const SupplierHomePage()
                       //  const CookerHomePage()
                       ),
                   (route) => false);
@@ -186,6 +190,55 @@ class AuthPage extends StatelessWidget {
         gW(200.0),
         gH(50.0),
       ),
+    );
+  }
+}
+
+class FakePage extends StatelessWidget {
+  const FakePage({Key? key}) : super(key: key);
+  final List<String> roles = const [
+    "TAMINOTCHI",
+    "HAMSHIRA",
+    "OSHPAZ",
+    "MUDIR",
+  ];
+  @override
+  Widget build(BuildContext context) {
+    return ListView.separated(
+      padding: EdgeInsets.symmetric(horizontal:gW(20.0),vertical: gW(100.0)),
+      shrinkWrap: true,
+      physics: const BouncingScrollPhysics(),
+      itemBuilder: (_, __) {
+        return ElevatedButton(
+          style: ElevatedButton.styleFrom(primary: mainColor,elevation: 0,fixedSize: Size(gW(335.0),gH(62.0))),
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                switch (__) {
+                  case 0:
+                    return const SupplierHomePage();
+
+                  case 1:
+                    return const NurseHomePage();
+
+                  case 2:
+                    return const CookerHomePage();
+
+                  case 3:
+                    return const ManagerHomePage();
+
+                  default:
+                    return const FakePage();
+                }
+              }));
+            },
+            child: Text(roles[__]));
+      },
+      separatorBuilder: (context, index) {
+        return SizedBox(
+          height: gH(30.0),
+        );
+      },
+      itemCount: roles.length,
     );
   }
 }

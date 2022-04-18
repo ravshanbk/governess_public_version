@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/decorations.dart';
 import 'package:governess/consts/size_config.dart';
-import 'package:governess/main.dart';
 import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/models/supplier/product_model.dart';
 import 'package:governess/models/supplier/product_with_available_company_names_model.dart';
@@ -549,18 +548,18 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
 
           if (value.success!) {
 
-            showToast(value.text!.toString(), value.success!);
+            showToast(value.text!.toString(), value.success!,false);
 
             Provider.of<ToBuyProductPageProvider>(con, listen: false).clear();
             Provider.of<ToBuyProductPageProvider>(con, listen: false)
                 .changeCurrent(-1);
             Navigator.pop(con);
           } else {
-            showToast(value.text!.toString(), value.success!);
+            showToast(value.text!.toString(), value.success!,false);
           }
         });
       } else {
-        showToast("Miqdorni kiriting, nol bolmasin", false);
+        showToast("Miqdorni kiriting, nol bolmasin", false,false);
       }
     });
   }

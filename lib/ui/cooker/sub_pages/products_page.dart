@@ -4,13 +4,13 @@ import 'package:governess/consts/size_config.dart';
 import 'package:governess/ui/cooker/sub_pages/accept_product_page.dart';
 import 'package:governess/ui/cooker/sub_pages/show_products_in_storage_page.dart';
 import 'package:governess/ui/cooker/sub_pages/waste_product_page.dart';
-import 'package:governess/ui/cooker/sub_pages/wastes_cooker_page.dart';
 
 class CookerProductsPage extends StatelessWidget {
   const CookerProductsPage({Key? key}) : super(key: key);
   final List<String> toDoes = const [
     "Mahsulotlarni Qabul Qilish",
     "Ombordagi Mahsulotlar",
+    "Zahiradagi Mahsulotlar",
     "Chiqitga chiqarish",
     "Chiqindilar",
   ];
@@ -40,10 +40,11 @@ class CookerProductsPage extends StatelessWidget {
                       case 1:
                         return const CookerShowProductsInStoragePage();
                       case 2:
-                        return const CookerWastProductPage();
-                      case 3:
                         return const CookerShowProductsInStoragePage();
-
+                      case 3:
+                        return const CookerWastProductPage();
+                      case 4:
+                        return const CookerShowProductsInStoragePage();
                       default:
                         return const CookerProductsPage();
                     }
