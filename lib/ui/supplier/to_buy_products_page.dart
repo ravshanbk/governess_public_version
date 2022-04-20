@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:governess/consts/print_my.dart';
 import 'package:provider/provider.dart';
 
 import 'package:governess/consts/colors.dart';
@@ -260,8 +261,7 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
           _showDialogDate(context);
           // _showDataPicker(true);
           // showToast("Qachondan ?", false, isCentr: true);
-        } else {
-        }
+        } else {}
       },
       style: ElevatedButton.styleFrom(
           minimumSize: const Size(0, 0),
@@ -383,8 +383,9 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
       actions: [
         IconButton(
           onPressed: () {
-            context.read<ToBuyProductPageProvider>().changeCurrent(-1);
-            initState();
+            Provider.of<ToBuyProductPageProvider>(context, listen: false)
+                .changeCurrent(-1);
+            setState(() {});
           },
           icon: const Icon(
             Icons.refresh,
@@ -450,7 +451,7 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
               top: gH(20.0),
               left: gW(10.0),
               right: gW(10.0),
-              bottom: gH(380.0),
+              bottom: gH(399.0),
             ),
             decoration: BoxDecoration(
               color: whiteColor,
@@ -467,11 +468,13 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
                     ["Yaxlitlash miqdaori:  ", data.pack.toString()]),
                 _richTextInRow(["Nechta:  ", data.numberPack.toString()]),
                 _richTextInRow(["Umumiy:  ", data.weightPack.toString()]),
-                SizedBox(height: gH(20.0)),
+                SizedBox(height: gH(10.0)),
                 _numberInputField(context),
-                SizedBox(height: gH(20.0)),
+                SizedBox(height: gH(15.0)),
+                _priceInputField(context),
+                SizedBox(height: gH(15.0)),
                 _commentInputField(context),
-                SizedBox(height: gH(20.0)),
+                SizedBox(height: gH(15.0)),
                 _sendButtonInShowDialog(alertContext, data),
               ],
             ),
@@ -486,7 +489,7 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
       useSafeArea: true,
       context: context,
       builder: (BuildContext alertContext) {
-        return _ShowDialogContent(widget.dataw);
+        return _ShowDialogDateContent(widget.dataw);
       },
     );
   }
@@ -545,21 +548,19 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
           ),
         )
             .then((value) {
-
           if (value.success!) {
-
-            showToast(value.text!.toString(), value.success!,false);
+            showToast(value.text!.toString(), value.success!, false);
 
             Provider.of<ToBuyProductPageProvider>(con, listen: false).clear();
             Provider.of<ToBuyProductPageProvider>(con, listen: false)
                 .changeCurrent(-1);
             Navigator.pop(con);
           } else {
-            showToast(value.text!.toString(), value.success!,false);
+            showToast(value.text!.toString(), value.success!, false);
           }
         });
       } else {
-        showToast("Miqdorni kiriting, nol bolmasin", false,false);
+        showToast("Miqdorni kiriting, nol bolmasin", false, false);
       }
     });
   }
@@ -570,7 +571,19 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
       keyboardType: TextInputType.number,
       controller: context.read<ToBuyProductPageProvider>().numberController,
       decoration: DecorationMy.inputDecoration(
-        "Qancha...",
+        "Miqdor...",
+        null,
+      ),
+    );
+  }
+
+  TextField _priceInputField(BuildContext context) {
+    return TextField(
+      onChanged: (v) {},
+      keyboardType: TextInputType.number,
+      controller: context.read<ToBuyProductPageProvider>().priceController,
+      decoration: DecorationMy.inputDecoration(
+        "Narxi...",
         null,
       ),
     );
@@ -628,9 +641,9 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
   }
 }
 
-class _ShowDialogContent extends StatelessWidget {
+class _ShowDialogDateContent extends StatelessWidget {
   List<Product>? dataw;
-  _ShowDialogContent(
+  _ShowDialogDateContent(
     this.dataw, {
     Key? key,
   }) : super(key: key);

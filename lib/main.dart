@@ -20,7 +20,7 @@ import 'package:governess/ui/supplier/get_shipped_product_page.dart';
 import 'package:governess/ui/supplier/to_buy_products_page.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
-
+// 192.168.68.124  ofisdagi birinchi berilgani
 void main()async {
   WidgetsFlutterBinding.ensureInitialized();
    await Hive.initFlutter();

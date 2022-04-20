@@ -3,6 +3,7 @@ import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/decorations.dart';
 import 'package:governess/consts/print_my.dart';
 import 'package:governess/consts/size_config.dart';
+import 'package:governess/models/hamshira_models/number_of_children_dto_list_model.dart';
 import 'package:governess/models/hamshira_models/number_of_children_model.dart';
 import 'package:governess/models/hamshira_models/v_model.dart';
 import 'package:governess/providers/nurse/editing_children_page_provider.dart';
@@ -15,28 +16,59 @@ import 'package:provider/provider.dart';
 
 class EditDailyChildrenPage extends StatelessWidget {
   final NumberOfChildren data;
-
   const EditDailyChildrenPage(this.data, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     List<Widget> inputFields = List.generate(
-        context.read<EditingChildrenNumberPageProvider>().controllers!.length,
-        (__) {
-      return TextFormField(
-        keyboardType: TextInputType.number,
-        cursorColor: mainColor,
-        validator: (v) {
-          if (v!.isEmpty) {
-            return "Hech bo'lmasa '0' kiriting";
-          }
-        },
-        controller:
-            context.read<EditingChildrenNumberPageProvider>().controllers![__],
-        decoration: DecorationMy.inputDecoration("Yosh toifa: ",
-            data.perDayList![0].numberOfChildrenDTOList![__].ageGroupName),
-      );
-    });
+      context.read<EditingChildrenNumberPageProvider>().controllers!.length,
+      (__) {
+        return TextFormField(
+          key: Key("$__ EditNumberOfChildren"),
+          autofocus: false,
+          focusNode:
+              context.watch<EditingChildrenNumberPageProvider>().nodes![__],
+          keyboardType: TextInputType.number,
+          cursorColor: mainColor,
+          onFieldSubmitted: (v) {
+            if (__ <
+                Provider.of<EditingChildrenNumberPageProvider>(context,
+                            listen: false)
+                        .nodes!
+                        .length -
+                    1) {
+              Provider.of<EditingChildrenNumberPageProvider>(context,
+                      listen: false)
+                  .nodes![__]
+                  .unfocus();
+              FocusScope.of(context).requestFocus(
+                  Provider.of<EditingChildrenNumberPageProvider>(context,
+                          listen: false)
+                      .nodes![__ + 1]);
+            } else {
+              Provider.of<EditingChildrenNumberPageProvider>(context,
+                      listen: false)
+                  .nodes![__]
+                  .unfocus();
+              FocusScope.of(context).requestFocus(
+                  Provider.of<EditingChildrenNumberPageProvider>(context,
+                          listen: false)
+                      .nodes![0]);
+            }
+          },
+          validator: (v) {
+            if (v!.isEmpty) {
+              return "Hech bo'lmasa '0' kiriting";
+            }
+          },
+          controller: context
+              .read<EditingChildrenNumberPageProvider>()
+              .controllers![__],
+          decoration: DecorationMy.inputDecoration("Yosh toifa: ",
+              data.perDayList![0].numberOfChildrenDTOList![__].ageGroupName),
+        );
+      },
+    );
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -85,22 +117,27 @@ class EditDailyChildrenPage extends StatelessWidget {
           .formKey
           .currentState!
           .validate()) {
-        List<V> v = List.generate(
-            data.perDayList![0].numberOfChildrenDTOList!.length, (index) {
-          return V(
-            ageGroupId:
-                data.perDayList![0].numberOfChildrenDTOList![index].ageGroupId,
-            number: int.parse(Provider.of<EditingChildrenNumberPageProvider>(
-                    context,
-                    listen: false)
-                .controllers![index]
-                .text),
-          );
-        });
+        NOCDL v = (data.perDayList![0].numberOfChildrenDTOList! as NOCDL)
+            .toJson() as NOCDL;
 
-        NurseService().editDailyChildrenNumber(v).then((value) {
-          if (value) {
-            showToast("Muvaffaqiyatli O'zgartirildi!", true,false);
+        // List<AgeGroupIdAndNumber> v = List.generate(
+        //     data.perDayList![0].numberOfChildrenDTOList!.length, (index) {
+        //   return AgeGroupIdAndNumber(
+        //     ageGroupId:
+        //         data.perDayList![0].numberOfChildrenDTOList![index].ageGroupId,
+        //     number: int.parse(Provider.of<EditingChildrenNumberPageProvider>(
+        //             context,
+        //             listen: false)
+        //         .controllers![index]
+        //         .text),
+        //   );
+        // });
+
+        NurseService()
+            .editDailyChildrenNumber(v, data.perDayList![0].kindergartenId!)
+            .then((value) {
+          if (value.success!) {
+            showToast(value.text!, true, false);
             context
                 .read<EditingChildrenNumberPageProvider>()
                 .clearControllers();
@@ -110,8 +147,7 @@ class EditDailyChildrenPage extends StatelessWidget {
                 MaterialPageRoute(builder: (context) => const NurseHomePage()),
                 (route) => false);
           } else {
-            p("Something");
-            return  showToast("Message", false,false);
+            return showToast(value.text!, false, false);
             // ScaffoldMessenger.of(context).showSnackBar(_snackbar("message"));
           }
         });

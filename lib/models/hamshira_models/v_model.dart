@@ -1,10 +1,10 @@
-class V {
+class AgeGroupIdAndNumber {
   int? ageGroupId;
   int? number;
 
-  V({this.ageGroupId, this.number});
+  AgeGroupIdAndNumber({this.ageGroupId, this.number});
 
-  V.fromJson(Map<String, dynamic> json) {
+  AgeGroupIdAndNumber.fromJson(Map<String, dynamic> json) {
     ageGroupId = json['ageGroupId'];
     number = json['number'];
   }

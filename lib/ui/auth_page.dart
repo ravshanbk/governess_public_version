@@ -9,6 +9,7 @@ import 'package:governess/ui/apply_application_page.dart';
 import 'package:governess/ui/cooker/home_cooker_page.dart';
 import 'package:governess/ui/manager/home_manager_page.dart';
 import 'package:governess/ui/nurse/nurse_home_page.dart';
+import 'package:governess/ui/pin_code_page.dart';
 import 'package:governess/ui/supplier/home_supplier_page.dart';
 import 'package:governess/ui/widgets/cancel_button_widget.dart';
 import 'package:http/retry.dart';
@@ -205,33 +206,27 @@ class FakePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
-      padding: EdgeInsets.symmetric(horizontal:gW(20.0),vertical: gW(100.0)),
+      padding: EdgeInsets.symmetric(horizontal: gW(20.0), vertical: gW(100.0)),
       shrinkWrap: true,
       physics: const BouncingScrollPhysics(),
       itemBuilder: (_, __) {
         return ElevatedButton(
-          style: ElevatedButton.styleFrom(primary: mainColor,elevation: 0,fixedSize: Size(gW(335.0),gH(62.0))),
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                switch (__) {
-                  case 0:
-                    return const SupplierHomePage();
-
-                  case 1:
-                    return const NurseHomePage();
-
-                  case 2:
-                    return const CookerHomePage();
-
-                  case 3:
-                    return const ManagerHomePage();
-
-                  default:
-                    return const FakePage();
-                }
-              }));
-            },
-            child: Text(roles[__]));
+          style: ElevatedButton.styleFrom(
+              primary: mainColor,
+              elevation: 0,
+              fixedSize: Size(gW(335.0), gH(62.0))),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => PinCodePage(__),
+              ),
+            );
+          },
+          child: Text(
+            roles[__],
+          ),
+        );
       },
       separatorBuilder: (context, index) {
         return SizedBox(

@@ -19,40 +19,58 @@ class Product {
         this.comment,
     });
 
-    int? id;
-    int? createDate;
-    int? updateDate;
+    num? id;
+    num? createDate;
+    num? updateDate;
     int? sendDate;
     String? orderNumber;
     dynamic price;
     num? pack;
     num? numberPack;
-    double? weightPack;
+    num? weightPack;
     String? status;
     String? measurementType;
     String? companyName;
-    int? companyId;
-    int? productId;
+    num? companyId;
+    num? productId;
     String? productName;
     dynamic comment;
 
     factory Product.fromJson(Map<String, dynamic> json) => Product(
-        id: json["id"] == null ? null : json["id"],
-        createDate: json["createDate"] == null ? null : json["createDate"],
-        updateDate: json["updateDate"] == null ? null : json["updateDate"],
-        sendDate: json["sendDate"] == null ? null : json["sendDate"],
-        orderNumber: json["orderNumber"] == null ? null : json["orderNumber"],
+        id: json["id"],
+        createDate: json["createDate"],
+        updateDate: json["updateDate"],
+        sendDate: json["sendDate"],
+        orderNumber: json["orderNumber"],
         price: json["price"],
-        pack: json["pack"] == null ? null : json["pack"],
-        numberPack: json["numberPack"] == null ? null : json["numberPack"],
-        weightPack: json["weightPack"] == null ? null : json["weightPack"].toDouble(),
-        status: json["status"] == null ? null : json["status"],
-        measurementType: json["measurementType"] == null ? null : json["measurementType"],
-        companyName: json["companyName"] == null ? null : json["companyName"],
-        companyId: json["companyId"] == null ? null : json["companyId"],
-        productId: json["productId"] == null ? null : json["productId"],
-        productName: json["productName"] == null ? null : json["productName"],
+        pack: json["pack"],
+        numberPack: json["numberPack"],
+        weightPack: json["weightPack"],
+        status: json["status"],
+        measurementType: json["measurementType"],
+        companyName: json["companyName"],
+        companyId: json["companyId"],
+        productId: json["productId"],
+        productName: json["productName"],
         comment: json["comment"],
     );
 
+    Map<String, dynamic> toJson() => {
+        "id": id,
+        "createDate": createDate,
+        "updateDate": updateDate,
+        "sendDate": sendDate,
+        "orderNumber": orderNumber,
+        "price": price,
+        "pack": pack,
+        "numberPack": numberPack,
+        "weightPack": weightPack,
+        "status": status,
+        "measurementType": measurementType,
+        "companyName": companyName,
+        "companyId": companyId,
+        "productId": productId,
+        "productName": productName,
+        "comment": comment,
+    };
 }

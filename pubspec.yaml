@@ -43,21 +43,25 @@ dependencies:
   flutter_datetime_picker: ^1.5.1
   envify: ^2.0.2
 
+
  
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_launcher_icons: ^0.9.2
   flutter_lints: ^1.0.0
   build_runner: ^2.1.8
   hive_generator: ^1.1.2
   envify_generator: ^2.0.2
+  flutter_launcher_icons: ^0.9.2
+
 
 flutter_icons:
-  android:true
-  ios:true
-  image_path:"assets/icon/icon.png"
+  android: true
+  remove_alpha_ios: true
+  
+  ios: true
+  image_path: "assets/images/governessLogo.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

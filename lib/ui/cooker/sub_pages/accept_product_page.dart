@@ -5,7 +5,7 @@ import 'package:governess/consts/size_config.dart';
 import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/models/supplier/product_model.dart';
 import 'package:governess/providers/cooker/accept_product_provider.dart';
-import 'package:governess/services/chef_service.dart';
+import 'package:governess/services/cooker_service.dart';
 import 'package:governess/ui/widgets/expansion_tile_to_show_product_widget.dart';
 import 'package:provider/provider.dart';
 
@@ -22,7 +22,7 @@ class CookerAcceptProductPage extends StatelessWidget {
         title: const Text("Mahsulotlarni qabul qilish"),
       ),
       body: FutureBuilder(
-        future: ChefService().acceptProduct(),
+        future: CookerService().acceptProduct(),
         builder: (context, AsyncSnapshot<List<Product>> snap) {
           return snap.hasData
               ? _body(snap, context)

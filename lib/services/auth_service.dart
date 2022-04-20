@@ -6,9 +6,10 @@ import 'package:governess/models/other/post_res_model.dart';
 import 'package:governess/models/user/user_model.dart';
 
 class AuthService {
-  Future<PostResModel> signUpUser(bool success) async {
+ static  String localhost = "http://128.199.24.255:7788";
+  Future<ResModel> signUpUser(bool success) async {
     try {
-      return PostResModel(
+      return ResModel(
           text: "Arizangiz muvaffaqiyatli yuborildi",
           success: success,
           object: null);
@@ -23,7 +24,7 @@ class AuthService {
 
     try {
       user = await Dio().post(
-        "${Secret.api_key}/out/api/user/signIn",
+        "${AuthService.localhost}/out/api/user/signIn",
         data: {"login": login, "password": password},
       );
       debugPrint(user.data);

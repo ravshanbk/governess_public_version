@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:governess/consts/colors.dart';
+import 'package:governess/consts/print_my.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/models/hamshira_models/number_of_children_model.dart';
 import 'package:governess/providers/nurse/editing_children_page_provider.dart';
@@ -9,8 +10,8 @@ import 'package:provider/provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:governess/services/nurse_service.dart';
 
-class ShowNumberOfChildrenPage extends StatelessWidget {
-  const ShowNumberOfChildrenPage({Key? key}) : super(key: key);
+class NurseShowNumberOfChildrenPage extends StatelessWidget {
+  const NurseShowNumberOfChildrenPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +47,7 @@ class ShowNumberOfChildrenPage extends StatelessWidget {
                 children: [
                   NumberOfChildrenWidget(data: data),
                   SizedBox(height: gH(20.0)),
-                  _editButton(context,data),
+                  _editButton(context, data),
                 ],
               ),
             ),
@@ -56,7 +57,7 @@ class ShowNumberOfChildrenPage extends StatelessWidget {
     );
   }
 
-  _editButton(BuildContext context,NumberOfChildren data) {
+  _editButton(BuildContext context, NumberOfChildren data) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         shape: RoundedRectangleBorder(
@@ -72,15 +73,24 @@ class ShowNumberOfChildrenPage extends StatelessWidget {
               data.perDayList![0].status == "QABUL QILINDI"
           ? null
           : () async {
-              Future.delayed(const Duration(milliseconds: 100), () {
-                List<int> vInt = List.generate(
+              Future.delayed(const Duration(seconds: 2), () {
+                List<String> vInt = List.generate(
                     data.perDayList![0].numberOfChildrenDTOList!.length,
-                    (index) => data.perDayList![0]
-                        .numberOfChildrenDTOList![index].number!);
+                    (index) {
+                  return data.perDayList![0].numberOfChildrenDTOList![index]
+                              .number ==
+                          null
+                      ? ""
+                      : data.perDayList![0].numberOfChildrenDTOList![index]
+                          .number!
+                          .toString();
+                });
+
                 context
                     .read<EditingChildrenNumberPageProvider>()
-                    .initControllers(vInt);
+                    .initControllersAndNodes(vInt);
               }).then((value) {
+
                 return Navigator.push(
                   context,
                   MaterialPageRoute(

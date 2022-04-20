@@ -1,12 +1,16 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:governess/config/env.dart';
+import 'package:governess/consts/print_my.dart';
 import 'package:governess/models/other/post_res_model.dart';
 import 'package:governess/models/supplier/product_with_available_company_names_model.dart';
 import 'package:governess/models/supplier/send_product_model.dart';
 import 'package:governess/models/supplier/product_model.dart';
+import 'package:governess/services/auth_service.dart';
 
 class SupplierService {
+  String token =
+      "Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6IlJPTEVfVEFgTUlOT1RDSEkiLCJzdWIiOiJ0YW1pbm90IiwiaWF0IjoxNjUwNDM3ODA3LCJleHAiOjE2NTEzMDE4MDd9.WhEbVdA0vnT_yFhrPBBKeWyyWtZldaBdAAJxQbJvIEc";
   Future<ProductWithAvailableCompnayNames> getToBuyProducts() async {
     List<Map<String, dynamic>> hardData = [
       {
@@ -426,20 +430,20 @@ class SupplierService {
     ];
     List<Product> data;
     try {
-      //   var res = await Dio()
-      //       .get("${Secret.api_key}/out/api/supplier/getRequiredProduct",
-      //           options: Options(headers: {
-      //             "Authorization":
-      //                 "Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6IlJPTEVfVEFgTUlOT1RDSEkiLCJzdWIiOiJ0YW1pbm90IiwiaWF0IjoxNjQ5MTQwMTcyLCJleHAiOjE2NTAwMDQxNzJ9.vNqjOpO60WNLMpd9I59EXxClBLmD-eK2bUYuCHPCuGs"
-      //           }));
+      Response res = await Dio()
+          .get("${AuthService.localhost}/out/api/supplier/getRequiredProduct",
+              options: Options(headers: {
+                "Authorization":
+                    token
+              }));
 
-      //   List<String> container = [];
-      //   data = (res.data as List).map((e) => Product.fromJson(e)).toList();
+      List<String> container = [];
+      data = (res.data as List).map((e) => Product.fromJson(e)).toList();
 
       /////////////////////////////////////
-      List<String> container = [];
+      // List<String> container = [];
 
-      data = hardData.map((e) => Product.fromJson(e)).toList();
+      // data = hardData.map((e) => Product.fromJson(e)).toList();
       for (var item in data) {
         if (!container.contains(item.companyName)) {
           container.add(item.companyName!);
@@ -453,7 +457,7 @@ class SupplierService {
     }
   }
 
-  Future<PostResModel> sendProduct(SendProduct v) async {
+  Future<ResModel> sendProduct(SendProduct v) async {
     try {
       //   var res = await Dio().post(
       //     "http://192.168.1.6:7788/out/api/supplier/getRequiredProduct",
@@ -467,7 +471,7 @@ class SupplierService {
       //       },
       //     ),
       //   );
-      return PostResModel.fromJson({
+      return ResModel.fromJson({
         "text": "Muvaffaqiyatli yuborildi",
         "success": true,
         "object": null
@@ -478,39 +482,18 @@ class SupplierService {
   }
 
   Future<List<Product>> getShippedProduct() async {
-    debugPrint("Get Shippped Service ga kirdim");
     try {
-      //   var res = await Dio().get(
-      //     "http://192.168.1.6:7788/out/api/supplier/getShippedProduct",
-      //     options: Options(
-      //       headers: {
-      //         "Authorization":
-      //             "Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6IlJPTEVfSEFNU0hJUkEiLCJzdWIiOiJoYW1zaGlyYSIsImlhdCI6MTY0OTA1MTgyMCwiZXhwIjoxNjQ5OTE1ODIwfQ.cLvQL3WHazmir1MTK4xf9C6oGJLEUlL4-T6BQgJV4Qk"
-      //       },
-      //     ),
-      //   );
-      // debugPrint("data:"+GetShippedProduct.fromJson(res.data).toString());
+      Response res = await Dio().get(
+        "http://${AuthService.localhost}/out/api/supplier/getShippedProduct",
+        options: Options(
+          headers: {
+            "Authorization":
+                token
+          },
+        ),
+      );
 
-      return ([
-        {
-          "id": 3,
-          "createDate": 1649231112579,
-          "updateDate": 1649231164344,
-          "sendDate": 1649231112578,
-          "orderNumber": null,
-          "price": 75.00,
-          "pack": 500.00,
-          "numberPack": 20.00,
-          "weightPack": 10000.00,
-          "status": "QABUL QILINDI",
-          "measurementType": "gramm",
-          "companyName": "Yengil yechim MCHJ",
-          "companyId": 1,
-          "productId": 11,
-          "productName": "Mol go`shti",
-          "comment": "Raxmat"
-        }
-      ]).map((e) => Product.fromJson(e)).toList();
+      return (res.data as List).map((e) => Product.fromJson(e)).toList();
     } catch (e) {
       throw Exception("Get Shipped Product Service" + e.toString());
     }

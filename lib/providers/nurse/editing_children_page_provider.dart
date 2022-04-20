@@ -1,12 +1,17 @@
 import 'package:flutter/cupertino.dart';
 
 class EditingChildrenNumberPageProvider extends ChangeNotifier {
+  List<FocusNode>? nodes;
+
+  //////////////////////////////////////////////////////
   List<TextEditingController>? controllers;
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-  initControllers(List<int> v) {
+  initControllersAndNodes(List<String> v) {
+    nodes = List.generate(v.length, (index) => FocusNode());
+
     controllers = List.generate(
-        v.length, (index) => TextEditingController(text: v[index].toString()));
+        v.length, (index) => TextEditingController(text: v[index]));
     notifyListeners();
   }
 

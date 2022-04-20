@@ -1,7 +1,7 @@
 
 
-class PostResModel {
-    PostResModel({
+class ResModel {
+    ResModel({
         this.text,
         this.success,
         this.object,
@@ -11,7 +11,7 @@ class PostResModel {
     bool? success;
     dynamic object;
 
-    factory PostResModel.fromJson(Map<String, dynamic> json) => PostResModel(
+    factory ResModel.fromJson(Map<String, dynamic> json) => ResModel(
         text: json["text"],
         success: json["success"],
         object: json["object"],

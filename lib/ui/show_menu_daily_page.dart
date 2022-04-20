@@ -9,30 +9,41 @@ import 'package:governess/services/nurse_service.dart';
 import 'package:governess/ui/widgets/meal_widget.dart';
 import 'package:provider/provider.dart';
 
-class ShowDailyMenuPage extends StatelessWidget {
-  const ShowDailyMenuPage({Key? key}) : super(key: key);
+class NurseShowDailyMenuPage extends StatelessWidget {
+  const NurseShowDailyMenuPage({Key? key}) : super(key: key);
 
-
+  // DateTime dateTime =  DateTime(2022, 4, 18);
   @override
   Widget build(BuildContext context) {
-
     SizeConfig().init(context);
     return Scaffold(
       appBar: _appBar(),
       body: FutureBuilder(
-        future: NurseService().getDailyMenu(),
+        future: NurseService().getDailyMenu(DateTime(2022, 4, 18,7,45,00)),
         builder: (BuildContext context, AsyncSnapshot<DailyMenu> snap) {
-          DailyMenu? data = snap.data;
-
-          return !snap.hasData
-              ? Center(child: CupertinoActivityIndicator(radius: gW(70.0)))
-              : _body(data, context);
+          if (snap.connectionState == ConnectionState.active) {
+            return _indicator(snap);
+          } else if (snap.connectionState == ConnectionState.done) {
+            return _body(snap.data!, context);
+          } else{
+            return _indicator(snap);
+          }
         },
       ),
     );
   }
 
-  ListView _body(DailyMenu? data, BuildContext context) {
+  Center _indicator(AsyncSnapshot<DailyMenu> snap) {
+    return Center(
+        child: Column(
+      children: [
+        Text(snap.connectionState.name),
+        CupertinoActivityIndicator(radius: gW(70.0)),
+      ],
+    ));
+  }
+
+  ListView _body(DailyMenu data, BuildContext context) {
     return ListView.separated(
         padding: EdgeInsets.symmetric(vertical: gH(20.0), horizontal: gW(20.0)),
         physics: const BouncingScrollPhysics(),
@@ -43,20 +54,20 @@ class ShowDailyMenuPage extends StatelessWidget {
         separatorBuilder: (context, index) {
           return SizedBox(height: gH(20.0));
         },
-        itemCount: data!.mealTimeStandardResponseSaveDtoList!.length);
+        itemCount: data.mealTimeStandardResponseSaveDtoList!.length);
   }
 
   _expansionTile(BuildContext context, int __, DailyMenu? data) {
     return Ink(
-      decoration: BoxDecoration(border: Border.all(color: mainColor),
-        
+      decoration: BoxDecoration(
+        border: Border.all(color: mainColor),
         borderRadius: BorderRadius.circular(gW(10.0)),
-        color: 
-        context.watch<DailyMenuPageProvider>().current != __
+        color: context.watch<DailyMenuPageProvider>().current != __
             ? mainColor_02
             : mainColor,
       ),
-      child: ExpansionTile(key: Key(DateTime.now().toString()),
+      child: ExpansionTile(
+        key: Key(DateTime.now().toString()),
         onExpansionChanged: (v) {
           if (v) {
             Provider.of<DailyMenuPageProvider>(context, listen: false)
@@ -70,7 +81,6 @@ class ShowDailyMenuPage extends StatelessWidget {
         collapsedIconColor: Colors.white,
         iconColor: mainColor,
         collapsedTextColor: mainColor,
-        
         textColor: whiteColor,
         collapsedBackgroundColor: Colors.transparent,
         title: _expansionTileTitle(data, __),
@@ -83,7 +93,6 @@ class ShowDailyMenuPage extends StatelessWidget {
                     data: data!.mealTimeStandardResponseSaveDtoList![__]
                         .mealAgeStandardResponseSaveDtoList![n]);
               },
-             
               itemCount: data!.mealTimeStandardResponseSaveDtoList![__]
                   .mealAgeStandardResponseSaveDtoList!.length),
         ],
@@ -93,26 +102,24 @@ class ShowDailyMenuPage extends StatelessWidget {
 
   _expansionTileTitle(DailyMenu? data, int __) {
     return Text(
-        data!.mealTimeStandardResponseSaveDtoList![__].mealTimeName!,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          
-            letterSpacing: gW(2),
-            fontWeight: FontWeight.w500,
-            fontSize: gW(20.0)),
-      );
+      data!.mealTimeStandardResponseSaveDtoList![__].mealTimeName!,
+      textAlign: TextAlign.center,
+      style: TextStyle(
+          letterSpacing: gW(2),
+          fontWeight: FontWeight.w500,
+          fontSize: gW(20.0)),
+    );
   }
 
- 
   AppBar _appBar() {
     return AppBar(
-        backgroundColor: mainColor,
-        elevation: 0,
-        centerTitle: true,
-        title:  Text(
-          DTFM.maker(DateTime.now().millisecondsSinceEpoch),
-          textAlign: TextAlign.center,
-        ),
-       );
+      backgroundColor: mainColor,
+      elevation: 0,
+      centerTitle: true,
+      title: Text(
+        DTFM.maker(DateTime.now().millisecondsSinceEpoch),
+        textAlign: TextAlign.center,
+      ),
+    );
   }
 }

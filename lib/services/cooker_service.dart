@@ -1,6 +1,7 @@
+import 'package:governess/models/hamshira_models/number_of_children_model.dart';
 import 'package:governess/models/supplier/product_model.dart';
 
-class ChefService {
+class CookerService {
   Future<List<Product>> acceptProduct() async {
     List<Map<String, dynamic>> hardData = [
       {
@@ -424,5 +425,58 @@ class ChefService {
     } catch (e) {
       throw Exception("Chef Service acceptProduct: " + e.toString());
     }
+  }
+   Future<NumberOfChildren> getChildrenNumberByData(DateTime date) async {
+    return await Future.delayed(const Duration(seconds: 1), () {
+      return NumberOfChildren.fromJson({
+        "district": {"id": 34, "name": "Buxoro shahri"},
+        "perDayList": [
+          {
+            "id": 1,
+            "createDate": 1648362861870,
+            "updateDate": 1648362861870,
+            "createdBy": 30,
+            "updateBy": 30,
+            "status": "KIRITILDI",
+            "numberOfChildrenDTOList": [
+              {
+                "id": 1,
+                "number": 10,
+                "createDate": 1648362861809,
+                "updateDate": 1648362861809,
+                "ageGroupId": 1,
+                "ageGroupName": "3-4"
+              },
+              {
+                "id": 2,
+                "number": 30,
+                "createDate": 1648362861845,
+                "updateDate": 1648362861845,
+                "ageGroupId": 2,
+                "ageGroupName": "4-7"
+              },
+              {
+                "id": 3,
+                "number": 50,
+                "createDate": 1648362861853,
+                "updateDate": 1648362861853,
+                "ageGroupId": 3,
+                "ageGroupName": "Qisqa muddatli"
+              },
+              {
+                "id": 4,
+                "number": 60,
+                "createDate": 1648362861861,
+                "updateDate": 1648362861861,
+                "ageGroupId": 4,
+                "ageGroupName": "Xodim"
+              }
+            ],
+            "kindergartenId": 3,
+            "kindergartenName": "2-MTT"
+          }
+        ]
+      });
+    });
   }
 }
