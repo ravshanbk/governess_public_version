@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/size_config.dart';
@@ -7,6 +6,8 @@ import 'package:governess/models/supplier/product_model.dart';
 import 'package:governess/providers/cooker/accept_product_provider.dart';
 import 'package:governess/services/cooker_service.dart';
 import 'package:governess/ui/widgets/expansion_tile_to_show_product_widget.dart';
+import 'package:governess/ui/widgets/future_builder_of_no_data_widget.dart';
+import 'package:governess/ui/widgets/indicator_widget.dart';
 import 'package:provider/provider.dart';
 
 class CookerAcceptProductPage extends StatelessWidget {
@@ -21,16 +22,18 @@ class CookerAcceptProductPage extends StatelessWidget {
         elevation: 0,
         title: const Text("Mahsulotlarni qabul qilish"),
       ),
-      body: FutureBuilder(
-        future: CookerService().acceptProduct(),
+      body: FutureBuilder<List<Product>>(
+        future: CookerService().getSentProductFromWarehouse(),
         builder: (context, AsyncSnapshot<List<Product>> snap) {
-          return snap.hasData
-              ? _body(snap, context)
-              : Center(
-                  child: CupertinoActivityIndicator(
-                    radius: gW(50.0),
-                  ),
-                );
+          if (snap.connectionState == ConnectionState.done && snap.hasData) {
+            return _body(snap, context);
+          } else if (snap.connectionState == ConnectionState.done &&
+              !snap.hasData) {
+            return const NoDataWidgetForFutureBuilder(
+                "Hozircha Yuborilgan Mahsulotlar Mavjud Emas");
+          } else {
+            return IndicatorWidget(snap);
+          }
         },
       ),
     );

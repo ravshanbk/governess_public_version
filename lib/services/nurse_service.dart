@@ -1,26 +1,29 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:governess/consts/print_my.dart';
-import 'package:governess/models/hamshira_models/daily_menu_model.dart';
-import 'package:governess/models/hamshira_models/number_of_children_dto_list_model.dart';
+import 'package:governess/models/nurse_models/daily_menu_model.dart';
+import 'package:governess/models/nurse_models/number_of_children_model.dart';
+import 'package:governess/models/nurse_models/v_model.dart';
 import 'package:governess/models/other/post_res_model.dart';
-import 'package:governess/models/hamshira_models/number_of_children_model.dart';
-import 'package:governess/models/hamshira_models/v_model.dart';
 import 'package:governess/services/auth_service.dart';
 
 class NurseService {
   Options option = Options(headers: {
     "Authorization":
-        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6IlJPTEVfSEFNU0hJUkEiLCJzdWIiOiJ4YW1zaGlyYW4zIiwiaWF0IjoxNjUwNDQwMTUyLCJleHAiOjE2NTEzMDQxNTJ9.bW1aTil0Lw1FDBqc8EUwfWEzgniTt3wODiNIvLEYi6g"
+        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6IlJPTEVfSEFNU0hJUkEiLCJzdWIiOiJiMmhhbXNoaXJhIiwiaWF0IjoxNjUwNTQ3NDI4LCJleHAiOjE2NTE0MTE0Mjh9.BsFgihXP9iLc0mOMq5Oa_WzhFvm7MSSFS7iPvaCkacM"
   });
 
   Future<DailyMenu> getDailyMenu(DateTime date) async {
+    p(date.millisecondsSinceEpoch.toString());
+
     try {
       Response res = await Dio().get(
-        "${AuthService.localhost}/out/api/multiMenu/getMenuKin?timestamp=${date.millisecondsSinceEpoch}",
+        "http://192.168.68.107:7788/out/api/multiMenu/getMenuKin?timestamp=1650609741634",
         options: option,
       );
-
+      Future.delayed(const Duration(seconds: 2), () {
+        p(res.data.toString());
+      });
       return DailyMenu.fromJson(res.data);
     } catch (e) {
       throw Exception("Daily Menu Service: " + e.toString());
@@ -53,11 +56,12 @@ class NurseService {
     }
   }
 
-  Future<ResModel> editDailyChildrenNumber(NOCDL v,num menuId) async {
+  Future<ResModel> editDailyChildrenNumber(
+      List<AgeGroupIdAndNumber> v, num gardenId) async {
     try {
       Response res = await Dio().patch(
-        "http://${AuthService.localhost}/out/api/perDay/$menuId",
-        data: v,
+        "http://${AuthService.localhost}/out/api/perDay/$gardenId",
+        data: {"numberOfChildrenDTOList": v},
         options: option,
       );
       return ResModel.fromJson(res.data);

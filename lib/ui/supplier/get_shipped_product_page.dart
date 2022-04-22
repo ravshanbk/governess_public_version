@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/print_my.dart';
@@ -7,7 +6,10 @@ import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/models/supplier/product_model.dart';
 import 'package:governess/providers/supplier/get_shipped_products_provider.dart';
 import 'package:governess/providers/supplier/to_buy_products_page_provider.dart.dart';
+import 'package:governess/services/supplier_service.dart';
 import 'package:governess/ui/widgets/expansion_tile_to_show_product_widget.dart';
+import 'package:governess/ui/widgets/future_builder_of_no_data_widget.dart';
+import 'package:governess/ui/widgets/indicator_widget.dart';
 import 'package:governess/ui/widgets/text_in_row_widget.dart';
 import 'package:provider/provider.dart';
 
@@ -19,7 +21,6 @@ class GetShippedProductPage extends StatefulWidget {
 }
 
 class _GetShippedProductPageState extends State<GetShippedProductPage> {
-  Future<List<Product>>? products;
 
   @override
   Widget build(BuildContext context) {
@@ -27,58 +28,55 @@ class _GetShippedProductPageState extends State<GetShippedProductPage> {
     return Scaffold(
       appBar: _appBar(),
       body: FutureBuilder<List<Product>>(
-        future: products,
+        future: SupplierService().getShippedProduct(),
         builder: (context, AsyncSnapshot<List<Product>> snap) {
-          if (snap.connectionState == ConnectionState.done) {
+          if (snap.connectionState == ConnectionState.done && snap.hasData) {
             return _body(context, snap.data!);
-          } else if (snap.connectionState == ConnectionState.active) {
-            return _indicator(snap.connectionState.name);
+          } else if (snap.connectionState == ConnectionState.done &&
+              !snap.hasData) {
+            return const NoDataWidgetForFutureBuilder("Hozircha Yetkazilgan Mahsulotlar Mavjud Emas!");
           } else {
-            return _indicator(snap.connectionState.name);
+            return IndicatorWidget(snap);
           }
         },
       ),
     );
   }
 
-  Column _body(BuildContext context, List<Product> data) {
-    return Column(
-      children: [
-        ListView.separated(
-          padding:
-              EdgeInsets.only(left: gW(20.0), right: gW(20.0), top: gW(20.0)),
-          shrinkWrap: true,
-          physics: const BouncingScrollPhysics(),
-          itemBuilder: (_, __) {
-            int current = context.watch<GetShippedProductsProvider>().current;
-            return Column(
-              children: [
-                ExpansionTileToShowProductWidget(
-                    isExpanded: current == __,
-                    children: _children(data[__], context),
-                    onChanged: (bool newState) {
-                      if (newState) {
-                        Provider.of<ToBuyProductPageProvider>(context,
-                                listen: false)
-                            .changeCurrent(__);
-                      } else {
-                        Provider.of<ToBuyProductPageProvider>(context,
-                                listen: false)
-                            .changeCurrent(-1);
-                      }
-                    },
-                    data: data[__]),
-              ],
-            );
-          },
-          separatorBuilder: (context, index) {
-            return SizedBox(
-              height: gH(4.0),
-            );
-          },
-          itemCount: data.length,
-        ),
-      ],
+  _body(BuildContext context, List<Product> data) {
+    return ListView.separated(
+      padding:
+          EdgeInsets.only(left: gW(20.0), right: gW(20.0), top: gW(20.0)),
+      shrinkWrap: true,
+      physics: const BouncingScrollPhysics(),
+      itemBuilder: (_, __) {
+        int current = context.watch<GetShippedProductsProvider>().current;
+        return Column(
+          children: [
+            ExpansionTileToShowProductWidget(
+                isExpanded: current == __,
+                children: _children(data[__], context),
+                onChanged: (bool newState) {
+                  if (newState) {
+                    Provider.of<ToBuyProductPageProvider>(context,
+                            listen: false)
+                        .changeCurrent(__);
+                  } else {
+                    Provider.of<ToBuyProductPageProvider>(context,
+                            listen: false)
+                        .changeCurrent(-1);
+                  }
+                },
+                data: data[__]),
+          ],
+        );
+      },
+      separatorBuilder: (context, index) {
+        return SizedBox(
+          height: gH(14.0),
+        );
+      },
+      itemCount: data.length,
     );
   }
 
@@ -141,18 +139,5 @@ class _GetShippedProductPageState extends State<GetShippedProductPage> {
         endIndent: gW(15.0),
       );
 
-  Scaffold _indicator(String idf) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          children: [
-            Text(idf),
-            CupertinoActivityIndicator(
-              radius: gW(50.0),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+ 
 }

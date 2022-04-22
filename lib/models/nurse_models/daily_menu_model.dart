@@ -1,3 +1,9 @@
+import 'dart:convert';
+
+DailyMenu dailyMenuFromJson(String str) => DailyMenu.fromJson(json.decode(str));
+
+String dailyMenuToJson(DailyMenu data) => json.encode(data.toJson());
+
 class DailyMenu {
   DailyMenu({
     this.id,
@@ -6,6 +12,8 @@ class DailyMenu {
     this.updateDate,
     this.multiMenuName,
     this.date,
+    this.status,
+    this.confirmation,
     this.perDayDto,
     this.mealTimeStandardResponseSaveDtoList,
     this.numberToGuess,
@@ -17,10 +25,12 @@ class DailyMenu {
   int? updateDate;
   String? multiMenuName;
   int? date;
+  String? status;
+  bool? confirmation;
   dynamic perDayDto;
   List<MealTimeStandardResponseSaveDtoList>?
       mealTimeStandardResponseSaveDtoList;
-  List<NumberToGuess>? numberToGuess;
+  List<dynamic>? numberToGuess;
 
   factory DailyMenu.fromJson(Map<String, dynamic> json) => DailyMenu(
         id: json["id"],
@@ -29,18 +39,30 @@ class DailyMenu {
         updateDate: json["updateDate"],
         multiMenuName: json["multiMenuName"],
         date: json["date"],
+        status: json["status"],
+        confirmation: json["confirmation"],
         perDayDto: json["perDayDTO"],
         mealTimeStandardResponseSaveDtoList:
-            json["mealTimeStandardResponseSaveDTOList"] == null
-                ? null
-                : List<MealTimeStandardResponseSaveDtoList>.from(
-                    json["mealTimeStandardResponseSaveDTOList"].map((x) =>
-                        MealTimeStandardResponseSaveDtoList.fromJson(x))),
-        numberToGuess: json["numberToGuess"] == null
-            ? null
-            : List<NumberToGuess>.from(
-                json["numberToGuess"].map((x) => NumberToGuess.fromJson(x))),
+            List<MealTimeStandardResponseSaveDtoList>.from(
+                json["mealTimeStandardResponseSaveDTOList"].map(
+                    (x) => MealTimeStandardResponseSaveDtoList.fromJson(x))),
+        numberToGuess: List<dynamic>.from(json["numberToGuess"].map((x) => x)),
       );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "name": name,
+        "createDate": createDate,
+        "updateDate": updateDate,
+        "multiMenuName": multiMenuName,
+        "date": date,
+        "status": status,
+        "confirmation": confirmation,
+        "perDayDTO": perDayDto,
+        "mealTimeStandardResponseSaveDTOList": List<dynamic>.from(
+            mealTimeStandardResponseSaveDtoList!.map((x) => x.toJson())),
+        "numberToGuess": List<dynamic>.from(numberToGuess!.map((x) => x)),
+      };
 }
 
 class MealTimeStandardResponseSaveDtoList {
@@ -50,7 +72,7 @@ class MealTimeStandardResponseSaveDtoList {
     this.mealAgeStandardResponseSaveDtoList,
   });
 
-  num? id;
+  int? id;
   String? mealTimeName;
   List<MealAgeStandardResponseSaveDtoList>? mealAgeStandardResponseSaveDtoList;
 
@@ -60,12 +82,17 @@ class MealTimeStandardResponseSaveDtoList {
         id: json["id"],
         mealTimeName: json["mealTimeName"],
         mealAgeStandardResponseSaveDtoList:
-            json["mealAgeStandardResponseSaveDTOList"] == null
-                ? null
-                : List<MealAgeStandardResponseSaveDtoList>.from(
-                    json["mealAgeStandardResponseSaveDTOList"].map(
-                        (x) => MealAgeStandardResponseSaveDtoList.fromJson(x))),
+            List<MealAgeStandardResponseSaveDtoList>.from(
+                json["mealAgeStandardResponseSaveDTOList"].map(
+                    (x) => MealAgeStandardResponseSaveDtoList.fromJson(x))),
       );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "mealTimeName": mealTimeName,
+        "mealAgeStandardResponseSaveDTOList": List<dynamic>.from(
+            mealAgeStandardResponseSaveDtoList!.map((x) => x.toJson())),
+      };
 }
 
 class MealAgeStandardResponseSaveDtoList {
@@ -76,7 +103,7 @@ class MealAgeStandardResponseSaveDtoList {
     this.ageStandardResponseSaveDtoList,
   });
 
-  num? id;
+  int? id;
   String? name;
   String? image;
   List<AgeStandardResponseSaveDtoList>? ageStandardResponseSaveDtoList;
@@ -88,12 +115,18 @@ class MealAgeStandardResponseSaveDtoList {
         name: json["name"],
         image: json["image"],
         ageStandardResponseSaveDtoList:
-            json["ageStandardResponseSaveDTOList"] == null
-                ? null
-                : List<AgeStandardResponseSaveDtoList>.from(
-                    json["ageStandardResponseSaveDTOList"].map(
-                        (x) => AgeStandardResponseSaveDtoList.fromJson(x))),
+            List<AgeStandardResponseSaveDtoList>.from(
+                json["ageStandardResponseSaveDTOList"]
+                    .map((x) => AgeStandardResponseSaveDtoList.fromJson(x))),
       );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "name": name,
+        "image": image,
+        "ageStandardResponseSaveDTOList": List<dynamic>.from(
+            ageStandardResponseSaveDtoList!.map((x) => x.toJson())),
+      };
 }
 
 class AgeStandardResponseSaveDtoList {
@@ -103,8 +136,8 @@ class AgeStandardResponseSaveDtoList {
     this.ageGroupName,
   });
 
-  num? id;
-  num? weight;
+  int? id;
+  double? weight;
   String? ageGroupName;
 
   factory AgeStandardResponseSaveDtoList.fromJson(Map<String, dynamic> json) =>
@@ -113,25 +146,10 @@ class AgeStandardResponseSaveDtoList {
         weight: json["weight"],
         ageGroupName: json["ageGroupName"],
       );
-}
 
-class NumberToGuess {
-  NumberToGuess({
-    this.id,
-    this.ageGroupId,
-    this.ageGroupName,
-    this.number,
-  });
-
-  num? id;
-  num? ageGroupId;
-  String? ageGroupName;
-  num? number;
-
-  factory NumberToGuess.fromJson(Map<String, dynamic> json) => NumberToGuess(
-        id: json["id"],
-        ageGroupId: json["ageGroupId"],
-        ageGroupName: json["ageGroupName"],
-        number: json["number"],
-      );
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "weight": weight,
+        "ageGroupName": ageGroupName,
+      };
 }

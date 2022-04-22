@@ -1,8 +1,19 @@
-import 'package:governess/models/hamshira_models/number_of_children_model.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+import 'package:governess/consts/print_my.dart';
+import 'package:governess/models/cooker/receive_product_model.dart';
+import 'package:governess/models/in_out_list_product_model.dart';
+import 'package:governess/models/nurse_models/number_of_children_model.dart';
+import 'package:governess/models/other/post_res_model.dart';
 import 'package:governess/models/supplier/product_model.dart';
+import 'package:governess/services/auth_service.dart';
 
 class CookerService {
-  Future<List<Product>> acceptProduct() async {
+  Options option = Options(headers: {
+    "Authorization":
+        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6IlJPTEVfT1NIUEFaIiwic3ViIjoiYjJvc2hwYXoiLCJpYXQiOjE2NTA1NDYzODQsImV4cCI6MTY1MTQxMDM4NH0.LDKQjbFj29mssqXo89j1YaoLn4mgXgONT9RYT6lpMEQ"
+  });
+  Future<ResModel> acceptProduct(ReceiveProductModel data) async {
     List<Map<String, dynamic>> hardData = [
       {
         "id": 4,
@@ -421,62 +432,226 @@ class CookerService {
     ];
 
     try {
-      return hardData.map((e) => Product.fromJson(e)).toList();
+      Response res = await Dio().post(
+        "${AuthService.localhost}/out/api/cook/receive/1",
+        options: option,
+        data: data,
+      );
+      return ResModel.fromJson(res.data);
     } catch (e) {
       throw Exception("Chef Service acceptProduct: " + e.toString());
     }
   }
-   Future<NumberOfChildren> getChildrenNumberByData(DateTime date) async {
-    return await Future.delayed(const Duration(seconds: 1), () {
-      return NumberOfChildren.fromJson({
-        "district": {"id": 34, "name": "Buxoro shahri"},
-        "perDayList": [
+
+  Future<NumberOfChildren> getChildrenNumberByData(DateTime date) async {
+    try {
+      Response res = await Dio().get(
+        "${AuthService.localhost}/out/api/perDay",
+        options: option,
+      );
+      return NumberOfChildren.fromJson(res.data);
+    } catch (e) {
+      throw Exception("CookerService acceptProduct:" + e.toString());
+    }
+  }
+
+  Future<List<Product>> getSentProductFromWarehouse() async {
+    try {
+      Response res = await Dio().get(
+        "${AuthService.localhost}/out/api/cook/getInOut",
+        options: option,
+      );
+      return (res.data as List).map((e) => Product.fromJson(e)).toList();
+    } catch (e) {
+      throw Exception(
+          "CookerService / getSentProductFromWarehouse: " + e.toString());
+    }
+  }
+
+  Future<List<InoutListProduct>> getAvailbleProductsInStorage() async {
+    var hardData = [
+      {
+        "inOutList": [
           {
-            "id": 1,
-            "createDate": 1648362861870,
-            "updateDate": 1648362861870,
-            "createdBy": 30,
-            "updateBy": 30,
-            "status": "KIRITILDI",
-            "numberOfChildrenDTOList": [
-              {
-                "id": 1,
-                "number": 10,
-                "createDate": 1648362861809,
-                "updateDate": 1648362861809,
-                "ageGroupId": 1,
-                "ageGroupName": "3-4"
-              },
-              {
-                "id": 2,
-                "number": 30,
-                "createDate": 1648362861845,
-                "updateDate": 1648362861845,
-                "ageGroupId": 2,
-                "ageGroupName": "4-7"
-              },
-              {
-                "id": 3,
-                "number": 50,
-                "createDate": 1648362861853,
-                "updateDate": 1648362861853,
-                "ageGroupId": 3,
-                "ageGroupName": "Qisqa muddatli"
-              },
-              {
-                "id": 4,
-                "number": 60,
-                "createDate": 1648362861861,
-                "updateDate": 1648362861861,
-                "ageGroupId": 4,
-                "ageGroupName": "Xodim"
-              }
-            ],
-            "kindergartenId": 3,
-            "kindergartenName": "2-MTT"
+            "id": null,
+            "enterDate": 1649573808070,
+            "price": 1,
+            "pack": 500,
+            "numberPack": 770,
+            "weightPack": 385000,
+            "measurementType": "gramm"
           }
-        ]
-      });
-    });
+        ],
+        "productName": "Mol go`shti",
+        "weight": 385000
+      },
+      {
+        "inOutList": [
+          {
+            "id": null,
+            "enterDate": 1649573803410,
+            "price": 12,
+            "pack": 500,
+            "numberPack": 134,
+            "weightPack": 67000,
+            "measurementType": "gramm"
+          }
+        ],
+        "productName": "Sabzi",
+        "weight": 67000
+      },
+      {
+        "inOutList": [
+          {
+            "id": null,
+            "enterDate": 1649573798599,
+            "price": 17,
+            "pack": 1000,
+            "numberPack": 57,
+            "weightPack": 57000,
+            "measurementType": "gramm"
+          }
+        ],
+        "productName": "Piyoz",
+        "weight": 57000
+      },
+      {
+        "inOutList": [
+          {
+            "id": null,
+            "enterDate": 1649573793833,
+            "price": 31,
+            "pack": 500,
+            "numberPack": 11,
+            "weightPack": 5500,
+            "measurementType": "gramm"
+          }
+        ],
+        "productName": "Tomat pastasi",
+        "weight": 5500
+      },
+      {
+        "inOutList": [
+          {
+            "id": null,
+            "enterDate": 1649573788088,
+            "price": 47,
+            "pack": 1000,
+            "numberPack": 16,
+            "weightPack": 16000,
+            "measurementType": "gramm"
+          }
+        ],
+        "productName": "Tuz",
+        "weight": 16000
+      },
+      {
+        "inOutList": [
+          {
+            "id": null,
+            "enterDate": 1649573781921,
+            "price": 12,
+            "pack": 500,
+            "numberPack": 780,
+            "weightPack": 390000,
+            "measurementType": "gramm"
+          }
+        ],
+        "productName": "Baliq (boshsiz, tozalangan)",
+        "weight": 390000
+      },
+      {
+        "inOutList": [
+          {
+            "id": null,
+            "enterDate": 1649573776997,
+            "price": 15,
+            "pack": 400,
+            "numberPack": 231,
+            "weightPack": 92400,
+            "measurementType": "gramm"
+          }
+        ],
+        "productName": "Non",
+        "weight": 92400
+      },
+      {
+        "inOutList": [
+          {
+            "id": null,
+            "enterDate": 1649573771997,
+            "price": 12,
+            "pack": 400,
+            "numberPack": 142,
+            "weightPack": 56800,
+            "measurementType": "gramm"
+          }
+        ],
+        "productName": "Saryogʼ",
+        "weight": 56800
+      },
+      {
+        "inOutList": [
+          {
+            "id": null,
+            "enterDate": 1649573766635,
+            "price": 14,
+            "pack": 1000,
+            "numberPack": 134,
+            "weightPack": 134000,
+            "measurementType": "gramm"
+          }
+        ],
+        "productName": "Sut",
+        "weight": 134000
+      },
+      {
+        "inOutList": [
+          {
+            "id": null,
+            "enterDate": 1649573761335,
+            "price": 14,
+            "pack": 1,
+            "numberPack": 5130,
+            "weightPack": 5130,
+            "measurementType": "gramm"
+          }
+        ],
+        "productName": "Un (1-sort)",
+        "weight": 5130
+      }
+    ];
+    try {
+      Response res = await Dio().get(
+        "${AuthService.localhost}/out/api/cook/getProductBalancer",
+        options: option,
+      );
+      debugPrint("getAvailableProductsInStorage function ichi: " +
+          res.data.toString());
+      return (res.data as List)
+          .map((e) => InoutListProduct.fromJson(e))
+          .toList();
+      // return hardData.map((e) => InoutListProduct.fromJson(e)).toList();
+    } catch (e) {
+      throw Exception(
+          "InOutListProductService getAvailableProductsInStorage: " +
+              e.toString());
+    }
+  }
+
+  Future<List<InoutListProduct>> getExistingProduct() async {
+    try {
+      Response res = await Dio().get(
+        "${AuthService.localhost}/out/api/cook/getExistingProduct",
+        options: option,
+      );
+      return (res.data as List)
+          .map((e) => InoutListProduct.fromJson(e))
+          .toList();
+    } catch (e) {
+      throw Exception(
+          "InOutListProductService getAvailableProductsInStorage: " +
+              e.toString());
+    }
   }
 }

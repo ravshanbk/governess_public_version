@@ -49,6 +49,10 @@ class PinCodePage extends StatelessWidget {
                           }
                         },
                         decoration: InputDecoration(
+                          focusedBorder:  OutlineInputBorder(
+                            borderSide: BorderSide(color: mainColor),
+                            
+                              borderRadius: BorderRadius.circular(gW(8.0))),
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(gW(8.0))),
                           contentPadding: EdgeInsets.only(left: gW(14.0)),

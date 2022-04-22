@@ -9,8 +9,8 @@ import 'package:governess/ui/widgets/number_of_children_widget.dart';
 import 'package:governess/services/nurse_service.dart';
 import 'package:governess/ui/widgets/show_toast_function.dart';
 
-class NurseShowNumberOfChildrenPage extends StatelessWidget {
-  const NurseShowNumberOfChildrenPage({Key? key}) : super(key: key);
+class ManagerShowNumberOfChildrenPage extends StatelessWidget {
+  const ManagerShowNumberOfChildrenPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +80,7 @@ class NurseShowNumberOfChildrenPage extends StatelessWidget {
         });
       },
       child: Text(
-        "O'zgartirish",
+        "Tasdiqlash",
         style: TextStyle(
           letterSpacing: gW(2.0),
           fontSize: gW(20.0),

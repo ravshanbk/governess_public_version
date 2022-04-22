@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/size_config.dart';
-import 'package:governess/models/hamshira_models/number_of_children_model.dart';
+import 'package:governess/models/nurse_models/number_of_children_model.dart';
 import 'package:governess/ui/widgets/grey_text_in_row_widget.dart';
 
 // ignore: must_be_immutable

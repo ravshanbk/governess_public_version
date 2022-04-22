@@ -24,12 +24,10 @@ class FilterToBuyPageProvider extends ChangeNotifier {
     List<Product> list = [];
 
     for (int i = 0; i < data.length; i++) {
-      debugPrint(data[i].companyName.toString() + " " + name);
       if (data[i].companyName! == name) {
         list.add(data[i]);
       }
     }
-    debugPrint("Length of comp name list: " + list.length.toString());
     dataByCompanyName = list;
     notifyListeners();
   }

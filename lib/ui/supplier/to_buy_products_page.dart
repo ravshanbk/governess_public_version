@@ -1,7 +1,8 @@
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-import 'package:governess/consts/print_my.dart';
+import 'package:governess/ui/widgets/future_builder_of_no_data_widget.dart';
+import 'package:governess/ui/widgets/indicator_widget.dart';
 import 'package:provider/provider.dart';
 
 import 'package:governess/consts/colors.dart';
@@ -38,7 +39,15 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
         future: SupplierService().getToBuyProducts(),
         builder:
             (context, AsyncSnapshot<ProductWithAvailableCompnayNames> snap) {
-          return snap.hasData ? _body(snap.data!, context) : _indicator();
+          if (snap.connectionState == ConnectionState.done && snap.hasData) {
+            return _body(snap.data!, context);
+          } else if (snap.connectionState == ConnectionState.done &&
+              !snap.hasData) {
+            return const NoDataWidgetForFutureBuilder(
+                "Hozircha Harid Qilinadigan Mahsulotlar Mavjud Emas!");
+          } else {
+            return IndicatorWidget(snap);
+          }
         },
       ),
     );
@@ -111,7 +120,9 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
         );
       },
     );
-    return CustomScrollView(slivers: [
+    return CustomScrollView(
+      physics:const  BouncingScrollPhysics(),
+      slivers: [
       _sliverAppBar(context, datas),
       SliverToBoxAdapter(
         child: Center(
@@ -442,44 +453,7 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
       useSafeArea: true,
       context: context,
       builder: (BuildContext alertContext) {
-        return Material(
-          type: MaterialType.transparency,
-          child: Container(
-            padding:
-                EdgeInsets.symmetric(horizontal: gW(20.0), vertical: gH(15)),
-            margin: EdgeInsets.only(
-              top: gH(20.0),
-              left: gW(10.0),
-              right: gW(10.0),
-              bottom: gH(399.0),
-            ),
-            decoration: BoxDecoration(
-              color: whiteColor,
-              border: Border.all(color: greyColor),
-              borderRadius: BorderRadius.circular(
-                gW(10.0),
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _richTextInRow(["Nomi:  ", data.productName!.toString()]),
-                _richTextInRow(
-                    ["Yaxlitlash miqdaori:  ", data.pack.toString()]),
-                _richTextInRow(["Nechta:  ", data.numberPack.toString()]),
-                _richTextInRow(["Umumiy:  ", data.weightPack.toString()]),
-                SizedBox(height: gH(10.0)),
-                _numberInputField(context),
-                SizedBox(height: gH(15.0)),
-                _priceInputField(context),
-                SizedBox(height: gH(15.0)),
-                _commentInputField(context),
-                SizedBox(height: gH(15.0)),
-                _sendButtonInShowDialog(alertContext, data),
-              ],
-            ),
-          ),
-        );
+        return _SendProductShowDialogContentWidget(data);
       },
     );
   }
@@ -491,113 +465,6 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
       builder: (BuildContext alertContext) {
         return _ShowDialogDateContent(widget.dataw);
       },
-    );
-  }
-
-  RichText _richTextInRow(List<String> text) {
-    return RichText(
-      text: TextSpan(
-        children: [
-          TextSpan(
-            text: text[0],
-            style: TextStyle(color: greyColor, fontSize: gW(14.0)),
-          ),
-          TextSpan(
-            text: text[1].length > 17 ? text[1].substring(0, 16) : text[1],
-            style: TextStyle(color: Colors.black, fontSize: gW(18.0)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  SendButtonWidget _sendButtonInShowDialog(BuildContext con, Product data) {
-    return SendButtonWidget(() async {
-      if ((Provider.of<ToBuyProductPageProvider>(con, listen: false)
-              .numberController
-              .text
-              .isNotEmpty) &&
-          (int.parse(Provider.of<ToBuyProductPageProvider>(con, listen: false)
-                  .numberController
-                  .text) >
-              0)) {
-        num number = int.parse(
-                Provider.of<ToBuyProductPageProvider>(con, listen: false)
-                    .numberController
-                    .text) *
-            (data.pack! > 0 ? data.pack! : 1);
-
-        await SupplierService()
-            .sendProduct(
-          SendProduct(
-            comment: Provider.of<ToBuyProductPageProvider>(con, listen: false)
-                .commentController
-                .text,
-            companyId: data.companyId,
-            measurementType: data.measurementType,
-            orderNumber: data.orderNumber,
-            price: data.price,
-            productId: data.productId,
-            weightPack: number,
-            pack: data.pack,
-            numberPack: int.parse(
-              Provider.of<ToBuyProductPageProvider>(con, listen: false)
-                  .numberController
-                  .text,
-            ),
-          ),
-        )
-            .then((value) {
-          if (value.success!) {
-            showToast(value.text!.toString(), value.success!, false);
-
-            Provider.of<ToBuyProductPageProvider>(con, listen: false).clear();
-            Provider.of<ToBuyProductPageProvider>(con, listen: false)
-                .changeCurrent(-1);
-            Navigator.pop(con);
-          } else {
-            showToast(value.text!.toString(), value.success!, false);
-          }
-        });
-      } else {
-        showToast("Miqdorni kiriting, nol bolmasin", false, false);
-      }
-    });
-  }
-
-  TextField _numberInputField(BuildContext context) {
-    return TextField(
-      onChanged: (v) {},
-      keyboardType: TextInputType.number,
-      controller: context.read<ToBuyProductPageProvider>().numberController,
-      decoration: DecorationMy.inputDecoration(
-        "Miqdor...",
-        null,
-      ),
-    );
-  }
-
-  TextField _priceInputField(BuildContext context) {
-    return TextField(
-      onChanged: (v) {},
-      keyboardType: TextInputType.number,
-      controller: context.read<ToBuyProductPageProvider>().priceController,
-      decoration: DecorationMy.inputDecoration(
-        "Narxi...",
-        null,
-      ),
-    );
-  }
-
-  TextField _commentInputField(BuildContext context) {
-    return TextField(
-      onChanged: (v) {},
-      keyboardType: TextInputType.text,
-      controller: context.read<ToBuyProductPageProvider>().commentController,
-      decoration: DecorationMy.inputDecoration(
-        "Comment...",
-        null,
-      ),
     );
   }
 
@@ -631,16 +498,171 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
       ),
     );
   }
+}
 
-  _indicator() {
-    return Center(
-      child: CupertinoActivityIndicator(
-        radius: gW(50.0),
+// ignore: unused_element
+class _SendProductShowDialogContentWidget extends StatelessWidget {
+  final Product data;
+  const _SendProductShowDialogContentWidget(this.data, {Key? key})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      type: MaterialType.transparency,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: gW(20.0), vertical: gH(15)),
+        margin: EdgeInsets.only(
+          top: gH(0.0),
+          left: gW(10.0),
+          right: gW(10.0),
+          bottom: gH(340.0),
+        ),
+        decoration: BoxDecoration(
+          color: whiteColor,
+          border: Border.all(color: greyColor),
+          borderRadius: BorderRadius.circular(
+            gW(10.0),
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _richTextInRow(["Nomi:  ", data.productName!.toString()]),
+            _richTextInRow(["Yaxlitlash miqdaori:  ", data.pack.toString()]),
+            _richTextInRow(["Nechta:  ", data.numberPack.toString()]),
+            _richTextInRow(["Umumiy:  ", data.weightPack.toString()]),
+            const Spacer(),
+            _numberInputField(context, data),
+            const Spacer(),
+            _priceInputField(context),
+            const Spacer(),
+            _commentInputField(context),
+            const Spacer(),
+            _sendButtonInShowDialog(context, data),
+          ],
+        ),
+      ),
+    );
+  }
+
+  RichText _richTextInRow(List<String> text) {
+    return RichText(
+      text: TextSpan(
+        children: [
+          TextSpan(
+            text: text[0],
+            style: TextStyle(color: greyColor, fontSize: gW(14.0)),
+          ),
+          TextSpan(
+            text: text[1].length > 17 ? text[1].substring(0, 16) : text[1],
+            style: TextStyle(color: Colors.black, fontSize: gW(18.0)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  SendButtonWidget _sendButtonInShowDialog(BuildContext con, Product data) {
+    return SendButtonWidget(() async {
+      if ((Provider.of<ToBuyProductPageProvider>(con, listen: false)
+              .numberController
+              .text
+              .isNotEmpty) &&
+          (int.parse(Provider.of<ToBuyProductPageProvider>(con, listen: false)
+                  .numberController
+                  .text) >
+              0)) {
+        int number = (int.parse(
+                    Provider.of<ToBuyProductPageProvider>(con, listen: false)
+                        .numberController
+                        .text) *
+                (data.pack! > 0 ? data.pack! : 1))
+            .toInt();
+        await SupplierService()
+            .sendProduct(
+          v: SendProduct(
+            comment: Provider.of<ToBuyProductPageProvider>(con, listen: false)
+                .commentController
+                .text,
+            companyId: data.companyId,
+            measurementType: data.measurementType,
+            orderNumber: data.orderNumber,
+            price: 500,
+            productId: data.productId,
+            weightPack: number,
+            pack: 400,
+            numberPack: int.parse(
+              Provider.of<ToBuyProductPageProvider>(con, listen: false)
+                  .numberController
+                  .text,
+            ),
+          ),
+          id: data.id!,
+        )
+            .then((value) {
+          if (value.success!) {
+            showToast(value.text!.toString(), value.success!, false);
+
+            Provider.of<ToBuyProductPageProvider>(con, listen: false).clear();
+            Provider.of<ToBuyProductPageProvider>(con, listen: false)
+                .changeCurrent(-1);
+            Navigator.pop(con);
+          } else {
+            showToast(value.text!.toString(), value.success!, false);
+          }
+        });
+      } else {
+        showToast("Miqdorni kiriting, nol bolmasin", false, false);
+      }
+    });
+  }
+
+  _numberInputField(BuildContext context, Product data) {
+    return TextFormField(
+      onChanged: (v) {
+        if (double.parse(v) > data.numberPack!) {
+          showToast(
+              "Kiritilgan miqdor keraklisidan oshmasligi kerak", false, false);
+          Provider.of<ToBuyProductPageProvider>(context, listen: false)
+              .clearNumberController();
+        }
+      },
+      keyboardType: TextInputType.number,
+      controller: context.read<ToBuyProductPageProvider>().numberController,
+      decoration: DecorationMy.inputDecoration(
+        "Miqdor...",
+        null,
+      ),
+    );
+  }
+
+  TextField _priceInputField(BuildContext context) {
+    return TextField(
+      onChanged: (v) {},
+      keyboardType: TextInputType.number,
+      controller: context.read<ToBuyProductPageProvider>().priceController,
+      decoration: DecorationMy.inputDecoration(
+        "Narxi...",
+        null,
+      ),
+    );
+  }
+
+  TextField _commentInputField(BuildContext context) {
+    return TextField(
+      onChanged: (v) {},
+      keyboardType: TextInputType.text,
+      controller: context.read<ToBuyProductPageProvider>().commentController,
+      decoration: DecorationMy.inputDecoration(
+        "Comment...",
+        null,
       ),
     );
   }
 }
 
+// ignore: must_be_immutable
 class _ShowDialogDateContent extends StatelessWidget {
   List<Product>? dataw;
   _ShowDialogDateContent(

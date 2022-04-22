@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:governess/config/env.dart';
 import 'package:governess/consts/print_my.dart';
 import 'package:governess/models/other/post_res_model.dart';
 import 'package:governess/models/supplier/product_with_available_company_names_model.dart';
@@ -9,8 +8,10 @@ import 'package:governess/models/supplier/product_model.dart';
 import 'package:governess/services/auth_service.dart';
 
 class SupplierService {
-  String token =
-      "Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6IlJPTEVfVEFgTUlOT1RDSEkiLCJzdWIiOiJ0YW1pbm90IiwiaWF0IjoxNjUwNDM3ODA3LCJleHAiOjE2NTEzMDE4MDd9.WhEbVdA0vnT_yFhrPBBKeWyyWtZldaBdAAJxQbJvIEc";
+  Options option = Options(headers: {
+    "Authorization":
+        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6IlJPTEVfVEFgTUlOT1RDSEkiLCJzdWIiOiJ0YW1pbm90IiwiaWF0IjoxNjUwNTMxODU1LCJleHAiOjE2NTEzOTU4NTV9.-Oi8yaj8YsCB83bw9oct0WUHFDSdDFW0raPdbBlKrQM"
+  });
   Future<ProductWithAvailableCompnayNames> getToBuyProducts() async {
     List<Map<String, dynamic>> hardData = [
       {
@@ -430,13 +431,9 @@ class SupplierService {
     ];
     List<Product> data;
     try {
-      Response res = await Dio()
-          .get("${AuthService.localhost}/out/api/supplier/getRequiredProduct",
-              options: Options(headers: {
-                "Authorization":
-                    token
-              }));
-
+      Response res = await Dio().get(
+          "${AuthService.localhost}/out/api/supplier/getRequiredProduct",
+          options: option);
       List<String> container = [];
       data = (res.data as List).map((e) => Product.fromJson(e)).toList();
 
@@ -453,49 +450,44 @@ class SupplierService {
       return ProductWithAvailableCompnayNames(
           availables: container, product: data);
     } catch (e) {
-      throw Exception("Get To Buy Products Supplier: " + e.toString());
+      throw Exception("SupplierService / getToBuyProducts: " + e.toString());
     }
   }
 
-  Future<ResModel> sendProduct(SendProduct v) async {
+  Future<ResModel> sendProduct(
+      {required SendProduct v, required String id}) async {
     try {
-      //   var res = await Dio().post(
-      //     "http://192.168.1.6:7788/out/api/supplier/getRequiredProduct",
-      //     data: {
-      //       "numberOfChildrenDTOList": [v]
-      //     },
-      //     options: Options(
-      //       headers: {
-      //         "Authorization":
-      //             "Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6IlJPTEVfSEFNU0hJUkEiLCJzdWIiOiJoYW1zaGlyYSIsImlhdCI6MTY0OTA1MTgyMCwiZXhwIjoxNjQ5OTE1ODIwfQ.cLvQL3WHazmir1MTK4xf9C6oGJLEUlL4-T6BQgJV4Qk"
-      //       },
-      //     ),
-      //   );
-      return ResModel.fromJson({
-        "text": "Muvaffaqiyatli yuborildi",
-        "success": true,
-        "object": null
-      });
+      var res = await Dio().post(
+        "${AuthService.localhost}/out/api/supplier/addShippedProduct/$id",
+        data: {
+          "comment": v.comment,
+          "companyId": v.companyId,
+          "measurementType": v.measurementType,
+          "numberPack": v.numberPack,
+          "orderNumber": v.orderNumber,
+          "pack": v.pack,
+          "price": v.price,
+          "productId": v.productId,
+          "weightPack": v.weightPack
+        },
+        options: option,
+      );
+      return ResModel.fromJson(res.data);
     } catch (e) {
-      throw Exception("Enter Number Of Children: " + e.toString());
+      throw Exception("SupplierService / getToBuyProducts: " + e.toString());
     }
   }
 
   Future<List<Product>> getShippedProduct() async {
     try {
       Response res = await Dio().get(
-        "http://${AuthService.localhost}/out/api/supplier/getShippedProduct",
-        options: Options(
-          headers: {
-            "Authorization":
-                token
-          },
-        ),
+        "${AuthService.localhost}/out/api/supplier/getShippedProduct",
+        options: option,
       );
 
       return (res.data as List).map((e) => Product.fromJson(e)).toList();
     } catch (e) {
-      throw Exception("Get Shipped Product Service" + e.toString());
+      throw Exception("SupplierService / getShippedProduct: " + e.toString());
     }
   }
 }

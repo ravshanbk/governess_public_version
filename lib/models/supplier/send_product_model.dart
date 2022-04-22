@@ -1,3 +1,12 @@
+// To parse this JSON data, do
+//
+//     final sendProduct = sendProductFromJson(jsonString);
+
+import 'dart:convert';
+
+SendProduct sendProductFromJson(String str) => SendProduct.fromJson(json.decode(str));
+
+String sendProductToJson(SendProduct data) => json.encode(data.toJson());
 
 class SendProduct {
     SendProduct({
@@ -13,14 +22,14 @@ class SendProduct {
     });
 
     String? comment;
-    num? companyId;
+    int? companyId;
     String? measurementType;
     int? numberPack;
     String? orderNumber;
-    num? pack;
-    num? price;
-    num? productId;
-    num? weightPack;
+    int? pack;
+    int? price;
+    int? productId;
+    int? weightPack;
 
     factory SendProduct.fromJson(Map<String, dynamic> json) => SendProduct(
         comment: json["comment"],

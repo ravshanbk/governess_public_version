@@ -1,12 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:governess/config/env.dart';
 import 'package:governess/local_storage/user_storage.dart';
 import 'package:governess/models/other/post_res_model.dart';
 import 'package:governess/models/user/user_model.dart';
 
-class AuthService {
- static  String localhost = "http://128.199.24.255:7788";
+class AuthService {                
+ static  String localhost = "http://192.168.68.107:7788";
   Future<ResModel> signUpUser(bool success) async {
     try {
       return ResModel(

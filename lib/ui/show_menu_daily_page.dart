@@ -1,60 +1,131 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/size_config.dart';
+import 'package:governess/models/nurse_models/daily_menu_model.dart';
 import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
-import 'package:governess/models/hamshira_models/daily_menu_model.dart';
 import 'package:governess/providers/nurse/daily_menu_page_provider.dart';
 import 'package:governess/services/nurse_service.dart';
+import 'package:governess/ui/widgets/date_time_show_button_widget.dart';
+import 'package:governess/ui/widgets/future_builder_of_no_data_widget.dart';
+import 'package:governess/ui/widgets/indicator_widget.dart';
 import 'package:governess/ui/widgets/meal_widget.dart';
 import 'package:provider/provider.dart';
 
 class NurseShowDailyMenuPage extends StatelessWidget {
-  const NurseShowDailyMenuPage({Key? key}) : super(key: key);
+  NurseShowDailyMenuPage({Key? key}) : super(key: key);
 
-  // DateTime dateTime =  DateTime(2022, 4, 18);
+  DateTime dateTime = DateTime.now();
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     return Scaffold(
       appBar: _appBar(),
-      body: FutureBuilder(
-        future: NurseService().getDailyMenu(DateTime(2022, 4, 18,7,45,00)),
+      body: FutureBuilder<DailyMenu>(
+        future: NurseService().getDailyMenu(dateTime),
         builder: (BuildContext context, AsyncSnapshot<DailyMenu> snap) {
-          if (snap.connectionState == ConnectionState.active) {
-            return _indicator(snap);
-          } else if (snap.connectionState == ConnectionState.done) {
+          if (snap.connectionState == ConnectionState.done && snap.hasData) {
             return _body(snap.data!, context);
-          } else{
-            return _indicator(snap);
+          } else if (snap.connectionState == ConnectionState.done &&
+              !snap.hasData) {
+            return const NoDataWidgetForFutureBuilder(
+                "Hozircha Menyu Mavjud Emas!");
+          } else {
+            return IndicatorWidget(snap);
           }
         },
       ),
     );
   }
 
-  Center _indicator(AsyncSnapshot<DailyMenu> snap) {
-    return Center(
+  _body(DailyMenu data, BuildContext context) {
+    return SingleChildScrollView(
+      child: Container(
+        margin: EdgeInsets.all(
+          gW(10.0),
+        ),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.black),
+          borderRadius: BorderRadius.circular(
+            gW(
+              10.0,
+            ),
+          ),
+        ),
         child: Column(
-      children: [
-        Text(snap.connectionState.name),
-        CupertinoActivityIndicator(radius: gW(70.0)),
-      ],
-    ));
-  }
-
-  ListView _body(DailyMenu data, BuildContext context) {
-    return ListView.separated(
-        padding: EdgeInsets.symmetric(vertical: gH(20.0), horizontal: gW(20.0)),
-        physics: const BouncingScrollPhysics(),
-        shrinkWrap: true,
-        itemBuilder: (_, __) {
-          return _expansionTile(context, __, data);
-        },
-        separatorBuilder: (context, index) {
-          return SizedBox(height: gH(20.0));
-        },
-        itemCount: data.mealTimeStandardResponseSaveDtoList!.length);
+          children: [
+            Container(
+              padding: EdgeInsets.symmetric(
+                vertical: gH(10.0),
+              ),
+              decoration: BoxDecoration(
+                border: Border.all(color: mainColor,width: gW(2.0)),
+                borderRadius:
+                    BorderRadius.vertical(top: Radius.circular(gW(10.0))),
+                color: mainColor,
+              ),
+              child: Column(
+                children: [
+                  // MENYU NOMI
+                  Text(
+                    data.multiMenuName!,
+                    style: TextStyle(decorationThickness: gW(.5),
+                      decorationStyle: TextDecorationStyle.solid,
+                      decoration: TextDecoration.underline,
+                      decorationColor: lightGreyColor,
+                      fontWeight: FontWeight.bold,
+                      color: whiteColor,
+                      fontStyle: FontStyle.italic,
+                      fontSize: gW(
+                        25.0,
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: gW(5.0),
+                  ),
+                  //MENYU HOLATI
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: gW(20.0),
+                      ),
+                      Text(
+                        "Holati: ",
+                        style: TextStyle(
+                          color: lightGreyColor,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                      Text(
+                        data.status!,
+                        style: TextStyle(
+                          color: whiteColor,
+                          fontStyle: FontStyle.italic,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            ListView.separated(
+              padding: EdgeInsets.symmetric(
+                  vertical: gH(20.0), horizontal: gW(10.0)),
+              physics: const BouncingScrollPhysics(),
+              shrinkWrap: true,
+              itemBuilder: (_, __) {
+                return _expansionTile(context, __, data);
+              },
+              separatorBuilder: (context, index) {
+                return SizedBox(height: gH(20.0));
+              },
+              itemCount: data.mealTimeStandardResponseSaveDtoList!.length,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   _expansionTile(BuildContext context, int __, DailyMenu? data) {
@@ -116,10 +187,12 @@ class NurseShowDailyMenuPage extends StatelessWidget {
       backgroundColor: mainColor,
       elevation: 0,
       centerTitle: true,
-      title: Text(
-        DTFM.maker(DateTime.now().millisecondsSinceEpoch),
-        textAlign: TextAlign.center,
-      ),
+      actions: [
+        DateTimeShowButton(
+          DTFM.maker(dateTime.millisecondsSinceEpoch),
+          () {},
+        ),
+      ],
     );
   }
 }

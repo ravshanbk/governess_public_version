@@ -103,7 +103,7 @@ class NurseHomePage extends StatelessWidget {
                   builder: (context) {
                     switch (__) {
                       case 0:
-                        return const   NurseShowDailyMenuPage();
+                        return   NurseShowDailyMenuPage();
                       case 1:
                         return const NurseShowNumberOfChildrenPage();
 

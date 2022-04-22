@@ -22,6 +22,9 @@ class AuthPage extends StatelessWidget {
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     return Scaffold(
+      appBar: AppBar(
+        leading:const Image(image: AssetImage("assets/images/governessLogo.png"),),
+        backgroundColor: mainColor,elevation: 0,title:const Text("Governess Business"),),
       resizeToAvoidBottomInset: true,
       body: Center(
         child: Form(

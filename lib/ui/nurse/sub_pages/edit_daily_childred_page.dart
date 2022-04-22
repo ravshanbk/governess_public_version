@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/decorations.dart';
-import 'package:governess/consts/print_my.dart';
 import 'package:governess/consts/size_config.dart';
-import 'package:governess/models/hamshira_models/number_of_children_dto_list_model.dart';
-import 'package:governess/models/hamshira_models/number_of_children_model.dart';
-import 'package:governess/models/hamshira_models/v_model.dart';
+import 'package:governess/models/nurse_models/number_of_children_model.dart';
+import 'package:governess/models/nurse_models/v_model.dart';
 import 'package:governess/providers/nurse/editing_children_page_provider.dart';
 import 'package:governess/services/nurse_service.dart';
 import 'package:governess/ui/nurse/nurse_home_page.dart';
@@ -112,63 +110,50 @@ class EditDailyChildrenPage extends StatelessWidget {
   }
 
   AddButtonWidget _addButton(BuildContext context) {
-    return AddButtonWidget(callBack: () async {
-      if (Provider.of<EditingChildrenNumberPageProvider>(context, listen: false)
-          .formKey
-          .currentState!
-          .validate()) {
-        NOCDL v = (data.perDayList![0].numberOfChildrenDTOList! as NOCDL)
-            .toJson() as NOCDL;
+    return AddButtonWidget(
+      callBack: () async {
+        if (Provider.of<EditingChildrenNumberPageProvider>(context,
+                listen: false)
+            .formKey
+            .currentState!
+            .validate()) {
+          List<AgeGroupIdAndNumber> v = List.generate(
+            data.perDayList![0].numberOfChildrenDTOList!.length,
+            (index) {
+              return AgeGroupIdAndNumber(
+                ageGroupId: data
+                    .perDayList![0].numberOfChildrenDTOList![index].ageGroupId,
+                number: int.parse(
+                    Provider.of<EditingChildrenNumberPageProvider>(context,
+                            listen: false)
+                        .controllers![index]
+                        .text),
+              );
+            },
+          );
 
-        // List<AgeGroupIdAndNumber> v = List.generate(
-        //     data.perDayList![0].numberOfChildrenDTOList!.length, (index) {
-        //   return AgeGroupIdAndNumber(
-        //     ageGroupId:
-        //         data.perDayList![0].numberOfChildrenDTOList![index].ageGroupId,
-        //     number: int.parse(Provider.of<EditingChildrenNumberPageProvider>(
-        //             context,
-        //             listen: false)
-        //         .controllers![index]
-        //         .text),
-        //   );
-        // });
+          NurseService()
+              .editDailyChildrenNumber(v, data.perDayList![0].kindergartenId!)
+              .then(
+            (value) {
+              if (value.success!) {
+                showToast(value.text!, true, false);
+                context
+                    .read<EditingChildrenNumberPageProvider>()
+                    .clearControllers();
 
-        NurseService()
-            .editDailyChildrenNumber(v, data.perDayList![0].kindergartenId!)
-            .then((value) {
-          if (value.success!) {
-            showToast(value.text!, true, false);
-            context
-                .read<EditingChildrenNumberPageProvider>()
-                .clearControllers();
-
-            Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => const NurseHomePage()),
-                (route) => false);
-          } else {
-            return showToast(value.text!, false, false);
-            // ScaffoldMessenger.of(context).showSnackBar(_snackbar("message"));
-          }
-        });
-      }
-    });
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const NurseHomePage()),
+                    (route) => false);
+              } else {
+                return showToast(value.text!, false, false);
+              }
+            },
+          );
+        }
+      },
+    );
   }
-
-  // _snackbar(String message) {
-  //   return SnackBar(
-  //     margin: EdgeInsets.only(
-  //       bottom: gH(500.0),
-  //       right: gW(30.0),
-  //       left: gW(30.0),
-  //     ),
-  //     behavior: SnackBarBehavior.floating,
-  //     content: Container(
-  //       alignment: Alignment.center,
-  //       height: gH(200.0),
-  //       width: gW(300.0),
-  //       child: Text(message,style: TextStyle(color: whiteColor,fontSize: gW(18.0)),),
-  //     ),
-  //   );
-  // }
 }

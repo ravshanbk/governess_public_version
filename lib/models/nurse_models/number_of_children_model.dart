@@ -5,18 +5,17 @@ class NumberOfChildren {
   NumberOfChildren({this.district, this.perDayList});
 
   NumberOfChildren.fromJson(Map<String, dynamic> json) {
-    district = json['district'] != null
-        ?  District.fromJson(json['district'])
-        : null;
+    district =
+        json['district'] != null ? District.fromJson(json['district']) : null;
     if (json['perDayList'] != null) {
       perDayList = <PerDayList>[];
-      json['perDayList'].forEach((v) {
-        perDayList!.add( PerDayList.fromJson(v));
-      });
+      json['perDayList'].forEach(
+        (v) {
+          perDayList!.add(PerDayList.fromJson(v));
+        },
+      );
     }
   }
-
- 
 }
 
 class District {
@@ -29,8 +28,6 @@ class District {
     id = json['id'];
     name = json['name'];
   }
-
- 
 }
 
 class PerDayList {
@@ -71,7 +68,6 @@ class PerDayList {
     kindergartenId = json['kindergartenId'];
     kindergartenName = json['kindergartenName'];
   }
-
 }
 
 class NumberOfChildrenDTOList {
@@ -98,6 +94,4 @@ class NumberOfChildrenDTOList {
     ageGroupId = json['ageGroupId'];
     ageGroupName = json['ageGroupName'];
   }
-
- 
 }

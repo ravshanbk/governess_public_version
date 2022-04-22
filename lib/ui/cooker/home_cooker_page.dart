@@ -47,15 +47,16 @@ class CookerHomePage extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                         builder: (context) =>
-                           CookerShowNumberOfChildrenPage()));
+                        const   CookerShowNumberOfChildrenPage()));
               }),
               SizedBox(height: gH(20.0)),
 
+             //Kunlik Menu
               BigElevatedButtonHomePage(title:items[1], onPressed: () {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const NurseShowDailyMenuPage()));
+                        builder: (context) => NurseShowDailyMenuPage()));
               }),
               SizedBox(height: gH(20.0)),
 

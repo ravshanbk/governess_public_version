@@ -11,9 +11,15 @@ class ToBuyProductPageProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  clearNumberController() {
+    numberController.clear();
+    notifyListeners();
+  }
+
   clear() {
     numberController.clear();
     commentController.clear();
+    priceController.clear();
     notifyListeners();
   }
 }

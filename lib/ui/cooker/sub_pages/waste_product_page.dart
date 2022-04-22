@@ -7,7 +7,9 @@ import 'package:governess/models/in_out_list_product_model.dart';
 import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/providers/cooker/show_in_out_list_product_provider.dart';
 import 'package:governess/providers/cooker/waste_product_cooker_page_provider.dart';
-import 'package:governess/services/in_out_list_product_service.dart';
+import 'package:governess/services/cooker_service.dart';
+import 'package:governess/ui/widgets/future_builder_of_no_data_widget.dart';
+import 'package:governess/ui/widgets/indicator_widget.dart';
 import 'package:governess/ui/widgets/show_in_out_list_product_widget.dart';
 import 'package:governess/ui/widgets/text_in_row_widget.dart';
 import 'package:provider/provider.dart';
@@ -27,13 +29,17 @@ class CookerWastProductPage extends StatelessWidget {
         title: const Text("Wast Product Page"),
       ),
       body: FutureBuilder(
-        future: InOutListProductService().getAvailableProductsInStorage(),
+        future: CookerService().getAvailbleProductsInStorage(),
         builder: (context, AsyncSnapshot<List<InoutListProduct>> snap) {
-          return !snap.hasData
-              ? CupertinoActivityIndicator(
-                  radius: gW(50.0),
-                )
-              : _body(context, snap.data!);
+          if (snap.connectionState == ConnectionState.done && snap.hasData) {
+            return _body(context, snap.data!);
+          } else if (snap.connectionState == ConnectionState.done &&
+              !snap.hasData) {
+            return const NoDataWidgetForFutureBuilder(
+                "Hozircha Omborda Mahsulotlar Mavjud Emas");
+          } else {
+            return IndicatorWidget(snap);
+          }
         },
       ),
     );
