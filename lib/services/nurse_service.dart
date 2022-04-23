@@ -4,21 +4,22 @@ import 'package:governess/consts/print_my.dart';
 import 'package:governess/models/nurse_models/daily_menu_model.dart';
 import 'package:governess/models/nurse_models/number_of_children_model.dart';
 import 'package:governess/models/nurse_models/v_model.dart';
+import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/models/other/post_res_model.dart';
 import 'package:governess/services/auth_service.dart';
 
 class NurseService {
   Options option = Options(headers: {
     "Authorization":
-        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6IlJPTEVfSEFNU0hJUkEiLCJzdWIiOiJiMmhhbXNoaXJhIiwiaWF0IjoxNjUwNTQ3NDI4LCJleHAiOjE2NTE0MTE0Mjh9.BsFgihXP9iLc0mOMq5Oa_WzhFvm7MSSFS7iPvaCkacM"
+        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6IlJPTEVfSEFNU0hJUkEiLCJzdWIiOiJiMmhhbXNoaXJhIiwiaWF0IjoxNjUwNzA4NjQ3LCJleHAiOjE2NTE1NzI2NDd9.EsGYGugJcSS2qTyBwC369bMOAjW7gK0cywgJ6fzDkII"
   });
 
   Future<DailyMenu> getDailyMenu(DateTime date) async {
-    p(date.millisecondsSinceEpoch.toString());
+    p(DTFM.maker(date.millisecondsSinceEpoch));
 
     try {
       Response res = await Dio().get(
-        "http://192.168.68.107:7788/out/api/multiMenu/getMenuKin?timestamp=1650609741634",
+        "${AuthService.localhost}/out/api/multiMenu/getMenuKin?timestamp=${date.millisecondsSinceEpoch}",
         options: option,
       );
       Future.delayed(const Duration(seconds: 2), () {
@@ -31,10 +32,13 @@ class NurseService {
   }
 
   Future<ResModel> enterDailyChildrenNumber(List<AgeGroupIdAndNumber> v) async {
+    await Future.delayed(const Duration(seconds: 1), () {
+      p(v.toString());
+    });
     try {
       debugPrint(v[0].number.toString());
       var res = await Dio().post(
-        "http://64.227.134.50:7788/out/api/perDay",
+        "${AuthService.localhost}/out/api/perDay",
         data: {
           "numberOfChildrenDTOList": [v]
         },
@@ -46,11 +50,18 @@ class NurseService {
     }
   }
 
-  Future<NumberOfChildren> getChildrenNumber() async {
+  Future<NumberOfChildren> getDailyChildrenNumber(DateTime date) async {
+    p(date.millisecondsSinceEpoch.toString());
+    NumberOfChildren data;
     try {
-      Response res = await Dio()
-          .get("${AuthService.localhost}/out/api/perDay", options: option);
-      return NumberOfChildren.fromJson(res.data);
+      Response res = await Dio().get(
+        "${AuthService.localhost}/out/api/perDay?timestamp=${date.millisecondsSinceEpoch}",
+        options: option,
+      );
+      p("Res.data: "+res.data.toString());
+      data = NumberOfChildren.fromJson(res.data);
+      p(data.perDayList![0].status!);
+      return data;
     } catch (e) {
       throw Exception("getChildrenNumber: " + e.toString());
     }
@@ -60,7 +71,7 @@ class NurseService {
       List<AgeGroupIdAndNumber> v, num gardenId) async {
     try {
       Response res = await Dio().patch(
-        "http://${AuthService.localhost}/out/api/perDay/$gardenId",
+        "${AuthService.localhost}/out/api/perDay/$gardenId",
         data: {"numberOfChildrenDTOList": v},
         options: option,
       );

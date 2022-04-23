@@ -11,6 +11,7 @@ class MealWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+  
     return ListTile(
       tileColor:whiteColor,
       minVerticalPadding: 0.0,

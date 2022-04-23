@@ -35,9 +35,9 @@ class NumberOfChildrenWidget extends StatelessWidget {
             physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (_, __) {
               return GreyTextInRowWidget(
-                  data!.perDayList![0].numberOfChildrenDTOList![__].ageGroupName
+                  data!.perDayList![0].numberOfChildrenDtoList![__].ageGroupName
                       .toString(),
-                  data!.perDayList![0].numberOfChildrenDTOList![__].number
+                  data!.perDayList![0].numberOfChildrenDtoList![__].number
                       .toString());
             },
             separatorBuilder: (context, index) {
@@ -50,7 +50,7 @@ class NumberOfChildrenWidget extends StatelessWidget {
                 ),
               );
             },
-            itemCount: data!.perDayList![0].numberOfChildrenDTOList!.length,
+            itemCount: data!.perDayList![0].numberOfChildrenDtoList!.length,
           ),
           SizedBox(
             height: gH(5.0),

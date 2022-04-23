@@ -5,7 +5,7 @@ import 'package:governess/models/other/post_res_model.dart';
 import 'package:governess/models/user/user_model.dart';
 
 class AuthService {                
- static  String localhost = "http://192.168.68.107:7788";
+ static  String localhost = "http://185.217.131.117:7788";
   Future<ResModel> signUpUser(bool success) async {
     try {
       return ResModel(

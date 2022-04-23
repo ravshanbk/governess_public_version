@@ -4,24 +4,25 @@ import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/models/nurse_models/number_of_children_model.dart';
 import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
-import 'package:governess/services/manager_service.dart';
+import 'package:governess/providers/nurse/editing_children_page_provider.dart';
+import 'package:governess/ui/nurse/sub_pages/edit_daily_childred_page.dart';
 import 'package:governess/ui/widgets/date_time_show_button_widget.dart';
 import 'package:governess/ui/widgets/future_builder_of_no_data_widget.dart';
 import 'package:governess/ui/widgets/indicator_widget.dart';
 import 'package:governess/ui/widgets/number_of_children_widget.dart';
 import 'package:governess/services/nurse_service.dart';
-import 'package:governess/ui/widgets/show_toast_function.dart';
+import 'package:provider/provider.dart';
 
-class ManagerShowNumberOfChildrenPage extends StatefulWidget {
-  const ManagerShowNumberOfChildrenPage({Key? key}) : super(key: key);
+class NurseShowNumberOfChildrenPage extends StatefulWidget {
+  const NurseShowNumberOfChildrenPage({Key? key}) : super(key: key);
 
   @override
-  State<ManagerShowNumberOfChildrenPage> createState() =>
-      _ManagerShowNumberOfChildrenPageState();
+  State<NurseShowNumberOfChildrenPage> createState() =>
+      _NurseShowNumberOfChildrenPageState();
 }
 
-class _ManagerShowNumberOfChildrenPageState
-    extends State<ManagerShowNumberOfChildrenPage> {
+class _NurseShowNumberOfChildrenPageState
+    extends State<NurseShowNumberOfChildrenPage> {
   DateTime when = DateTime.now();
   @override
   Widget build(BuildContext context) {
@@ -31,9 +32,7 @@ class _ManagerShowNumberOfChildrenPageState
         elevation: 0,
         backgroundColor: mainColor,
         actions: [
-          DateTimeShowButton(DTFM.maker(when.millisecondsSinceEpoch), () {
-            _showDataPicker(context);
-          })
+          _dateTimeShowButton(context),
         ],
       ),
       body: FutureBuilder<NumberOfChildren>(
@@ -53,6 +52,17 @@ class _ManagerShowNumberOfChildrenPageState
     );
   }
 
+  DateTimeShowButton _dateTimeShowButton(BuildContext context) {
+    return DateTimeShowButton(
+      DTFM.maker(
+        when.millisecondsSinceEpoch,
+      ),
+      () {
+        _showDataPicker(context);
+      },
+    );
+  }
+
   _body(NumberOfChildren data, BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(
@@ -65,13 +75,13 @@ class _ManagerShowNumberOfChildrenPageState
         children: [
           NumberOfChildrenWidget(data: data),
           SizedBox(height: gH(20.0)),
-          _submitButton(context, data),
+          _editButton(context, data),
         ],
       ),
     );
   }
 
-  _submitButton(BuildContext context, NumberOfChildren data) {
+  _editButton(BuildContext context, NumberOfChildren data) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         shape: RoundedRectangleBorder(
@@ -86,23 +96,33 @@ class _ManagerShowNumberOfChildrenPageState
           gH(52.0),
         ),
       ),
-      onPressed: data.perDayList![0].status == "TASDIQLANDI"
-          ? null
-          : () async {
-              ManagerService()
-                  .submitDailyNumberOfChildren(
-                      data.perDayList![0].kindergartenId!)
-                  .then((value) {
-                if (value.success!) {
-                  setState(() {});
-                  showToast(value.text!, value.success!, value.success!);
-                } else {
-                  showToast(value.text!, value.success!, value.success!);
-                }
-              });
-            },
+      onPressed: () async {
+        await Future.delayed(const Duration(microseconds: 200), () {
+          return List.generate(
+              data.perDayList![0].numberOfChildrenDtoList!.length,
+              (index) => data
+                          .perDayList![0].numberOfChildrenDtoList![index].number
+                          .toString() ==
+                      "null"
+                  ? ""
+                  : data.perDayList![0].numberOfChildrenDtoList![index].number
+                      .toString());
+        }).then(
+          (value) => Provider.of<NurseEditingChildrenNumberPageProvider>(
+                  context,
+                  listen: false)
+              .initControllersAndNodes(value),
+        );
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => NurseEditDailyChildrenPage(data),
+          ),
+        );
+      },
       child: Text(
-        "Tasdiqlash",
+        "O'zgartirish",
         style: TextStyle(
           letterSpacing: gW(2.0),
           fontSize: gW(20.0),

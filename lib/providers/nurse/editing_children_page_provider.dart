@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 
-class EditingChildrenNumberPageProvider extends ChangeNotifier {
-  List<FocusNode>? nodes;
+class NurseEditingChildrenNumberPageProvider extends ChangeNotifier {
+ 
 
-  //////////////////////////////////////////////////////
+  /////////////////////
+  List<FocusNode>? nodes;
+  /////////////////////
   List<TextEditingController>? controllers;
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 

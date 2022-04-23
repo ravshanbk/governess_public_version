@@ -1,27 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/models/nurse_models/daily_menu_model.dart';
 import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/providers/nurse/daily_menu_page_provider.dart';
 import 'package:governess/services/nurse_service.dart';
+import 'package:governess/ui/cooker/sub_pages/meal_info_page.dart';
 import 'package:governess/ui/widgets/date_time_show_button_widget.dart';
 import 'package:governess/ui/widgets/future_builder_of_no_data_widget.dart';
 import 'package:governess/ui/widgets/indicator_widget.dart';
 import 'package:governess/ui/widgets/meal_widget.dart';
 import 'package:provider/provider.dart';
 
-class NurseShowDailyMenuPage extends StatelessWidget {
-  NurseShowDailyMenuPage({Key? key}) : super(key: key);
+class CookerShowDailyMenuPage extends StatefulWidget {
+  const CookerShowDailyMenuPage({Key? key}) : super(key: key);
 
-  DateTime dateTime = DateTime.now();
+  @override
+  State<CookerShowDailyMenuPage> createState() =>
+      _CookerShowDailyMenuPageState();
+}
+
+class _CookerShowDailyMenuPageState extends State<CookerShowDailyMenuPage> {
+  DateTime when = DateTime.now();
+
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     return Scaffold(
       appBar: _appBar(),
       body: FutureBuilder<DailyMenu>(
-        future: NurseService().getDailyMenu(dateTime),
+        future: NurseService().getDailyMenu(when),
         builder: (BuildContext context, AsyncSnapshot<DailyMenu> snap) {
           if (snap.connectionState == ConnectionState.done && snap.hasData) {
             return _body(snap.data!, context);
@@ -58,7 +67,7 @@ class NurseShowDailyMenuPage extends StatelessWidget {
                 vertical: gH(10.0),
               ),
               decoration: BoxDecoration(
-                border: Border.all(color: mainColor,width: gW(2.0)),
+                border: Border.all(color: mainColor, width: gW(2.0)),
                 borderRadius:
                     BorderRadius.vertical(top: Radius.circular(gW(10.0))),
                 color: mainColor,
@@ -67,8 +76,9 @@ class NurseShowDailyMenuPage extends StatelessWidget {
                 children: [
                   // MENYU NOMI
                   Text(
-                    data.multiMenuName!,
-                    style: TextStyle(decorationThickness: gW(.5),
+                    data.name!,
+                    style: TextStyle(
+                      decorationThickness: gW(.5),
                       decorationStyle: TextDecorationStyle.solid,
                       decoration: TextDecoration.underline,
                       decorationColor: lightGreyColor,
@@ -160,9 +170,23 @@ class NurseShowDailyMenuPage extends StatelessWidget {
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemBuilder: (_, n) {
-                return MealWidget(
-                    data: data!.mealTimeStandardResponseSaveDtoList![__]
-                        .mealAgeStandardResponseSaveDtoList![n]);
+                return InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CookerMealInfoPage(
+                          mealAgeStandartId: data!.mealTimeStandardResponseSaveDtoList![__].mealAgeStandardResponseSaveDtoList![n].id,
+                          menuId: data.id,
+                          mealName: data.name!,
+                        ),
+                      ),
+                    );
+                  },
+                  child: MealWidget(
+                      data: data!.mealTimeStandardResponseSaveDtoList![__]
+                          .mealAgeStandardResponseSaveDtoList![n]),
+                );
               },
               itemCount: data!.mealTimeStandardResponseSaveDtoList![__]
                   .mealAgeStandardResponseSaveDtoList!.length),
@@ -189,10 +213,41 @@ class NurseShowDailyMenuPage extends StatelessWidget {
       centerTitle: true,
       actions: [
         DateTimeShowButton(
-          DTFM.maker(dateTime.millisecondsSinceEpoch),
-          () {},
+          DTFM.maker(when.millisecondsSinceEpoch),
+          () {
+            _showDataPicker(context);
+          },
         ),
       ],
+    );
+  }
+
+  _showDataPicker(BuildContext context) {
+    DatePicker.showPicker(
+      context,
+      showTitleActions: true,
+      theme: DatePickerTheme(
+        backgroundColor: lightGreyColor,
+        containerHeight: gH(200.0),
+        headerColor: mainColor,
+        itemStyle: const TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.bold,
+          fontSize: 18,
+        ),
+        doneStyle: TextStyle(
+          color: whiteColor,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          letterSpacing: gW(1.5),
+          decoration: TextDecoration.underline,
+        ),
+      ),
+      onConfirm: (date) {
+        when = date;
+        setState(() {});
+      },
+      locale: LocaleType.en,
     );
   }
 }

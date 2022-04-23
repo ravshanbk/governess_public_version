@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:governess/consts/colors.dart';
@@ -26,19 +25,19 @@ class _CookerShowNumberOfChildrenPageState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: _appBar(context),
+      appBar: _appBar(context),
       body: FutureBuilder<NumberOfChildren>(
         future: CookerService().getChildrenNumberByData(when),
         builder: (context, AsyncSnapshot<NumberOfChildren> snap) {
-           if (snap.connectionState == ConnectionState.done && snap.hasData) {
-              return _body(snap.data!, context);
-            } else if (snap.connectionState == ConnectionState.done &&
-                !snap.hasData) {
-              return const NoDataWidgetForFutureBuilder(
-                  "Bu Kunga Hali Bolalar Soni Kiritilmagan!");
-            } else {
-              return IndicatorWidget(snap);
-            }
+          if (snap.connectionState == ConnectionState.done && snap.hasData) {
+            return _body(snap.data!, context);
+          } else if (snap.connectionState == ConnectionState.done &&
+              !snap.hasData) {
+            return const NoDataWidgetForFutureBuilder(
+                "Bu Kunga Hali Bolalar Soni Kiritilmagan!");
+          } else {
+            return IndicatorWidget(snap);
+          }
         },
       ),
     );
@@ -50,7 +49,7 @@ class _CookerShowNumberOfChildrenPageState
       backgroundColor: mainColor,
       actions: [
         DateTimeShowButton(
-          DTFM.maker(when.millisecondsSinceEpoch),
+          DTFM.maker(when.millisecondsSinceEpoch)+"df",
           () {
             _showDataPicker(context);
           },
@@ -61,34 +60,14 @@ class _CookerShowNumberOfChildrenPageState
 
   _body(NumberOfChildren data, BuildContext context) {
     return Padding(
-        padding: EdgeInsets.only(
-          left: gW(20.0),
-          right: gW(20.0),
-          top: gH(20.0),
-        ),
-        child: Column(
-          children: [
-            NumberOfChildrenWidget(data: data),
-          ],
-        ),
-      );
-    
-    
-    
-    
-  }
-
-  Scaffold _indicator(String what) {
-    return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      padding: EdgeInsets.only(
+        left: gW(20.0),
+        right: gW(20.0),
+        top: gH(20.0),
+      ),
+      child: Column(
         children: [
-          Text(what),
-          Center(
-            child: CupertinoActivityIndicator(
-              radius: gW(50.0),
-            ),
-          ),
+          NumberOfChildrenWidget(data: data),
         ],
       ),
     );

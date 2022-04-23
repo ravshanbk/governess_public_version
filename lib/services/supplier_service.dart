@@ -1,6 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:governess/consts/print_my.dart';
 import 'package:governess/models/other/post_res_model.dart';
 import 'package:governess/models/supplier/product_with_available_company_names_model.dart';
 import 'package:governess/models/supplier/send_product_model.dart';
@@ -10,7 +8,7 @@ import 'package:governess/services/auth_service.dart';
 class SupplierService {
   Options option = Options(headers: {
     "Authorization":
-        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6IlJPTEVfVEFgTUlOT1RDSEkiLCJzdWIiOiJ0YW1pbm90IiwiaWF0IjoxNjUwNTMxODU1LCJleHAiOjE2NTEzOTU4NTV9.-Oi8yaj8YsCB83bw9oct0WUHFDSdDFW0raPdbBlKrQM"
+        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6IlJPTEVfVEFgTUlOT1RDSEkiLCJzdWIiOiJ0YW1pbm90IiwiaWF0IjoxNjUwNzA4NzUxLCJleHAiOjE2NTE1NzI3NTF9.1YhIU1v45nXFZbNN-YEhcCTbwjseZjao1BliCGln8OQ"
   });
   Future<ProductWithAvailableCompnayNames> getToBuyProducts() async {
     List<Map<String, dynamic>> hardData = [
