@@ -1,18 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:governess/consts/colors.dart';
-import 'package:governess/consts/print_my.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/models/nurse_models/daily_menu_model.dart';
 import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
-import 'package:governess/providers/nurse/daily_menu_page_provider.dart';
 import 'package:governess/services/manager_service.dart';
 import 'package:governess/services/nurse_service.dart';
+import 'package:governess/ui/widgets/daily_menu_widget.dart';
 import 'package:governess/ui/widgets/date_time_show_button_widget.dart';
 import 'package:governess/ui/widgets/future_builder_of_no_data_widget.dart';
 import 'package:governess/ui/widgets/indicator_widget.dart';
-import 'package:governess/ui/widgets/meal_widget.dart';
-import 'package:provider/provider.dart';
 
 class ManagerShowDailyMenuPage extends StatefulWidget {
   const ManagerShowDailyMenuPage({Key? key}) : super(key: key);
@@ -32,7 +29,7 @@ class _ManagerShowDailyMenuPageState extends State<ManagerShowDailyMenuPage> {
     return Scaffold(
       appBar: _appBar(),
       body: FutureBuilder(
-        future: NurseService().getDailyMenu(DateTime.now()),
+        future: NurseService().getDailyMenu(when),
         builder: (BuildContext context, AsyncSnapshot<DailyMenu> snap) {
           if (snap.connectionState == ConnectionState.done && snap.hasData) {
             return _body(snap.data!, context);
@@ -58,79 +55,13 @@ class _ManagerShowDailyMenuPageState extends State<ManagerShowDailyMenuPage> {
         children: [
           _submitUnsubmitButton(data),
           _status(),
-          _menus(context, data),
+        DailyMenuWidget(data: data, con: context, onTap: (int __, int n) {}),
         ],
       ),
     );
   }
 
-  ListView _menus(BuildContext context, DailyMenu data) {
-    return ListView.separated(
-      padding: EdgeInsets.symmetric(
-        vertical: gH(20.0),
-        horizontal: gW(20.0),
-      ),
-      physics: const NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      itemBuilder: (_, __) {
-        return Ink(
-          decoration: BoxDecoration(
-            border: Border.all(color: mainColor),
-            borderRadius: BorderRadius.circular(gW(10.0)),
-            color: context.watch<DailyMenuPageProvider>().current != __
-                ? Colors.white
-                : mainColor,
-          ),
-          child: ExpansionTile(
-            key: Key(DateTime.now().toString()),
-            onExpansionChanged: (v) {
-              p(v.toString());
-              debugPrint("CURRENT: " +
-                  Provider.of<DailyMenuPageProvider>(context, listen: false)
-                      .current
-                      .toString());
-              if (v) {
-                Provider.of<DailyMenuPageProvider>(context, listen: false)
-                    .changeCurrent(__);
-              } else {
-                Provider.of<DailyMenuPageProvider>(context, listen: false)
-                    .changeCurrent(-1);
-              }
-              debugPrint("CURRENT: " +
-                  Provider.of<DailyMenuPageProvider>(context, listen: false)
-                      .current
-                      .toString());
-            },
-            initiallyExpanded:
-                context.watch<DailyMenuPageProvider>().current == __,
-            collapsedIconColor: Colors.white,
-            iconColor: mainColor,
-            collapsedTextColor: mainColor,
-            textColor: whiteColor,
-            collapsedBackgroundColor: Colors.transparent,
-            title: _expansionTileTitle(data, __),
-            children: [
-              Text("fsdfasf"),
-              ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemBuilder: (_, n) {
-                    return MealWidget(
-                        data: data.mealTimeStandardResponseSaveDtoList![__]
-                            .mealAgeStandardResponseSaveDtoList![n]);
-                  },
-                  itemCount: data.mealTimeStandardResponseSaveDtoList![__]
-                      .mealAgeStandardResponseSaveDtoList!.length),
-            ],
-          ),
-        );
-      },
-      separatorBuilder: (context, index) {
-        return SizedBox(height: gH(20.0));
-      },
-      itemCount: data.mealTimeStandardResponseSaveDtoList!.length,
-    );
-  }
+  
 
   Padding _status() {
     return Padding(
@@ -191,17 +122,7 @@ class _ManagerShowDailyMenuPageState extends State<ManagerShowDailyMenuPage> {
     );
   }
 
-  _expansionTileTitle(DailyMenu? data, int __) {
-    return Text(
-      data!.mealTimeStandardResponseSaveDtoList![__].mealTimeName!,
-      textAlign: TextAlign.center,
-      style: TextStyle(
-          letterSpacing: gW(2),
-          fontWeight: FontWeight.w500,
-          fontSize: gW(20.0)),
-    );
-  }
-
+ 
   AppBar _appBar() {
     return AppBar(
       backgroundColor: mainColor,

@@ -44,7 +44,7 @@ class CookerProductsPage extends StatelessWidget {
                       case 3:
                         return const CookerWastProductPage();
                       case 4:
-                        return const CookerShowProductsInStoragePage();
+                        return const CookerWastProductPage();
                       default:
                         return const CookerProductsPage();
                     }

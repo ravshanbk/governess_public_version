@@ -86,7 +86,7 @@ class _ManagerShowNumberOfChildrenPageState
           gH(52.0),
         ),
       ),
-      onPressed: data.perDayList![0].status == "TASDIQLANDI"
+      onPressed: data.perDayList![0].status == "TASDIQLANDI"||data.perDayList![0].status == "NOANIQ"
           ? null
           : () async {
               ManagerService()

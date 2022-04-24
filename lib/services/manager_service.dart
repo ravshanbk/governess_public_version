@@ -5,7 +5,7 @@ import 'package:governess/services/auth_service.dart';
 class ManagerService {
   Options option = Options(headers: {
     "Authorization":
-        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6IlJPTEVfQk9HYENIQSBNVURJUkFTSSIsInN1YiI6ImIybXVkaXJhIiwiaWF0IjoxNjUwNzA4ODgwLCJleHAiOjE2NTE1NzI4ODB9.ZTEkjFGHTF-1TbSjhbcfd4_8pEjsa18hro1VN2g_3nIBearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6IlJPTEVfQk9HYENIQSBNVURJUkFTSSIsInN1YiI6ImIybXVkaXJhIiwiaWF0IjoxNjUwNzA4ODgwLCJleHAiOjE2NTE1NzI4ODB9.ZTEkjFGHTF-1TbSjhbcfd4_8pEjsa18hro1VN2g_3nI"
+        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6IlJPTEVfQk9HYENIQSBNVURJUkFTSSIsInN1YiI6ImIybXVkaXJhIiwiaWF0IjoxNjUwNzc2NDA5LCJleHAiOjE2NTE2NDA0MDl9.DujR_aWUW2K5j_JrVQ5zabji_Y0tlfoslEm_BxkOjLE"
   });
 
   Future<ResModel> submitDailyNumberOfChildren(int kinderGardenId) async {

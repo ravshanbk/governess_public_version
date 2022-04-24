@@ -31,10 +31,10 @@ class CookerWastProductPage extends StatelessWidget {
       body: FutureBuilder(
         future: CookerService().getAvailbleProductsInStorage(),
         builder: (context, AsyncSnapshot<List<InoutListProduct>> snap) {
-          if (snap.connectionState == ConnectionState.done && snap.hasData) {
+          if (snap.connectionState == ConnectionState.done && snap.data!.isNotEmpty) {
             return _body(context, snap.data!);
           } else if (snap.connectionState == ConnectionState.done &&
-              !snap.hasData) {
+              snap.data!.isEmpty) {
             return const NoDataWidgetForFutureBuilder(
                 "Hozircha Omborda Mahsulotlar Mavjud Emas");
           } else {

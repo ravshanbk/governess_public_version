@@ -6,6 +6,7 @@ import 'package:governess/models/nurse_models/daily_menu_model.dart';
 import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/providers/nurse/daily_menu_page_provider.dart';
 import 'package:governess/services/nurse_service.dart';
+import 'package:governess/ui/widgets/daily_menu_widget.dart';
 import 'package:governess/ui/widgets/date_time_show_button_widget.dart';
 import 'package:governess/ui/widgets/future_builder_of_no_data_widget.dart';
 import 'package:governess/ui/widgets/indicator_widget.dart';
@@ -31,7 +32,10 @@ class _NurseShowDailyMenuPageState extends State<NurseShowDailyMenuPage> {
         future: NurseService().getDailyMenu(when),
         builder: (BuildContext context, AsyncSnapshot<DailyMenu> snap) {
           if (snap.connectionState == ConnectionState.done && snap.hasData) {
-            return _body(snap.data!, context);
+            return Padding(
+              padding:  EdgeInsets.only(top: gH(20.0)),
+              child: DailyMenuWidget(con: context,data: snap.data!,onTap: (int __,int n){},),
+            );
           } else if (snap.connectionState == ConnectionState.done &&
               !snap.hasData) {
             return const NoDataWidgetForFutureBuilder(

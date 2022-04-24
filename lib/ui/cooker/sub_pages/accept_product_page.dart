@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/print_my.dart';
 import 'package:governess/consts/size_config.dart';
-import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/models/supplier/product_model.dart';
 import 'package:governess/providers/cooker/accept_product_provider.dart';
 import 'package:governess/services/cooker_service.dart';
@@ -41,6 +40,7 @@ class CookerAcceptProductPage extends StatelessWidget {
   }
 
   ListView _body(AsyncSnapshot<List<Product>> snap, BuildContext context) {
+    p(snap.data!.length.toString());
     return ListView.separated(
       padding: EdgeInsets.all(gW(20.0)),
       itemBuilder: (_, __) {
