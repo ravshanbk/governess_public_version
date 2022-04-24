@@ -28,15 +28,19 @@ class CookerMealInfoPage extends StatelessWidget {
     SizeConfig().init(context);
     return SafeArea(
       child: Scaffold(
-        body: FutureBuilder(
+            body: FutureBuilder(
           future: CookerService().getMealInfo(mealAgeStandartId!, menuId!),
           builder: (context, AsyncSnapshot<MealInfo> snap) {
             if (snap.connectionState == ConnectionState.done && snap.hasData) {
               return _body(snap.data!);
             } else if (snap.connectionState == ConnectionState.done &&
                 !snap.hasData) {
-              return const NoDataWidgetForFutureBuilder(
-                  "Hozircha Bu Kunga Hech Qanday Menyu Biriktirilmagan");
+              return Scaffold(
+                 appBar: AppBar(backgroundColor: mainColor,elevation: 0,),
+   
+               body: const NoDataWidgetForFutureBuilder(
+                    "Ma'lumotlar kelmadi, bu kunga bolalar soni kiritilmagan bo'lishi mumkin. Tekshirib ko'ring."),
+              );
             } else {
               return IndicatorWidget(snap);
             }

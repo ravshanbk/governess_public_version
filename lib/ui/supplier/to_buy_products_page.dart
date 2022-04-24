@@ -1,10 +1,8 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:governess/ui/widgets/future_builder_of_no_data_widget.dart';
 import 'package:governess/ui/widgets/indicator_widget.dart';
 import 'package:provider/provider.dart';
-
 import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/decorations.dart';
 import 'package:governess/consts/size_config.dart';
@@ -120,36 +118,29 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
         );
       },
     );
-    return CustomScrollView(
-      physics:const  BouncingScrollPhysics(),
-      slivers: [
-      _sliverAppBar(context, datas),
-      SliverToBoxAdapter(
-        child: Center(
-            child: (current == 0
-                ? _allBody(
-                    widgetsAll,
-                    context,
-                  )
-                : current == 1
-                    ? _allBody(
-                        widgetsDate,
-                        context,
-                      )
-                    : (current == 2
-                        ? _allBody(
-                            widgetsByCompanyName,
-                            context,
-                          )
-                        : _allBody(
-                            widgetsDate,
-                            context,
-                          )))),
-      ),
-    ]);
+    return Center(
+              child: (current == 0
+                  ? _allBody(
+                      widgetsAll,datas,
+                      context,
+                    )
+                  : current == 1
+                      ? _allBody(
+                          widgetsDate,datas,
+                          context,
+                        )
+                      : (current == 2
+                          ? _allBody(
+                              widgetsByCompanyName,datas,
+                              context,
+                            )
+                          : _allBody(
+                              widgetsDate,datas,
+                              context,
+                            ))));
   }
 
-  Container _noDataBody(BuildContext context) {
+  _noDataBody(BuildContext context) {
     return Container(
       alignment: Alignment.center,
       height: gH(400.0),
@@ -207,23 +198,31 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
     );
   }
 
-  _allBody(List<Widget>? data, BuildContext context) {
+  _allBody(List<Widget>? data,ProductWithAvailableCompnayNames datas ,BuildContext context) {
     return data!.isNotEmpty
-        ? ListView.separated(
-            separatorBuilder: (context, index) {
-              return SizedBox(
-                height: gH(14.0),
-                // child: Text(text),
-              );
-            },
-            key: Key(DateTime.now().toString()),
-            padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 25.0),
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: data.length,
-            itemBuilder: (_, __) {
-              return data[__];
-            },
+        ? CustomScrollView(
+            slivers: [
+               _sliverAppBar(context, datas),
+              SliverToBoxAdapter(
+                child: ListView.separated(
+                  separatorBuilder: (context, index) {
+                    return SizedBox(
+                      height: gH(14.0),
+                      // child: Text(text),
+                    );
+                  },
+                  key: Key(DateTime.now().toString()),
+                  padding:
+                      const EdgeInsets.only(left: 20.0, right: 20.0, top: 25.0),
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: data.length,
+                  itemBuilder: (_, __) {
+                    return data[__];
+                  },
+                ),
+              ),
+            ],
           )
         : _noDataBody(context);
   }

@@ -15,7 +15,8 @@ import 'package:provider/provider.dart';
 
 class NurseEditDailyChildrenPage extends StatelessWidget {
   final NumberOfChildren data;
-  const NurseEditDailyChildrenPage(this.data, {Key? key}) : super(key: key);
+  final bool idf;
+  const NurseEditDailyChildrenPage(this.data, {required this.idf, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -136,7 +137,8 @@ class NurseEditDailyChildrenPage extends StatelessWidget {
               );
             },
           );
-          NurseService()
+         if(idf){
+            NurseService()
               .editDailyChildrenNumber(v, data.perDayList![0].id!)
               .then(
             (value) {
@@ -156,7 +158,30 @@ class NurseEditDailyChildrenPage extends StatelessWidget {
               }
             },
           );
+         }else{
+            NurseService()
+              .enterDailyChildrenNumber(v)
+              .then(
+            (value) {
+              if (value.success!) {
+                showToast(value.text!, true, false);
+                context
+                    .read<NurseEditingChildrenNumberPageProvider>()
+                    .clearControllers();
+
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const NurseHomePage()),
+                    (route) => false);
+              } else {
+                return showToast(value.text!, false, false);
+              }
+            },
+          );
+         }
         }
+        
       },
     );
   }

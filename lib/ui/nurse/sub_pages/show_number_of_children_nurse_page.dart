@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:governess/consts/colors.dart';
+import 'package:governess/consts/print_my.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/models/nurse_models/number_of_children_model.dart';
 import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/providers/nurse/editing_children_page_provider.dart';
 import 'package:governess/ui/nurse/sub_pages/edit_daily_childred_page.dart';
+import 'package:governess/ui/nurse/sub_pages/enter_daily_children_page.dart';
 import 'package:governess/ui/widgets/date_time_show_button_widget.dart';
 import 'package:governess/ui/widgets/future_builder_of_no_data_widget.dart';
 import 'package:governess/ui/widgets/indicator_widget.dart';
@@ -38,6 +40,7 @@ class _NurseShowNumberOfChildrenPageState
       body: FutureBuilder<NumberOfChildren>(
         future: NurseService().getDailyChildrenNumber(when),
         builder: (context, AsyncSnapshot<NumberOfChildren> snap) {
+          p(snap.data.toString());
           if (snap.connectionState == ConnectionState.done && snap.hasData) {
             return _body(snap.data!, context);
           } else if (snap.connectionState == ConnectionState.done &&
@@ -117,7 +120,10 @@ class _NurseShowNumberOfChildrenPageState
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => NurseEditDailyChildrenPage(data),
+            builder: (context) => NurseEditDailyChildrenPage(
+              data,
+              idf: data.perDayList![0].id != null,
+            ),
           ),
         );
       },

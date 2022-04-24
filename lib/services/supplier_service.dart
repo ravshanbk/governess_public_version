@@ -8,7 +8,7 @@ import 'package:governess/services/auth_service.dart';
 class SupplierService {
   Options option = Options(headers: {
     "Authorization":
-        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6IlJPTEVfVEFgTUlOT1RDSEkiLCJzdWIiOiJ0YW1pbm90IiwiaWF0IjoxNjUwNzA4NzUxLCJleHAiOjE2NTE1NzI3NTF9.1YhIU1v45nXFZbNN-YEhcCTbwjseZjao1BliCGln8OQ"
+        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6IlJPTEVfVEFgTUlOT1RDSEkiLCJzdWIiOiJ0YW1pbm90IiwiaWF0IjoxNjUwNzMyNTE5LCJleHAiOjE2NTE1OTY1MTl9.s76Ub6X9Z3daRAYv3DyHzfor5IPjRvhyjy1ImY-POmg"
   });
   Future<ProductWithAvailableCompnayNames> getToBuyProducts() async {
     List<Map<String, dynamic>> hardData = [
@@ -430,8 +430,9 @@ class SupplierService {
     List<Product> data;
     try {
       Response res = await Dio().get(
-          "${AuthService.localhost}/out/api/supplier/getRequiredProduct",
-          options: option);
+        "${AuthService.localhost}/out/api/supplier/getRequiredProduct",
+        options: option,
+      );
       List<String> container = [];
       data = (res.data as List).map((e) => Product.fromJson(e)).toList();
 

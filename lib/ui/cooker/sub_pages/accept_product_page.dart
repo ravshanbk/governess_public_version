@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:governess/consts/colors.dart';
+import 'package:governess/consts/print_my.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/models/supplier/product_model.dart';
@@ -44,20 +45,22 @@ class CookerAcceptProductPage extends StatelessWidget {
       padding: EdgeInsets.all(gW(20.0)),
       itemBuilder: (_, __) {
         return ExpansionTileToShowProductWidget(
-            key: Key("$__ CookerAcceptProductPage"),
-            isExpanded:
-                context.watch<CookerAcceptProductProvider>().current == __,
-            children: _children(snap.data![__], context),
-            onChanged: (bool v) {
-              if (v) {
-                Provider.of<CookerAcceptProductProvider>(context, listen: false)
-                    .changeCurren(__);
-              } else {
-                Provider.of<CookerAcceptProductProvider>(context, listen: false)
-                    .changeCurren(-1);
-              }
-            },
-            data: snap.data![__]);
+          // children: [Text("data")],
+          key: Key("$__ CookerAcceptProductPage"),
+          isExpanded:
+              context.watch<CookerAcceptProductProvider>().current == __,
+          children: _children(snap.data![__], context),
+          onChanged: (bool v) {
+            if (v) {
+              Provider.of<CookerAcceptProductProvider>(context, listen: false)
+                  .changeCurren(__);
+            } else {
+              Provider.of<CookerAcceptProductProvider>(context, listen: false)
+                  .changeCurren(-1);
+            }
+          },
+          data: snap.data![__],
+        );
       },
       separatorBuilder: (context, index) {
         return SizedBox(
@@ -69,6 +72,7 @@ class CookerAcceptProductPage extends StatelessWidget {
   }
 
   List<Widget> _children(Product data, BuildContext context) {
+    // p(DTFM.maker(data.sendDate!));
     return <Widget>[
       Ink(
         decoration: BoxDecoration(
@@ -83,7 +87,7 @@ class CookerAcceptProductPage extends StatelessWidget {
           _divider(),
           _textInRow("Zayavka nomi", data.orderNumber.toString()),
           _divider(),
-          _textInRow("Yuborilgan Sana", DTFM.maker(data.sendDate!).toString()),
+          _textInRow("Yuborilgan Sana", "DTFM.maker(data.sendDate!)"),
           _divider(),
           _textInRow("O'lchov birligi", data.measurementType.toString()),
           _divider(),

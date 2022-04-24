@@ -12,7 +12,7 @@ import 'package:governess/services/auth_service.dart';
 class CookerService {
   Options option = Options(headers: {
     "Authorization":
-        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6IlJPTEVfT1NIUEFaIiwic3ViIjoiYjJvc2hwYXoiLCJpYXQiOjE2NTA3MDg4MTgsImV4cCI6MTY1MTU3MjgxOH0.OhIGcXkSb49vaNuI7prG3u33Hrqhz_csBoI4nOp1tKg"
+        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6IlJPTEVfT1NIUEFaIiwic3ViIjoiYjJvc2hwYXoiLCJpYXQiOjE2NTA3MzI5NzQsImV4cCI6MTY1MTU5Njk3NH0.h3CkwhjS-v7EFVOZUXCUHDiQV4fvvFwvgFHRoYm23Gk"
   });
   Future<ResModel> acceptProduct(ReceiveProductModel data) async {
     List<Map<String, dynamic>> hardData = [
@@ -462,6 +462,7 @@ class CookerService {
         "${AuthService.localhost}/out/api/cook/getInOut",
         options: option,
       );
+      p(res.data.toString());
       return (res.data as List).map((e) => Product.fromJson(e)).toList();
     } catch (e) {
       throw Exception(

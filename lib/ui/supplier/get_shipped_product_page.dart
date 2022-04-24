@@ -93,7 +93,7 @@ class _GetShippedProductPageState extends State<GetShippedProductPage> {
               context.read<GetShippedProductsProvider>().changeCurrent(-1);
               setState(() {});
             },
-            icon: const Icon(Icons.filter_list))
+            icon: const Icon(Icons.refresh_rounded))
       ],
     );
   }
