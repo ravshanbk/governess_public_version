@@ -4,8 +4,13 @@ import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/decorations.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/providers/auth/auth_page_provider.dart';
+import 'package:governess/services/auth_service.dart';
 import 'package:governess/ui/apply_application_page.dart';
+import 'package:governess/ui/cooker/home_cooker_page.dart';
+import 'package:governess/ui/manager/home_manager_page.dart';
+import 'package:governess/ui/nurse/nurse_home_page.dart';
 import 'package:governess/ui/pin_code_page.dart';
+import 'package:governess/ui/supplier/home_supplier_page.dart';
 import 'package:governess/ui/widgets/governess_app_bar.dart';
 import 'package:provider/provider.dart';
 
@@ -18,35 +23,39 @@ class AuthPage extends StatelessWidget {
     return Scaffold(
       appBar: governessAppBar,
       
-          resizeToAvoidBottomInset: true,
+          resizeToAvoidBottomInset: false,
       body: Center(
-        child: Form(
-          key: context.read<AuthPageProvider>().formKey,
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: gW(20.0),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(
-                  height: gH(50.0),
-                  child: context.watch<AuthPageProvider>().isInProgress
-                      ? CupertinoActivityIndicator(
-                          radius: gW(20.0),
-                        )
-                      : const Text(""),
+        child: Column(
+          children: [
+            Form(
+              key: context.read<AuthPageProvider>().formKey,
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: gW(20.0),
                 ),
-                _loginInput(context),
-                SizedBox(height: gH(20.0)),
-                _passwordInput(context),
-                SizedBox(height: gH(20.0)),
-                _textButton(context),
-                SizedBox(height: gH(20.0)),
-                _submitButton(context),
-              ],
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      height: gH(50.0),
+                      child: context.watch<AuthPageProvider>().isInProgress
+                          ? CupertinoActivityIndicator(
+                              radius: gW(20.0),
+                            )
+                          : const Text(""),
+                    ),
+                    _loginInput(context),
+                    SizedBox(height: gH(20.0)),
+                    _passwordInput(context),
+                    SizedBox(height: gH(20.0)),
+                    _textButton(context),
+                    SizedBox(height: gH(20.0)),
+                    _submitButton(context),
+                  ],
+                ),
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
@@ -81,73 +90,74 @@ class AuthPage extends StatelessWidget {
       onPressed: context.watch<AuthPageProvider>().isInProgress
           ? null
           : () async {
-              Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (context) => const FakePage()
-                      //  const NurseHomePage(),
-                      // const ManagerHomePage()
-                      // const SupplierHomePage()
-                      //  const CookerHomePage()
-                      ),
-                  (route) => false);
-              // if (Provider.of<AuthPageProvider>(context, listen: false)
-              //     .formKey
-              //     .currentState!
-              //     .validate()) {
-              //   Provider.of<AuthPageProvider>(context, listen: false)
-              //       .changeIsInProgress(true);
+              // Navigator.pushAndRemoveUntil(
+              //     context,
+              //     MaterialPageRoute(builder: (context) => const FakePage()
+              //         //  const NurseHomePage(),
+              //         // const ManagerHomePage()
+              //         // const SupplierHomePage()
+              //         //  const CookerHomePage()
+              //         ),
+              //     (route) => false);
+              if (Provider.of<AuthPageProvider>(context, listen: false)
+                  .formKey
+                  .currentState!
+                  .validate()) {
+                Provider.of<AuthPageProvider>(context, listen: false)
+                    .changeIsInProgress(true);
 
-              //   AuthService()
-              //       .getUser(
-              //           Provider.of<AuthPageProvider>(context, listen: false)
-              //               .loginController
-              //               .text,
-              //           Provider.of<AuthPageProvider>(context, listen: false)
-              //               .passwordController
-              //               .text)
-              //       .then(
-              //     (value) {
-              //       Provider.of<AuthPageProvider>(context, listen: false)
-              //           .changeIsInProgress(false);
-
-              //       switch (value.role) {
-              //         case "ROLE_HAMSHIRA":
-              //           Navigator.pushAndRemoveUntil(
-              //               context,
-              //               MaterialPageRoute(
-              //                 builder: (context) => const NurseHomePage(),
-              //               ),
-              //               (route) => false);
-              //           break;
-              //         case "ROLE_MUDIRA":
-              //           Navigator.pushAndRemoveUntil(
-              //               context,
-              //               MaterialPageRoute(
-              //                 builder: (context) => const ManagerHomePage(),
-              //               ),
-              //               (route) => false);
-              //           break;
-              //         case "ROLE_TAMINOT":
-              //           Navigator.pushAndRemoveUntil(
-              //               context,
-              //               MaterialPageRoute(
-              //                 builder: (context) => ToBuyProductsPage(),
-              //               ),
-              //               (route) => false);
-              //           break;
-              //         case "ROLE_OSHPAZ":
-              //           Navigator.pushAndRemoveUntil(
-              //               context,
-              //               MaterialPageRoute(
-              //                 builder: (context) => const CookerHomePage(),
-              //               ),
-              //               (route) => false);
-              //           break;
-              //         default:
-              //       }
-              //     },
-              //   );
-              // }
+                AuthService()
+                    .getUser(
+                        Provider.of<AuthPageProvider>(context, listen: false)
+                            .loginController
+                            .text,
+                        Provider.of<AuthPageProvider>(context, listen: false)
+                            .passwordController
+                            .text)
+                    .then(
+                  (value) {
+                    Provider.of<AuthPageProvider>(context, listen: false)
+                        .changeIsInProgress(false);
+  Provider.of<AuthPageProvider>(context, listen: false)
+                        .clear();
+                    switch (value.role) {
+                      case "ROLE_HAMSHIRA":
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const NurseHomePage(),
+                            ),
+                            (route) => false);
+                        break;
+                      case "ROLE_MUDIRA":
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const ManagerHomePage(),
+                            ),
+                            (route) => false);
+                        break;
+                      case "ROLE_TAMINOT":
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>const  SupplierHomePage(),
+                            ),
+                            (route) => false);
+                        break;
+                      case "ROLE_OSHPAZ":
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const CookerHomePage(),
+                            ),
+                            (route) => false);
+                        break;
+                      default:
+                    }
+                  },
+                );
+              }
             },
       style: _elevatedButtonStyle(),
       child: const Text("Kirish"),

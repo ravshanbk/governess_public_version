@@ -23,8 +23,6 @@ import 'package:provider/provider.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 void main() async {
-  final bool isConnected = await InternetConnectionChecker().hasConnection;
-  p("FFFFFF " + isConnected.toString());
 
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();

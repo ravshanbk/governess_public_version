@@ -2,14 +2,18 @@ import 'package:flutter/cupertino.dart';
 
 class AuthPageProvider extends ChangeNotifier {
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  TextEditingController loginController =
-      TextEditingController(text: "hamshira");
-  TextEditingController passwordController =
-      TextEditingController(text: "123456789");
+  TextEditingController loginController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
 
   bool isInProgress = false;
   changeIsInProgress(bool v) {
     isInProgress = v;
     notifyListeners();
+  }
+
+  clear() {
+    loginController.clear();
+    passwordController.clear();
+    
   }
 }

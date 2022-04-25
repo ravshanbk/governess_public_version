@@ -17,10 +17,6 @@ class CookerService {
   });
   Future<ResModel> acceptProduct(ReceiveProductModel data,
       {required String id}) async {
-    p(data.numberPack.toString());
-    p(data.comment.toString());
-    p(data.weightPack.toString());
-    p(id);
     List<Map<String, dynamic>> hardData = [
       {
         "id": 4,
@@ -468,7 +464,6 @@ class CookerService {
         "${AuthService.localhost}/out/api/cook/getInOut",
         options: option,
       );
-      p(res.data.toString());
       return (res.data as List).map((e) => Product.fromJson(e)).toList();
     } catch (e) {
       throw Exception(
@@ -1348,8 +1343,6 @@ class CookerService {
         "${AuthService.localhost}/out/api/cook/getProductBalancer",
         options: option,
       );
-      debugPrint("getAvailableProductsInStorage function ichi: " +
-          res.data.toString());
       return (res.data as List).map((e) => CookerProduct.fromJson(e)).toList();
       // return hardData.map((e) => CookerProduct.fromJson(e)).toList();
     } catch (e) {
@@ -2292,9 +2285,9 @@ class CookerService {
         "${AuthService.localhost}/out/api/meal/getMeal?mealAgeStandardId=$mealAgeStandartId&menuId=$menuId",
         options: option,
       );
-      p("${AuthService.localhost}/out/api/meal/getMeal?mealAgeStandardId=$mealAgeStandartId&menuId=$menuId");
-      p("MEAL INFO: " + res.data.toString());
-      return MealInfo.fromJson(res.data);
+      MealInfo d = MealInfo.fromJson(res.data);
+      p(d.toString());
+      return d;
       // return MealInfo.fromJson(hardData);
     } catch (e) {
       throw Exception("CookerService / getMealInfo" + e.toString());

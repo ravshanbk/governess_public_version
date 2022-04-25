@@ -15,7 +15,6 @@ class NurseService {
   });
 
   Future<DailyMenu> getDailyMenu(DateTime date) async {
-    p(DTFM.maker(date.millisecondsSinceEpoch));
 
     try {
       Response res = await Dio().get(
@@ -23,7 +22,6 @@ class NurseService {
         options: option,
       );
       Future.delayed(const Duration(seconds: 2), () {
-        p(res.data.toString());
       });
       return DailyMenu.fromJson(res.data);
     } catch (e) {
@@ -33,10 +31,8 @@ class NurseService {
 
   Future<ResModel> enterDailyChildrenNumber(List<AgeGroupIdAndNumber> v) async {
     await Future.delayed(const Duration(seconds: 1), () {
-      p(v.toString());
     });
     try {
-      debugPrint(v[0].number.toString());
       var res = await Dio().post(
         "${AuthService.localhost}/out/api/perDay",
         data: {
@@ -51,16 +47,13 @@ class NurseService {
   }
 
   Future<NumberOfChildren> getDailyChildrenNumber(DateTime date) async {
-    p(date.millisecondsSinceEpoch.toString());
     NumberOfChildren data;
     try {
       Response res = await Dio().get(
         "${AuthService.localhost}/out/api/perDay?timestamp=${date.millisecondsSinceEpoch}",
         options: option,
       );
-      p("Res.data: "+res.data.toString());
       data = NumberOfChildren.fromJson(res.data);
-      p(data.perDayList![0].status!);
       return data;
     } catch (e) {
       throw Exception("getChildrenNumber: " + e.toString());

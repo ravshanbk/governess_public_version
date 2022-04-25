@@ -40,7 +40,6 @@ class _NurseShowNumberOfChildrenPageState
       body: FutureBuilder<NumberOfChildren>(
         future: NurseService().getDailyChildrenNumber(when),
         builder: (context, AsyncSnapshot<NumberOfChildren> snap) {
-          p(snap.data.toString());
           if (snap.connectionState == ConnectionState.done && snap.hasData) {
             return _body(snap.data!, context);
           } else if (snap.connectionState == ConnectionState.done &&

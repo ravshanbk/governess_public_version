@@ -46,7 +46,6 @@ class CookerShowProductsInStoragePage extends StatelessWidget {
   }
 
   ListView _body(BuildContext context, List<CookerProduct> data) {
-    p(data[0].inOutList![0].enterDate.toString());
     return ListView.separated(
       shrinkWrap: true,
       physics: const BouncingScrollPhysics(),

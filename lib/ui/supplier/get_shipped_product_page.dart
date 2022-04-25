@@ -88,7 +88,6 @@ class _GetShippedProductPageState extends State<GetShippedProductPage> {
       actions: [
         IconButton(
             onPressed: () {
-              p("v");
               context.read<GetShippedProductsProvider>().changeCurrent(-1);
               setState(() {});
             },

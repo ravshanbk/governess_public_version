@@ -26,7 +26,6 @@ class AuthService {
         "${AuthService.localhost}/out/api/user/signIn",
         data: {"login": login, "password": password},
       );
-      debugPrint(user.data);
       decodedUser = User.fromJson(user.data);
 
       await UserHive().addUser(

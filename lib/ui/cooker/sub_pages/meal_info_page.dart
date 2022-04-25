@@ -22,9 +22,6 @@ class CookerMealInfoPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    p(mealAgeStandartId.toString());
-    p(menuId.toString());
-    p(mealName!);
     SizeConfig().init(context);
     return SafeArea(
       child: Scaffold(

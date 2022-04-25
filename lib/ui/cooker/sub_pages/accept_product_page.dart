@@ -44,7 +44,6 @@ class CookerAcceptProductPage extends StatelessWidget {
   }
 
   ListView _body(AsyncSnapshot<List<Product>> snap, BuildContext context) {
-    p(snap.data!.length.toString());
     return ListView.separated(
       padding: EdgeInsets.all(gW(20.0)),
       itemBuilder: (_, __) {

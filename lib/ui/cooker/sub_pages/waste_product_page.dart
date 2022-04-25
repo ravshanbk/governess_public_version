@@ -46,7 +46,6 @@ class CookerWastProductPage extends StatelessWidget {
   }
 
   ListView _body(BuildContext context, List<CookerProduct> data) {
-    p(data[0].inOutList![0].enterDate.toString());
     return ListView.separated(
       key: Key(DateTime.now().toString()),
       shrinkWrap: true,
@@ -257,21 +256,7 @@ class CookerWastProductPage extends StatelessWidget {
                                     .isEmpty
                             ? null
                             : () {
-                                p(
-                                  productId.toString() +
-                                      "\n" +
-                                      Provider.of<WasteProductCookerPageProvider>(
-                                              context,
-                                              listen: false)
-                                          .commentController
-                                          .text +
-                                      "\n" +
-                                      Provider.of<WasteProductCookerPageProvider>(
-                                              context,
-                                              listen: false)
-                                          .numberOfController
-                                          .text,
-                                );
+                               
                               },
                       ),
                     )

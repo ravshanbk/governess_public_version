@@ -36,9 +36,7 @@ class CookerProductsPageProvider extends ChangeNotifier {
     }
     availableCompanyNames = names;
 
-    debugPrint("Men Generate Available Company names ichidagi printman: " +
-        availableCompanyNames.toString());
-    notifyListeners();
+     notifyListeners();
   }
 
 ////////////////////////////////////////
