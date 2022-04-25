@@ -1,9 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/print_my.dart';
 import 'package:governess/consts/size_config.dart';
-import 'package:governess/models/in_out_list_product_model.dart';
+import 'package:governess/models/cooker/product_cooker_product.dart';
 import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/providers/cooker/show_in_out_list_product_provider.dart';
 import 'package:governess/providers/cooker/waste_product_cooker_page_provider.dart';
@@ -28,10 +27,11 @@ class CookerWastProductPage extends StatelessWidget {
         elevation: 0,
         title: const Text("Wast Product Page"),
       ),
-      body: FutureBuilder(
+      body: FutureBuilder<List<CookerProduct>>(
         future: CookerService().getAvailbleProductsInStorage(),
-        builder: (context, AsyncSnapshot<List<InoutListProduct>> snap) {
-          if (snap.connectionState == ConnectionState.done && snap.data!.isNotEmpty) {
+        builder: (context, AsyncSnapshot<List<CookerProduct>> snap) {
+          if (snap.connectionState == ConnectionState.done &&
+              snap.data!.isNotEmpty) {
             return _body(context, snap.data!);
           } else if (snap.connectionState == ConnectionState.done &&
               snap.data!.isEmpty) {
@@ -45,9 +45,10 @@ class CookerWastProductPage extends StatelessWidget {
     );
   }
 
-  ListView _body(BuildContext context, List<InoutListProduct> data) {
+  ListView _body(BuildContext context, List<CookerProduct> data) {
+    p(data[0].inOutList![0].enterDate.toString());
     return ListView.separated(
-      key: UniqueKey(),
+      key: Key(DateTime.now().toString()),
       shrinkWrap: true,
       physics: const BouncingScrollPhysics(),
       padding: EdgeInsets.all(
@@ -55,7 +56,7 @@ class CookerWastProductPage extends StatelessWidget {
       ),
       itemBuilder: (_, __) {
         return ShowInOutListProductWidget(
-          key: UniqueKey(),
+          key: Key(DateTime.now().toString()),
           onChanged: (bool v) {
             if (v) {
               Provider.of<ShowInOutListProductProvider>(context, listen: false)
@@ -82,7 +83,7 @@ class CookerWastProductPage extends StatelessWidget {
   }
 
   _inOutListProductChild(
-      List<InoutListProduct> data, int __, int index, BuildContext context) {
+      List<CookerProduct> data, int __, int index, BuildContext context) {
     return Container(
       margin: EdgeInsets.symmetric(
         horizontal: 10.0,
@@ -151,8 +152,8 @@ class CookerWastProductPage extends StatelessWidget {
           ),
         ),
         children: [
-          TextInRowWidget(
-              "O'lchov birligi", data[__].inOutList![index].measurementType!),
+          // TextInRowWidget(
+          //     "O'lchov birligi", data[__].inOutList![index].measurementType!),
           _divider(),
           TextInRowWidget(
               "Yaxlitlashi", data[__].inOutList![index].pack.toString()),

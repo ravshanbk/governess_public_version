@@ -1,18 +1,12 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/decorations.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/providers/auth/auth_page_provider.dart';
 import 'package:governess/ui/apply_application_page.dart';
-import 'package:governess/ui/cooker/home_cooker_page.dart';
-import 'package:governess/ui/manager/home_manager_page.dart';
-import 'package:governess/ui/nurse/nurse_home_page.dart';
 import 'package:governess/ui/pin_code_page.dart';
-import 'package:governess/ui/supplier/home_supplier_page.dart';
-import 'package:governess/ui/widgets/cancel_button_widget.dart';
-import 'package:http/retry.dart';
+import 'package:governess/ui/widgets/governess_app_bar.dart';
 import 'package:provider/provider.dart';
 
 class AuthPage extends StatelessWidget {
@@ -22,10 +16,9 @@ class AuthPage extends StatelessWidget {
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     return Scaffold(
-      appBar: AppBar(
-        leading:const Image(image: AssetImage("assets/images/governessLogo.png"),),
-        backgroundColor: mainColor,elevation: 0,title:const Text("Governess Business"),),
-      resizeToAvoidBottomInset: true,
+      appBar: governessAppBar,
+      
+          resizeToAvoidBottomInset: true,
       body: Center(
         child: Form(
           key: context.read<AuthPageProvider>().formKey,

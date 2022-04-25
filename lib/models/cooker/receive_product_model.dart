@@ -4,6 +4,7 @@ class ReceiveProductModel {
         this.comment,
         this.numberPack,
         this.weightPack,
+    
     });
 
     String? comment;

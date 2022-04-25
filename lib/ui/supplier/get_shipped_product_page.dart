@@ -21,7 +21,6 @@ class GetShippedProductPage extends StatefulWidget {
 }
 
 class _GetShippedProductPageState extends State<GetShippedProductPage> {
-
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
@@ -34,7 +33,8 @@ class _GetShippedProductPageState extends State<GetShippedProductPage> {
             return _body(context, snap.data!);
           } else if (snap.connectionState == ConnectionState.done &&
               !snap.hasData) {
-            return const NoDataWidgetForFutureBuilder("Hozircha Yetkazilgan Mahsulotlar Mavjud Emas!");
+            return const NoDataWidgetForFutureBuilder(
+                "Hozircha Yetkazilgan Mahsulotlar Mavjud Emas!");
           } else {
             return IndicatorWidget(snap);
           }
@@ -45,8 +45,7 @@ class _GetShippedProductPageState extends State<GetShippedProductPage> {
 
   _body(BuildContext context, List<Product> data) {
     return ListView.separated(
-      padding:
-          EdgeInsets.only(left: gW(20.0), right: gW(20.0), top: gW(20.0)),
+      padding: EdgeInsets.only(left: gW(20.0), right: gW(20.0), top: gW(20.0)),
       shrinkWrap: true,
       physics: const BouncingScrollPhysics(),
       itemBuilder: (_, __) {
@@ -138,6 +137,4 @@ class _GetShippedProductPageState extends State<GetShippedProductPage> {
         indent: gW(15.0),
         endIndent: gW(15.0),
       );
-
- 
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/ui/cooker/sub_pages/accept_product_page.dart';
+import 'package:governess/ui/cooker/sub_pages/existing_product_cooker_show.dart';
 import 'package:governess/ui/cooker/sub_pages/show_products_in_storage_page.dart';
 import 'package:governess/ui/cooker/sub_pages/waste_product_page.dart';
 
@@ -11,7 +12,6 @@ class CookerProductsPage extends StatelessWidget {
     "Mahsulotlarni Qabul Qilish",
     "Ombordagi Mahsulotlar",
     "Zahiradagi Mahsulotlar",
-    "Chiqitga chiqarish",
     "Chiqindilar",
   ];
   @override
@@ -21,7 +21,7 @@ class CookerProductsPage extends StatelessWidget {
         backgroundColor: mainColor,
         elevation: 0,
         centerTitle: true,
-        title: const Text("Mahsulotlar"),
+        title: const Text("Mahsulotlard"),
       ),
       body: ListView.separated(
         padding: EdgeInsets.all(
@@ -40,10 +40,8 @@ class CookerProductsPage extends StatelessWidget {
                       case 1:
                         return const CookerShowProductsInStoragePage();
                       case 2:
-                        return const CookerShowProductsInStoragePage();
+                        return const CookerShowExistingProductPage();
                       case 3:
-                        return const CookerWastProductPage();
-                      case 4:
                         return const CookerWastProductPage();
                       default:
                         return const CookerProductsPage();

@@ -119,25 +119,29 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
       },
     );
     return Center(
-              child: (current == 0
-                  ? _allBody(
-                      widgetsAll,datas,
-                      context,
-                    )
-                  : current == 1
-                      ? _allBody(
-                          widgetsDate,datas,
-                          context,
-                        )
-                      : (current == 2
-                          ? _allBody(
-                              widgetsByCompanyName,datas,
-                              context,
-                            )
-                          : _allBody(
-                              widgetsDate,datas,
-                              context,
-                            ))));
+        child: (current == 0
+            ? _allBody(
+                widgetsAll,
+                datas,
+                context,
+              )
+            : current == 1
+                ? _allBody(
+                    widgetsDate,
+                    datas,
+                    context,
+                  )
+                : (current == 2
+                    ? _allBody(
+                        widgetsByCompanyName,
+                        datas,
+                        context,
+                      )
+                    : _allBody(
+                        widgetsDate,
+                        datas,
+                        context,
+                      ))));
   }
 
   _noDataBody(BuildContext context) {
@@ -198,11 +202,12 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
     );
   }
 
-  _allBody(List<Widget>? data,ProductWithAvailableCompnayNames datas ,BuildContext context) {
+  _allBody(List<Widget>? data, ProductWithAvailableCompnayNames datas,
+      BuildContext context) {
     return data!.isNotEmpty
         ? CustomScrollView(
             slivers: [
-               _sliverAppBar(context, datas),
+              _sliverAppBar(context, datas),
               SliverToBoxAdapter(
                 child: ListView.separated(
                   separatorBuilder: (context, index) {
@@ -438,7 +443,7 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
                   Provider.of<ToBuyProductPageProvider>(context, listen: false)
                       .clear();
                   _showDialogSend(data, context);
-                }),
+                },titleOfButton: "YUBORISH",),
           SizedBox(
             height: gH(10.0),
           ),
@@ -614,7 +619,7 @@ class _SendProductShowDialogContentWidget extends StatelessWidget {
       } else {
         showToast("Miqdorni kiriting, nol bolmasin", false, false);
       }
-    });
+    },titleOfButton: "YUBORISH",);
   }
 
   _numberInputField(BuildContext context, Product data) {

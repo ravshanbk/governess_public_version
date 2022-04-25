@@ -10,6 +10,7 @@ class ExpansionTileToShowProductWidget extends StatelessWidget {
   final Product data;
   const ExpansionTileToShowProductWidget({
     Key? key,
+
     required this.isExpanded,
     required this.children,
     required this.onChanged,
@@ -20,8 +21,7 @@ class ExpansionTileToShowProductWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        // backgroundBlendMode: BlendMode.screen,
-        color:  isExpanded?whiteColor:mainColor_02,
+        color: isExpanded ? whiteColor : mainColor_02,
         borderRadius: BorderRadius.circular(
           gW(10.0),
         ),
@@ -76,6 +76,8 @@ class ExpansionTileToShowProductWidget extends StatelessWidget {
                     : Colors.black),
           ),
         ),
+   
+      
       ],
     );
   }

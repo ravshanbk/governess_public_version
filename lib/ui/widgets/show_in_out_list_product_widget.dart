@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/size_config.dart';
-import 'package:governess/models/in_out_list_product_model.dart';
+import 'package:governess/models/cooker/product_cooker_product.dart';
 
 class ShowInOutListProductWidget extends StatelessWidget {
   final bool isExpanded;
   final List<Widget> children;
   final Function(bool) onChanged;
-  final InoutListProduct data;
+  final CookerProduct data;
   const ShowInOutListProductWidget({
     Key? key,
     required this.isExpanded,
