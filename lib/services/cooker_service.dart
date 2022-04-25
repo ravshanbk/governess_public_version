@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:governess/consts/print_my.dart';
 import 'package:governess/models/cooker/meal_info_model.dart';
 import 'package:governess/models/cooker/product_cooker_product.dart';
@@ -1342,15 +1343,15 @@ class CookerService {
       }
     ];
     try {
-      // Response res = await Dio().get(
-      //   //OMBOR
-      //   "${AuthService.localhost}/out/api/cook/getProductBalancer",
-      //   options: option,
-      // );
-      // debugPrint("getAvailableProductsInStorage function ichi: " +
-      //     res.data.toString());
-      // return (res.data as List).map((e) => CookerProduct.fromJson(e)).toList();
-      return hardData.map((e) => CookerProduct.fromJson(e)).toList();
+      Response res = await Dio().get(
+        //OMBOR
+        "${AuthService.localhost}/out/api/cook/getProductBalancer",
+        options: option,
+      );
+      debugPrint("getAvailableProductsInStorage function ichi: " +
+          res.data.toString());
+      return (res.data as List).map((e) => CookerProduct.fromJson(e)).toList();
+      // return hardData.map((e) => CookerProduct.fromJson(e)).toList();
     } catch (e) {
       throw Exception(
           "InOutListProductService getAvailableProductsInStorage: " +

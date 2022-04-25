@@ -48,7 +48,6 @@ class CookerShowProductsInStoragePage extends StatelessWidget {
   ListView _body(BuildContext context, List<CookerProduct> data) {
     p(data[0].inOutList![0].enterDate.toString());
     return ListView.separated(
-      key: Key(DateTime.now().toString()),
       shrinkWrap: true,
       physics: const BouncingScrollPhysics(),
       padding: EdgeInsets.all(
@@ -56,7 +55,7 @@ class CookerShowProductsInStoragePage extends StatelessWidget {
       ),
       itemBuilder: (_, __) {
         return ShowInOutListProductWidget(
-          key: Key(DateTime.now().toString()),
+          key: Key("$__ StarageProducts"),
           onChanged: (bool v) {
             if (v) {
               Provider.of<ShowInOutListProductProvider>(context, listen: false)
@@ -147,13 +146,16 @@ class CookerShowProductsInStoragePage extends StatelessWidget {
             ),
             onPressed: () {
               context.read<WasteProductCookerPageProvider>().clear();
-              _showInputDialog(context, data[__].inOutList![index].id);
+              _showInputDialog(
+                context,
+                data[__].inOutList![index].id,
+              );
             },
           ),
         ),
         children: [
-          // TextInRowWidget(
-          //     "O'lchov birligi", data[__].inOutList![index].measurementType!),
+          TextInRowWidget(
+              "O'lchov birligi", data[__].inOutList![index].measurementType!),
           _divider(),
           TextInRowWidget(
               "Yaxlitlashi", data[__].inOutList![index].pack.toString()),
@@ -200,114 +202,125 @@ class CookerShowProductsInStoragePage extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    SizedBox(
-                      width: gW(150.0),
-                      height: gH(60.0),
-                      child: TextField(
-                        onChanged: (v) {
-                          if (v.isNotEmpty) {
-                            Provider.of<WasteProductCookerPageProvider>(context,
-                                    listen: false)
-                                .notify();
-                          }
-                        },
-                        keyboardType: TextInputType.number,
-                        controller: context
-                            .watch<WasteProductCookerPageProvider>()
-                            .numberOfController,
-                        decoration: InputDecoration(
-                          label: const Text("Miqdor..."),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(
-                              gW(7.0),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: gH(40.0),
-                      width: gW(120.0),
-                      child: ElevatedButton(
-                        key: UniqueKey(),
-                        style: ElevatedButton.styleFrom(
-                          shadowColor: Colors.transparent,
-                          primary: mainColor_02,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            side: BorderSide(color: mainColor),
-                            borderRadius: BorderRadius.circular(
-                              gW(7.0),
-                            ),
-                          ),
-                        ),
-                        child: Text(
-                          "Chiqarish",
-                          style: TextStyle(color: mainColor),
-                        ),
-                        onPressed: context
-                                    .watch<WasteProductCookerPageProvider>()
-                                    .commentController
-                                    .text
-                                    .isEmpty ||
-                                context
-                                    .watch<WasteProductCookerPageProvider>()
-                                    .numberOfController
-                                    .text
-                                    .isEmpty
-                            ? null
-                            : () {
-                                CookerService().postGarbage(
-                                    WasteProduct(
-                                        comment: context
-                                            .watch<
-                                                WasteProductCookerPageProvider>()
-                                            .commentController
-                                            .text,
-                                        productId: productId,
-                                        weight: int.parse(context
-                                            .watch<
-                                                WasteProductCookerPageProvider>()
-                                            .numberOfController
-                                            .text)),
-                                    productId);
-                              },
-                      ),
-                    )
+                    _numberInputFieldInDialog(context),
+                    _wasteButtonInDialog(context, productId)
                   ],
                 ),
                 SizedBox(height: gH(10.0)),
-                SizedBox(
-                  height: 60.0,
-                  child: TextField(
-                    onChanged: (v) {
-                      if (v.isNotEmpty) {
-                        Provider.of<WasteProductCookerPageProvider>(context,
-                                listen: false)
-                            .notify();
-                      }
-                    },
-                    maxLines: null,
-                    expands: true,
-                    keyboardType: TextInputType.name,
-                    controller: context
-                        .watch<WasteProductCookerPageProvider>()
-                        .commentController,
-                    decoration: InputDecoration(
-                      label: const Text("Izoh..."),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(
-                          gW(7.0),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+                _commentInputFieldInDialog(context),
               ],
             ),
           ),
         );
       },
+    );
+  }
+
+  SizedBox _numberInputFieldInDialog(BuildContext context) {
+    return SizedBox(
+      width: gW(150.0),
+      height: gH(60.0),
+      child: TextField(
+        onChanged: (v) {
+          if (v.isNotEmpty) {
+            Provider.of<WasteProductCookerPageProvider>(context, listen: false)
+                .notify();
+          }
+        },
+        keyboardType: TextInputType.number,
+        controller:
+            context.watch<WasteProductCookerPageProvider>().numberOfController,
+        decoration: InputDecoration(
+          label: const Text("Miqdor..."),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(
+              gW(7.0),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  _commentInputFieldInDialog(BuildContext context) {
+    return SizedBox(
+      height: 60.0,
+      child: TextField(
+        onChanged: (v) {
+          if (v.isNotEmpty) {
+            Provider.of<WasteProductCookerPageProvider>(context, listen: false)
+                .notify();
+          }
+        },
+        maxLines: null,
+        expands: true,
+        keyboardType: TextInputType.name,
+        controller:
+            context.watch<WasteProductCookerPageProvider>().commentController,
+        decoration: InputDecoration(
+          label: const Text("Izoh..."),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(
+              gW(7.0),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  _wasteButtonInDialog(BuildContext context, productId) {
+    return SizedBox(
+      height: gH(40.0),
+      width: gW(120.0),
+      child: ElevatedButton(
+        key: UniqueKey(),
+        style: ElevatedButton.styleFrom(
+          shadowColor: Colors.transparent,
+          primary: mainColor_02,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            side: BorderSide(color: mainColor),
+            borderRadius: BorderRadius.circular(
+              gW(7.0),
+            ),
+          ),
+        ),
+        child: Text(
+          "Chiqarish",
+          style: TextStyle(color: mainColor),
+        ),
+        onPressed:
+            Provider.of<WasteProductCookerPageProvider>(context, listen: false)
+                        .commentController
+                        .text
+                        .isEmpty ||
+                    Provider.of<WasteProductCookerPageProvider>(context,
+                            listen: false)
+                        .numberOfController
+                        .text
+                        .isEmpty
+                ? null
+                : () {
+                    CookerService().postGarbage(
+                      WasteProduct(
+                        comment: Provider.of<WasteProductCookerPageProvider>(
+                                context,
+                                listen: false)
+                            .commentController
+                            .text,
+                        productId: productId,
+                        weight: int.parse(
+                          Provider.of<WasteProductCookerPageProvider>(context,
+                                  listen: false)
+                              .numberOfController
+                              .text,
+                        ),
+                      ),
+                      productId,
+                    );
+                  },
+      ),
     );
   }
 }
