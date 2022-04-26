@@ -12,12 +12,13 @@ TextSpan textSpanGrey16Widget(String text) {
   );
 }
 
-TextSpan textSpan18black(String text) {
+TextSpan textSpan22Maincolor(String text) {
   return TextSpan(
     text: text,
     style: TextStyle(
-      color: Colors.black,
-      fontSize: gW(18.0),
+      fontWeight: FontWeight.bold,
+      color: mainColor,
+      fontSize: gW(22.0),
     ),
   );
 }

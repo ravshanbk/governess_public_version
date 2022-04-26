@@ -6,7 +6,7 @@ import 'package:governess/ui/cooker/sub_pages/products_page.dart';
 import 'package:governess/ui/cooker/sub_pages/show_daily_menu_page.dart';
 import 'package:governess/ui/cooker/sub_pages/show_number_of_children_page.dart';
 import 'package:governess/ui/widgets/big_elevate_button_home_page.dart';
-import 'package:governess/ui/widgets/fake_drawer_widget.dart';
+import 'package:governess/ui/widgets/drawer_widget_my.dart';
 
 class CookerHomePage extends StatelessWidget {
   const CookerHomePage({Key? key}) : super(key: key);
@@ -20,7 +20,7 @@ class CookerHomePage extends StatelessWidget {
     SizeConfig().init(context);
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      drawer: const FakeDrawerWidget(),
+      drawer: const DrawerWidgetMy(),
 
       //  _drawer(),
       appBar: AppBar(

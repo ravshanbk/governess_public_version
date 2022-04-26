@@ -4,7 +4,7 @@ import 'package:governess/consts/size_config.dart';
 import 'package:governess/ui/supplier/get_shipped_product_page.dart';
 import 'package:governess/ui/supplier/to_buy_products_page.dart';
 import 'package:governess/ui/widgets/big_elevate_button_home_page.dart';
-import 'package:governess/ui/widgets/fake_drawer_widget.dart';
+import 'package:governess/ui/widgets/drawer_widget_my.dart';
 
 class SupplierHomePage extends StatelessWidget {
   const SupplierHomePage({Key? key}) : super(key: key);
@@ -18,7 +18,7 @@ class SupplierHomePage extends StatelessWidget {
     ];
 
     return Scaffold(
-      drawer:const FakeDrawerWidget(),
+      drawer:const DrawerWidgetMy(),
       //  _drawer(),
       appBar: _appBar(),
       body: _body(doings, context),

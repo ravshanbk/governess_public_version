@@ -9,8 +9,8 @@ import 'package:governess/ui/auth/change_password_page.dart';
 import 'package:governess/ui/widgets/text_span_grey_16_widget.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-class FakeDrawerWidget extends StatelessWidget {
-  const FakeDrawerWidget({Key? key}) : super(key: key);
+class DrawerWidgetMy extends StatelessWidget {
+  const DrawerWidgetMy({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -49,14 +49,16 @@ class FakeDrawerWidget extends StatelessWidget {
               color: mainColor,
             ),
             SizedBox(height: gH(20.0)),
-            _richText("Tahallus: ", data.username),
+            _divider(),
+            _richText("Tahallus:  ", data.username),
+            _divider(),
+            _richText("Ism:  ", data.name),
+            _divider(),
+            _richText("Familya:  ", data.surname),
+            _divider(),
+            _richText("Lavozimi:  ", data.role.substring(5)),
+            _divider(),
             SizedBox(height: gH(20.0)),
-            _richText("Ism: ", data.name),
-            SizedBox(height: gH(20.0)),
-            _richText("Familya: ", data.surname),
-            SizedBox(height: gH(20.0)),
-            _richText("Lavozimi: ", data.role),
-            SizedBox(height: gH(50.0)),
             _exitButton(
               title: "Tizimdan Chiqish",
               context: context,
@@ -107,6 +109,13 @@ class FakeDrawerWidget extends StatelessWidget {
     );
   }
 
+  Divider _divider() {
+    return Divider(
+      color: greyColor,
+      endIndent: gW(80.0),
+    );
+  }
+
   ElevatedButton _exitButton(
       {required String title,
       required BuildContext context,
@@ -149,7 +158,7 @@ class FakeDrawerWidget extends StatelessWidget {
       text: TextSpan(
         children: [
           textSpanGrey16Widget(text1),
-          textSpan18black(text2),
+          textSpan22Maincolor(text2),
         ],
       ),
     );
@@ -158,7 +167,8 @@ class FakeDrawerWidget extends StatelessWidget {
 
 class _ShowDialogDateContent extends StatelessWidget {
   final bool isPin;
-  const _ShowDialogDateContent(this.isPin,{
+  const _ShowDialogDateContent(
+    this.isPin, {
     Key? key,
   }) : super(key: key);
   @override
@@ -185,7 +195,9 @@ class _ShowDialogDateContent extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              isPin? "Pinkodingizni o'zgartirmoqchimisiz?":"Rostdan ham chiqishni  xohlaysizmi?",
+              isPin
+                  ? "Pinkodingizni o'zgartirmoqchimisiz?"
+                  : "Rostdan ham chiqishni  xohlaysizmi?",
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: mainColor,
@@ -193,7 +205,9 @@ class _ShowDialogDateContent extends StatelessWidget {
               ),
             ),
             Text(
-             isPin?"Pinkodni o'zgartirish uchun tizimga qaytadan kirishingizga to'gri keladi": "Chiqqaningizdan keyin qayta ro'yxatdan o'tishingiz kerak bo'ladi",
+              isPin
+                  ? "Pinkodni o'zgartirish uchun tizimga qaytadan kirishingizga to'gri keladi"
+                  : "Chiqqaningizdan keyin qayta ro'yxatdan o'tishingiz kerak bo'ladi",
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Colors.red,

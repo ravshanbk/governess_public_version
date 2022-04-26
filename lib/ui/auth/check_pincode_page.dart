@@ -40,6 +40,7 @@ class CheckingPinCodePage extends StatelessWidget {
               fontSize: gW(20.0),
             ),
           ),
+          SizedBox(height: gH(10.0)),
           PinCodeWidget(
               controller:
                   Provider.of<PinCodePageProvider>(context, listen: false)

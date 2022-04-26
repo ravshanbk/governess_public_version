@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/models/nurse_models/number_of_children_model.dart';
-import 'package:governess/ui/widgets/grey_text_in_row_widget.dart';
 
 // ignore: must_be_immutable
 class NumberOfChildrenWidget extends StatelessWidget {
@@ -34,7 +33,7 @@ class NumberOfChildrenWidget extends StatelessWidget {
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (_, __) {
-              return GreyTextInRowWidget(
+              return _greyTextInRow(
                   data!.perDayList![0].numberOfChildrenDtoList![__].ageGroupName
                       .toString(),
                   data!.perDayList![0].numberOfChildrenDtoList![__].number
@@ -60,7 +59,7 @@ class NumberOfChildrenWidget extends StatelessWidget {
               indent: gW(25.0),
             ),
           ),
-          GreyTextInRowWidget("Holati", data!.perDayList![0].status!)
+          _greyTextInRow("Holati", data!.perDayList![0].status!)
         ],
       ),
     );
@@ -88,6 +87,26 @@ class NumberOfChildrenWidget extends StatelessWidget {
             "Soni",
             style: TextStyle(fontSize: gW(18.0), color: greyColor),
           )
+        ],
+      ),
+    );
+  }
+
+  _greyTextInRow(String text1, String text2) {
+    Padding(
+      padding: EdgeInsets.only(left: gW(30.0), right: gW(50.0)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            text1,
+            style: TextStyle(fontSize: gW(18.0), color: greyColor),
+          ),
+          const Spacer(),
+          Text(
+            text2,
+            style: TextStyle(fontSize: gW(18.0), color: greyColor),
+          ),
         ],
       ),
     );

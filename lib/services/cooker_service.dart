@@ -986,10 +986,10 @@ class CookerService {
     }
   }
 
-  deleteGarbage() async {
+  deleteGarbage(int id) async {
     try {
       Response res = await Dio().delete(
-        "${AuthService.localhost}/out/api/storage/garbageDelete/{id}",
+        "${AuthService.localhost}/out/api/storage/garbageDelete/$id",
         options: AuthService.option,
       );
       return res.statusCode == 200;

@@ -39,10 +39,8 @@ class AuthService {
           username: decodedUser.username,
         );
 
-        p("StatusCode If" + user.statusMessage!);
         return true;
       } else {
-        p("StatusCode else" + user.statusMessage!);
 
         return false;
       }

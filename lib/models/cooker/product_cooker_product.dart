@@ -1,4 +1,3 @@
-
 class CookerProduct {
   CookerProduct({
     this.inOutList,
@@ -9,7 +8,7 @@ class CookerProduct {
 
   List<InOutList>? inOutList;
   String? productName;
-  dynamic productId;
+  int? productId;
   double? weight;
 
   factory CookerProduct.fromJson(Map<String, dynamic> json) => CookerProduct(
@@ -45,7 +44,7 @@ class InOutList {
   double? price;
   double? pack;
   double? numberPack;
- double? weightPack;
+  double? weightPack;
   String? measurementType;
   dynamic status;
 

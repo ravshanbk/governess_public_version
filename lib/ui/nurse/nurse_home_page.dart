@@ -4,7 +4,7 @@ import 'package:governess/consts/size_config.dart';
 import 'package:governess/ui/nurse/sub_pages/show_menu_daily_page.dart';
 import 'package:governess/ui/nurse/sub_pages/show_number_of_children_nurse_page.dart';
 import 'package:governess/ui/widgets/big_elevate_button_home_page.dart';
-import 'package:governess/ui/widgets/fake_drawer_widget.dart';
+import 'package:governess/ui/widgets/drawer_widget_my.dart';
 
 class NurseHomePage extends StatelessWidget {
   const NurseHomePage({Key? key}) : super(key: key);
@@ -18,7 +18,7 @@ class NurseHomePage extends StatelessWidget {
     ];
 
     return Scaffold(
-      drawer: const FakeDrawerWidget(),
+      drawer: const DrawerWidgetMy(),
     
       appBar: _appBar(),
       body: _body(doings, context),

@@ -16,7 +16,5 @@ class AuthPageProvider extends ChangeNotifier {
     loginController.clear();
     passwordController.clear();
     notifyListeners();
-
-    
   }
 }
