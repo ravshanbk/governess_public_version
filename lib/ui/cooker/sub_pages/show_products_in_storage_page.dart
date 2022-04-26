@@ -125,7 +125,6 @@ class CookerShowProductsInStoragePage extends StatelessWidget {
           height: gH(40.0),
           width: gW(150.0),
           child: ElevatedButton(
-            key: UniqueKey(),
             style: ElevatedButton.styleFrom(
               primary: mainColor,
               elevation: 0,
@@ -144,11 +143,18 @@ class CookerShowProductsInStoragePage extends StatelessWidget {
                   fontSize: gW(18.0)),
             ),
             onPressed: () {
-              context.read<WasteProductCookerPageProvider>().clear();
-              _showInputDialog(
-                context,
-                data[__].inOutList![index].id,
-              );
+              p(data[__].productId.toString());
+              p( data[__].inOutList![index].id!.toString());
+              // Provider.of<WasteProductCookerPageProvider>(context,
+              //         listen: false)
+              //     .clear();
+              // showDialog(
+              //   context: context,
+              //   builder: (context) {
+              //     return _ShowDialogDateContent(
+              //         data[__].productId, data[__].inOutList![index].id!);
+              //   },
+              // );
             },
           ),
         ),
@@ -177,41 +183,153 @@ class CookerShowProductsInStoragePage extends StatelessWidget {
         endIndent: gW(15.0),
       );
 
-  _showInputDialog(BuildContext context, dynamic productId) {
-    return showDialog(
-      context: context,
-      builder: (context) {
-        return Material(
-          type: MaterialType.transparency,
-          child: Container(
-            padding: EdgeInsets.all(gW(20.0)),
-            margin: EdgeInsets.only(
-                bottom: gH(500.0),
-                left: gW(10.0),
-                right: gW(10.0),
-                top: gH(100.0)),
-            decoration: BoxDecoration(
-              color: whiteColor,
-              borderRadius: BorderRadius.circular(
-                gW(10.0),
-              ),
-            ),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _numberInputFieldInDialog(context),
-                    _wasteButtonInDialog(context, productId)
-                  ],
-                ),
-                SizedBox(height: gH(10.0)),
-                _commentInputFieldInDialog(context),
-              ],
+  SizedBox _numberInputFieldInDialog(BuildContext context) {
+    return SizedBox(
+      width: gW(150.0),
+      height: gH(60.0),
+      child: TextField(
+        onChanged: (v) {
+          if (v.isNotEmpty) {
+            Provider.of<WasteProductCookerPageProvider>(context, listen: false)
+                .notify();
+          }
+        },
+        keyboardType: TextInputType.number,
+        controller:
+            context.watch<WasteProductCookerPageProvider>().numberOfController,
+        decoration: InputDecoration(
+          label: const Text("Miqdor..."),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(
+              gW(7.0),
             ),
           ),
-        );
-      },
+        ),
+      ),
+    );
+  }
+
+  _commentInputFieldInDialog(BuildContext context) {
+    return SizedBox(
+      height: 60.0,
+      child: TextField(
+        onChanged: (v) {
+          if (v.isNotEmpty) {
+            Provider.of<WasteProductCookerPageProvider>(context, listen: false)
+                .notify();
+          }
+        },
+        maxLines: null,
+        expands: true,
+        keyboardType: TextInputType.name,
+        controller:
+            context.watch<WasteProductCookerPageProvider>().commentController,
+        decoration: InputDecoration(
+          label: const Text("Izoh..."),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(
+              gW(7.0),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  _wasteButtonInDialog(BuildContext context, dynamic productId, String id) {
+    return SizedBox(
+      height: gH(40.0),
+      width: gW(120.0),
+      child: ElevatedButton(
+        key: UniqueKey(),
+        style: ElevatedButton.styleFrom(
+          shadowColor: Colors.transparent,
+          primary: mainColor_02,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            side: BorderSide(color: mainColor),
+            borderRadius: BorderRadius.circular(
+              gW(7.0),
+            ),
+          ),
+        ),
+        child: Text(
+          "Chiqarish",
+          style: TextStyle(color: mainColor),
+        ),
+        onPressed:
+            Provider.of<WasteProductCookerPageProvider>(context, listen: false)
+                        .commentController
+                        .text
+                        .isEmpty ||
+                    Provider.of<WasteProductCookerPageProvider>(context,
+                            listen: false)
+                        .numberOfController
+                        .text
+                        .isEmpty
+                ? null
+                : () {
+                    CookerService().postGarbage(
+                      WasteProduct(
+                        comment: Provider.of<WasteProductCookerPageProvider>(
+                                context,
+                                listen: false)
+                            .commentController
+                            .text,
+                        productId: productId,
+                        weight: int.parse(
+                          Provider.of<WasteProductCookerPageProvider>(context,
+                                  listen: false)
+                              .numberOfController
+                              .text,
+                        ),
+                      ),
+                      id,
+                    );
+                  },
+      ),
+    );
+  }
+}
+
+// ignore: must_be_immutable
+class _ShowDialogDateContent extends StatelessWidget {
+  dynamic productId;
+  final String id;
+
+  _ShowDialogDateContent(
+    productId,
+    this.id, {
+    Key? key,
+  }) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      type: MaterialType.transparency,
+      child: Container(
+        padding: EdgeInsets.all(gW(20.0)),
+        margin: EdgeInsets.only(
+            bottom: gH(500.0), left: gW(10.0), right: gW(10.0), top: gH(100.0)),
+        decoration: BoxDecoration(
+          color: whiteColor,
+          borderRadius: BorderRadius.circular(
+            gW(10.0),
+          ),
+        ),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _numberInputFieldInDialog(context),
+                _wasteButtonInDialog(context, productId, id)
+              ],
+            ),
+            SizedBox(height: gH(10.0)),
+            _commentInputFieldInDialog(context),
+          ],
+        ),
+      ),
     );
   }
 
@@ -268,7 +386,7 @@ class CookerShowProductsInStoragePage extends StatelessWidget {
     );
   }
 
-  _wasteButtonInDialog(BuildContext context, productId) {
+  _wasteButtonInDialog(BuildContext context, dynamic productId, String id) {
     return SizedBox(
       height: gH(40.0),
       width: gW(120.0),
@@ -316,7 +434,7 @@ class CookerShowProductsInStoragePage extends StatelessWidget {
                               .text,
                         ),
                       ),
-                      productId,
+                      id,
                     );
                   },
       ),

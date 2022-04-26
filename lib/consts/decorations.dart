@@ -5,9 +5,12 @@ import 'package:governess/consts/size_config.dart';
 abstract class DecorationMy {
   static inputDecoration(String text1, String? text2) {
     return InputDecoration(
+      floatingLabelStyle: TextStyle(
+        color: greyColor,
+      ),
       border: _inputBorder(),
       focusedBorder: _inputBorder(),
-     
+      enabledBorder: _inputBorder(),
       label: text2 != null
           ? RichText(
               text: TextSpan(
@@ -23,7 +26,7 @@ abstract class DecorationMy {
             )
           : Text(
               text1,
-              style: TextStyle( fontSize: gW(20.0)),
+              style: TextStyle(fontSize: gW(20.0)),
             ),
     );
   }
@@ -32,7 +35,7 @@ abstract class DecorationMy {
     return OutlineInputBorder(
       borderSide: BorderSide(color: mainColor),
       borderRadius: BorderRadius.circular(
-        gW(10.0),
+        gW(20.0),
       ),
     );
   }

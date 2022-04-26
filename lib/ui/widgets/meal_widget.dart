@@ -1,13 +1,17 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+
 import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/models/nurse_models/daily_menu_model.dart';
 
 class MealWidget extends StatelessWidget {
   MealAgeStandardResponseSaveDtoList? data;
-  MealWidget({required this.data, Key? key}) : super(key: key);
+ MealWidget({
+    Key? key,
+   required this.data,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +67,7 @@ class MealWidget extends StatelessWidget {
         ],
       ),
     );
-    ;
+    
   }
 
   Text _text18grey(String text) {

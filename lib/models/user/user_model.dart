@@ -6,7 +6,7 @@ class User {
   String? username;
   String? surname;
   String? name;
-  Null? fatherName;
+  String? fatherName;
 
   User(
       {this.id,

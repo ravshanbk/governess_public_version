@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:governess/consts/colors.dart';
-import 'package:governess/consts/print_my.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/models/cooker/meal_info_model.dart';
 import 'package:governess/services/cooker_service.dart';
@@ -13,7 +12,7 @@ class CookerMealInfoPage extends StatelessWidget {
   final int? mealAgeStandartId;
   final int? menuId;
   final String? mealName;
-  CookerMealInfoPage(
+  const CookerMealInfoPage(
       {required this.mealAgeStandartId,
       required this.menuId,
       required this.mealName,
@@ -204,44 +203,7 @@ class CookerMealInfoPage extends StatelessWidget {
     );
   }
 
-  SliverToBoxAdapter _fake(MealInfo data) {
-    return SliverToBoxAdapter(
-      child: Column(
-        children: [
-          t("data.name!: ", data.name!),
-          t("data.id: ", data.id.toString()),
-          t("data.mealCategoryId: ", data.mealCategoryId.toString()),
-          t("data.mealCategoryName: ", data.mealCategoryName.toString()),
-          t("data.weight: ", data.weight.toString()),
-          t("data.comment: ", data.comment.toString()),
-          t("", "\n"),
-          //
-          // t(data.attachment!.bytes!),
-          t("data.attachment!.id: ", data.attachment!.id!.toString()),
-          t("", "\n"),
-          t("data.ingredientDto!.carbohydrates: ",
-              data.ingredientDto!.carbohydrates.toString()),
-          t("data.ingredientDto!.kcal: ", data.ingredientDto!.kcal.toString()),
-          t("data.ingredientDto!.oil: ", data.ingredientDto!.oil.toString()),
-          t("data.ingredientDto!.protein: ",
-              data.ingredientDto!.protein.toString()),
-          t("data.ingredientDto!.id: ", data.ingredientDto!.id.toString()),
-          t("", "\n"),
-
-          t("data.productMeals: ", data.productMeals![0].id.toString()),
-          t("data.productMeals![0].name: ",
-              data.productMeals![0].name.toString()),
-          t("data.productMeals![0].productId: ",
-              data.productMeals![0].productId.toString()),
-          t("data.productMeals![0].withoutExit: ",
-              data.productMeals![0].withoutExit.toString()),
-          t("data.productMeals![0].weight: ",
-              data.productMeals![0].weight.toString()),
-        ],
-      ),
-    );
-  }
-
+  
 // Taom ma'lumotlari
   SliverToBoxAdapter _mealInfo(MealInfo data) {
     return SliverToBoxAdapter(

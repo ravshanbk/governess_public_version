@@ -1,20 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:governess/consts/colors.dart';
-import 'package:governess/consts/print_my.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/models/cooker/product_cooker_product.dart';
 import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/providers/cooker/show_in_out_list_product_provider.dart';
 import 'package:governess/providers/cooker/waste_product_cooker_page_provider.dart';
 import 'package:governess/services/cooker_service.dart';
+import 'package:governess/ui/widgets/date_time_show_button_widget.dart';
 import 'package:governess/ui/widgets/future_builder_of_no_data_widget.dart';
 import 'package:governess/ui/widgets/indicator_widget.dart';
 import 'package:governess/ui/widgets/show_in_out_list_product_widget.dart';
 import 'package:governess/ui/widgets/text_in_row_widget.dart';
 import 'package:provider/provider.dart';
 
-class CookerWastProductPage extends StatelessWidget {
+class CookerWastProductPage extends StatefulWidget {
   const CookerWastProductPage({Key? key}) : super(key: key);
+
+  @override
+  State<CookerWastProductPage> createState() => _CookerWastProductPageState();
+}
+
+class _CookerWastProductPageState extends State<CookerWastProductPage> {
+  DateTime start = DateTime.now();
+
+  DateTime end = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
@@ -25,22 +35,52 @@ class CookerWastProductPage extends StatelessWidget {
         centerTitle: true,
         backgroundColor: mainColor,
         elevation: 0,
-        title: const Text("Wast Product Page"),
+        title: const Text("Chiqitlar"),
       ),
-      body: FutureBuilder<List<CookerProduct>>(
-        future: CookerService().getAvailbleProductsInStorage(),
-        builder: (context, AsyncSnapshot<List<CookerProduct>> snap) {
-          if (snap.connectionState == ConnectionState.done &&
-              snap.data!.isNotEmpty) {
-            return _body(context, snap.data!);
-          } else if (snap.connectionState == ConnectionState.done &&
-              snap.data!.isEmpty) {
-            return const NoDataWidgetForFutureBuilder(
-                "Hozircha Omborda Mahsulotlar Mavjud Emas");
-          } else {
-            return IndicatorWidget(snap);
-          }
-        },
+      body: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
+        slivers: [
+          SliverAppBar(
+            floating: true,
+            pinned: false,
+            automaticallyImplyLeading: false,
+            backgroundColor: greyColor,
+            leadingWidth: 0.0,
+            actions: [
+              DateTimeShowButton(DTFM.maker(start.millisecondsSinceEpoch), () {
+                _showDataPicker(
+                  context,
+                  true,
+                );
+              }),
+              SizedBox(width: gW(50.0)),
+              DateTimeShowButton(DTFM.maker(end.millisecondsSinceEpoch), () {
+                _showDataPicker(
+                  context,
+                  false,
+                );
+              }),
+              SizedBox(width: gW(23.0)),
+            ],
+          ),
+          SliverToBoxAdapter(
+            child: FutureBuilder<List<CookerProduct>>(
+              future: CookerService().getGarbage(start, end),
+              builder: (context, AsyncSnapshot<List<CookerProduct>> snap) {
+                if (snap.connectionState == ConnectionState.done &&
+                    snap.data!.isNotEmpty) {
+                  return _body(context, snap.data!);
+                } else if (snap.connectionState == ConnectionState.done &&
+                    snap.data!.isEmpty) {
+                  return const NoDataWidgetForFutureBuilder(
+                      "Hozircha Omborda Mahsulotlar Mavjud Emas");
+                } else {
+                  return IndicatorWidget(snap);
+                }
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -49,7 +89,7 @@ class CookerWastProductPage extends StatelessWidget {
     return ListView.separated(
       key: Key(DateTime.now().toString()),
       shrinkWrap: true,
-      physics: const BouncingScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       padding: EdgeInsets.all(
         gW(20.0),
       ),
@@ -255,9 +295,7 @@ class CookerWastProductPage extends StatelessWidget {
                                     .text
                                     .isEmpty
                             ? null
-                            : () {
-                               
-                              },
+                            : () {},
                       ),
                     )
                   ],
@@ -294,6 +332,40 @@ class CookerWastProductPage extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+
+  _showDataPicker(BuildContext context, bool idf) {
+    DatePicker.showPicker(
+      context,
+      showTitleActions: true,
+      theme: DatePickerTheme(
+        backgroundColor: lightGreyColor,
+        containerHeight: gH(200.0),
+        headerColor: mainColor,
+        itemStyle: const TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.bold,
+          fontSize: 18,
+        ),
+        doneStyle: TextStyle(
+          color: whiteColor,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          letterSpacing: gW(1.5),
+          decoration: TextDecoration.underline,
+        ),
+      ),
+      onConfirm: (date) {
+        if (idf) {
+          start = date;
+          setState(() {});
+        } else {
+          end = date;
+          setState(() {});
+        }
+      },
+      locale: LocaleType.en,
     );
   }
 }

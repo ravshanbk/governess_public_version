@@ -1,4 +1,5 @@
 import 'package:governess/local_storage/boxes.dart';
+import 'package:governess/models/hive_models/pin_hive_model.dart';
 import 'package:governess/models/hive_models/user_h_model.dart';
 
 class UserHive {
@@ -32,8 +33,21 @@ class UserHive {
   }
 
   logOutUser() {
+    final pinBox = Boxes.getPinUser();
+    pinBox.clear();
     final box = Boxes.getUser();
     box.clear();
-    
+  }
+
+  pinSave(String pin) {
+    final pinUser = PinHive()..pinUser = pin;
+
+    final box = Boxes.getPinUser();
+
+    if (box.isEmpty) {
+      box.add(pinUser);
+    } else {
+      box.putAt(0, pinUser);
+    }
   }
 }

@@ -4,6 +4,7 @@ class AuthPageProvider extends ChangeNotifier {
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
   TextEditingController loginController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  TextEditingController retwritePasswordController = TextEditingController();
 
   bool isInProgress = false;
   changeIsInProgress(bool v) {
@@ -14,6 +15,8 @@ class AuthPageProvider extends ChangeNotifier {
   clear() {
     loginController.clear();
     passwordController.clear();
+    notifyListeners();
+
     
   }
 }

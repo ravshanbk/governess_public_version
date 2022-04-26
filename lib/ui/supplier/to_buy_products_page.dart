@@ -15,8 +15,9 @@ import 'package:governess/providers/supplier/to_buy_products_page_provider.dart.
 import 'package:governess/services/supplier_service.dart';
 import 'package:governess/ui/widgets/expansion_tile_to_show_product_widget.dart';
 import 'package:governess/ui/widgets/show_toast_function.dart';
-import 'package:governess/ui/widgets/submit_button_widger.dart.dart';
+import 'package:governess/ui/widgets/send_button_widger.dart.dart';
 
+// ignore: must_be_immutable//!
 class ToBuyProductsPage extends StatefulWidget {
   ToBuyProductsPage({Key? key}) : super(key: key);
 
@@ -437,7 +438,7 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
           _divider(),
           _textInRow("Qadoqlangandan so'ng (miq)", data.weightPack.toString()),
           _divider(),
-          SendButtonWidget((data.status! == "TO'LIQ TUGALLANGAN")
+          SendButtonWidget(onPressed:(data.status! == "TO'LIQ TUGALLANGAN")
               ? null
               : () {
                   Provider.of<ToBuyProductPageProvider>(context, listen: false)
@@ -568,7 +569,7 @@ class _SendProductShowDialogContentWidget extends StatelessWidget {
   }
 
   SendButtonWidget _sendButtonInShowDialog(BuildContext con, Product data) {
-    return SendButtonWidget(() async {
+    return SendButtonWidget(onPressed:() async {
       if ((Provider.of<ToBuyProductPageProvider>(con, listen: false)
               .numberController
               .text

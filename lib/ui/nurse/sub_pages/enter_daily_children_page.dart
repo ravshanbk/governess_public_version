@@ -51,7 +51,7 @@ class NurseEnterDailyChildrenPage extends StatelessWidget {
     );
   }
 
-  Future<dynamic> _showDialog(BuildContext context) {
+  Future<dynamic> _showDialog(BuildContext context) {//!
     return showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -88,7 +88,7 @@ class NurseEnterDailyChildrenPage extends StatelessWidget {
     );
   }
 
-  ElevatedButton _addButton() {
+  ElevatedButton _addButton() {//!
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         shape: RoundedRectangleBorder(

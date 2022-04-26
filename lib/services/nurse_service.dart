@@ -1,25 +1,19 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:governess/consts/print_my.dart';
 import 'package:governess/models/nurse_models/daily_menu_model.dart';
 import 'package:governess/models/nurse_models/number_of_children_model.dart';
 import 'package:governess/models/nurse_models/v_model.dart';
-import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/models/other/post_res_model.dart';
 import 'package:governess/services/auth_service.dart';
 
 class NurseService {
-  Options option = Options(headers: {
-    "Authorization":
-        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6IlJPTEVfSEFNU0hJUkEiLCJzdWIiOiJiMmhhbXNoaXJhIiwiaWF0IjoxNjUwNzA4NjQ3LCJleHAiOjE2NTE1NzI2NDd9.EsGYGugJcSS2qTyBwC369bMOAjW7gK0cywgJ6fzDkII"
-  });
+  
 
   Future<DailyMenu> getDailyMenu(DateTime date) async {
 
     try {
       Response res = await Dio().get(
         "${AuthService.localhost}/out/api/multiMenu/getMenuKin?timestamp=${date.millisecondsSinceEpoch}",
-        options: option,
+        options: AuthService.option,
       );
       Future.delayed(const Duration(seconds: 2), () {
       });
@@ -38,7 +32,7 @@ class NurseService {
         data: {
           "numberOfChildrenDTOList": [v]
         },
-        options: option,
+        options: AuthService.option,
       );
       return ResModel.fromJson(res.data);
     } catch (e) {
@@ -51,7 +45,7 @@ class NurseService {
     try {
       Response res = await Dio().get(
         "${AuthService.localhost}/out/api/perDay?timestamp=${date.millisecondsSinceEpoch}",
-        options: option,
+        options: AuthService.option,
       );
       data = NumberOfChildren.fromJson(res.data);
       return data;
@@ -66,7 +60,7 @@ class NurseService {
       Response res = await Dio().patch(
         "${AuthService.localhost}/out/api/perDay/$gardenId",
         data: {"numberOfChildrenDTOList": v},
-        options: option,
+        options: AuthService.option,
       );
       return ResModel.fromJson(res.data);
     } catch (e) {

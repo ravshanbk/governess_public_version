@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_this
+
 class UserPlace {
   int? id;
   String? name;
@@ -24,15 +26,17 @@ class UserPlace {
     username = json['username'];
     email = json['email'];
     address =
+        // ignore: unnecessary_new
         json['address'] != null ? new Address.fromJson(json['address']) : null;
     phone = json['phone'];
     website = json['website'];
     company =
+        // ignore: unnecessary_new
         json['company'] != null ? new Company.fromJson(json['company']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = this.id;
     data['name'] = this.name;
     data['username'] = this.username;
@@ -63,11 +67,11 @@ class Address {
     suite = json['suite'];
     city = json['city'];
     zipcode = json['zipcode'];
-    geo = json['geo'] != null ? new Geo.fromJson(json['geo']) : null;
+    geo = json['geo'] != null ? Geo.fromJson(json['geo']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['street'] = this.street;
     data['suite'] = this.suite;
     data['city'] = this.city;
@@ -91,7 +95,7 @@ class Geo {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['lat'] = this.lat;
     data['lng'] = this.lng;
     return data;
@@ -112,7 +116,7 @@ class Company {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['name'] = this.name;
     data['catchPhrase'] = this.catchPhrase;
     data['bs'] = this.bs;

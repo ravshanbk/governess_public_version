@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/decorations.dart';
-import 'package:governess/consts/print_my.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/models/cooker/receive_product_model.dart';
 import 'package:governess/models/supplier/product_model.dart';
@@ -11,7 +10,7 @@ import 'package:governess/ui/widgets/expansion_tile_to_show_product_widget.dart'
 import 'package:governess/ui/widgets/future_builder_of_no_data_widget.dart';
 import 'package:governess/ui/widgets/indicator_widget.dart';
 import 'package:governess/ui/widgets/show_toast_function.dart';
-import 'package:governess/ui/widgets/submit_button_widger.dart.dart';
+import 'package:governess/ui/widgets/send_button_widger.dart.dart';
 import 'package:provider/provider.dart';
 
 class CookerAcceptProductPage extends StatelessWidget {
@@ -230,7 +229,7 @@ class _SendProductShowDialogContentWidget extends StatelessWidget {
 
   SendButtonWidget _sendButtonInShowDialog(BuildContext con, Product data) {
     return SendButtonWidget(
-      () async {
+      onPressed: () async {
         if ((Provider.of<CookerAcceptProductProvider>(con, listen: false)
                 .numberController
                 .text

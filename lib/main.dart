@@ -2,11 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:governess/consts/colors.dart';
-import 'package:governess/consts/print_my.dart';
 import 'package:governess/consts/size_config.dart';
+import 'package:governess/local_storage/boxes.dart';
 import 'package:governess/models/hive_models/user_h_model.dart';
+import 'package:governess/models/hive_models/pin_hive_model.dart';
 import 'package:governess/providers/auth/apply_application_page_provider.dart';
 import 'package:governess/providers/auth/auth_page_provider.dart';
+import 'package:governess/providers/auth/pin_code_page_provider.dart';
 import 'package:governess/providers/cooker/accept_product_provider.dart';
 import 'package:governess/providers/cooker/cooker_products_page_provider.dart';
 import 'package:governess/providers/nurse/daily_menu_page_provider.dart';
@@ -16,18 +18,22 @@ import 'package:governess/providers/supplier/get_shipped_products_provider.dart'
 import 'package:governess/providers/cooker/show_in_out_list_product_provider.dart';
 import 'package:governess/providers/supplier/to_buy_products_page_provider.dart.dart';
 import 'package:governess/providers/cooker/waste_product_cooker_page_provider.dart';
-import 'package:governess/ui/auth_page.dart';
+import 'package:governess/ui/auth/auth_page.dart';
+import 'package:governess/ui/auth/check_pincode_page.dart';
 import 'package:governess/ui/widgets/governess_app_bar.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 void main() async {
-
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
+  final bool hasNet = await InternetConnectionChecker().hasConnection;
+
   Hive.registerAdapter(UserHAdapter());
   await Hive.openBox<UserH>("user");
+  Hive.registerAdapter(PinHiveAdapter());
+  await Hive.openBox<PinHive>("pinUser");
 
   runApp(
     MultiProvider(
@@ -68,14 +74,18 @@ void main() async {
         ChangeNotifierProvider(
           create: (context) => CookerAcceptProductProvider(),
         ),
+        ChangeNotifierProvider(
+          create: (context) => PinCodePageProvider(),
+        ),
       ],
-      child: const MyApp(),
+      child: MyApp(hasNet),
     ),
   );
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+  bool hasInternet;
+  MyApp(this.hasInternet, {Key? key}) : super(key: key);
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -83,10 +93,10 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   late StreamSubscription<InternetConnectionStatus> listener;
-  int which = 0;
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
     List<Widget> widgets = const [
       AuthPage(),
       NoInternetConnectionPage(),
@@ -97,13 +107,13 @@ class _MyAppState extends State<MyApp> {
           case InternetConnectionStatus.connected:
             // ignore: avoid_print
             print('Data connection is available.');
-            which = 0;
+            widget.hasInternet = true;
             setState(() {});
             break;
           case InternetConnectionStatus.disconnected:
             // ignore: avoid_print
             print('You are disconnected from the internet.');
-            which = 1;
+            widget.hasInternet = false;
             setState(() {});
             break;
         }
@@ -111,22 +121,18 @@ class _MyAppState extends State<MyApp> {
     );
 
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: widgets[which],
+        debugShowCheckedModeBanner: false,
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: widget.hasInternet ? _body() : const NoInternetConnectionPage());
+  }
 
-// CookerMealInfoPage(mealAgeStandartId: 8, menuId: 5,mealName: "fsdf")
-      // ManagerHomePage()
-      // HomePageCookerPage()
-      //  ShowProductsInStoragePage()
-      // const AuthPage()
-      // ToBuyProductsPage(),
-      //  ApplyAplicationPage()
-// const GetShippedProductPage(),
-    );
+  _body() {
+    return Boxes.getUser().values.isEmpty || Boxes.getPinUser().values.isEmpty
+        ? const AuthPage()
+        : const CheckingPinCodePage();
   }
 
   @override

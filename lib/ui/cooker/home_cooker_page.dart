@@ -7,7 +7,6 @@ import 'package:governess/ui/cooker/sub_pages/show_daily_menu_page.dart';
 import 'package:governess/ui/cooker/sub_pages/show_number_of_children_page.dart';
 import 'package:governess/ui/widgets/big_elevate_button_home_page.dart';
 import 'package:governess/ui/widgets/fake_drawer_widget.dart';
-import 'package:governess/ui/widgets/text_span_grey_16_widget.dart';
 
 class CookerHomePage extends StatelessWidget {
   const CookerHomePage({Key? key}) : super(key: key);
@@ -79,15 +78,5 @@ class CookerHomePage extends StatelessWidget {
   }
 
   
-    RichText _richText(String text1, String text2) {
-    return RichText(
-      textAlign: TextAlign.start,
-      text: TextSpan(
-        children: [
-          textSpanGrey16Widget(text1),
-          textSpan18black(text2),
-        ],
-      ),
-    );
-  }
+   
 }

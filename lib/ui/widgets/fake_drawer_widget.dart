@@ -4,7 +4,8 @@ import 'package:governess/consts/size_config.dart';
 import 'package:governess/local_storage/boxes.dart';
 import 'package:governess/local_storage/user_storage.dart';
 import 'package:governess/models/hive_models/user_h_model.dart';
-import 'package:governess/ui/auth_page.dart';
+import 'package:governess/ui/auth/auth_page.dart';
+import 'package:governess/ui/auth/change_password_page.dart';
 import 'package:governess/ui/widgets/text_span_grey_16_widget.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -39,10 +40,14 @@ class FakeDrawerWidget extends StatelessWidget {
             Text(
               "Shaxsiy Malumotlar",
               style: TextStyle(
+                color: mainColor,
                 fontSize: gW(20.0),
               ),
             ),
-            Divider(thickness: gW(2.0)),
+            Divider(
+              thickness: gW(2.0),
+              color: mainColor,
+            ),
             SizedBox(height: gH(20.0)),
             _richText("Tahallus: ", data.username),
             SizedBox(height: gH(20.0)),
@@ -52,41 +57,43 @@ class FakeDrawerWidget extends StatelessWidget {
             SizedBox(height: gH(20.0)),
             _richText("Lavozimi: ", data.role),
             SizedBox(height: gH(50.0)),
-            ElevatedButton(
+            _exitButton(
+              title: "Tizimdan Chiqish",
+              context: context,
+              icon: Icons.logout_outlined,
               onPressed: () {
                 showDialog(
                     context: context,
                     builder: (context) {
-                      return _ShowDialogDateContent();
+                      return const _ShowDialogDateContent(false);
                     });
               },
-              style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  side: BorderSide(color: mainColor),
-                  borderRadius: BorderRadius.circular(
-                    gW(
-                      25.0,
-                    ),
-                  ),
-                ),
-                primary: mainColor_02,
-                elevation: 0,
-                shadowColor: whiteColor,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Tizimdan Chiqish",
-                    style: TextStyle(color: mainColor),
-                  ),
-                  Icon(
-                    Icons.logout_outlined,
-                    color: mainColor,
-                  )
-                ],
-              ),
             ),
+            SizedBox(height: gH(20.0)),
+            _exitButton(
+                title: "Pinkodni O'zgartirish",
+                context: context,
+                icon: Icons.replay_outlined,
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return const _ShowDialogDateContent(true);
+                      });
+                }),
+            SizedBox(height: gH(20.0)),
+            _exitButton(
+                title: "Pinkod O'zgartirish",
+                context: context,
+                icon: Icons.change_circle_outlined,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ChangePasswordPage(),
+                    ),
+                  );
+                }),
           ],
         ),
       ),
@@ -96,6 +103,42 @@ class FakeDrawerWidget extends StatelessWidget {
             gW(20.0),
           ),
         ),
+      ),
+    );
+  }
+
+  ElevatedButton _exitButton(
+      {required String title,
+      required BuildContext context,
+      required IconData icon,
+      required VoidCallback onPressed}) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        shape: RoundedRectangleBorder(
+          side: BorderSide(color: mainColor),
+          borderRadius: BorderRadius.circular(
+            gW(
+              25.0,
+            ),
+          ),
+        ),
+        primary: mainColor_02,
+        elevation: 0,
+        shadowColor: whiteColor,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            title,
+            style: TextStyle(color: mainColor),
+          ),
+          Icon(
+            icon,
+            color: mainColor,
+          )
+        ],
       ),
     );
   }
@@ -114,7 +157,8 @@ class FakeDrawerWidget extends StatelessWidget {
 }
 
 class _ShowDialogDateContent extends StatelessWidget {
-  const _ShowDialogDateContent({
+  final bool isPin;
+  const _ShowDialogDateContent(this.isPin,{
     Key? key,
   }) : super(key: key);
   @override
@@ -124,7 +168,7 @@ class _ShowDialogDateContent extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.all(gW(20.0)),
         margin: EdgeInsets.only(
-          top: gH(250.0),
+          top: gH(50.0),
           left: gW(10.0),
           right: gW(10.0),
           bottom: gH(350.0),
@@ -141,7 +185,15 @@ class _ShowDialogDateContent extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              "Rostdan ham chiqishni  xohlaysizmi?",
+              isPin? "Pinkodingizni o'zgartirmoqchimisiz?":"Rostdan ham chiqishni  xohlaysizmi?",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: mainColor,
+                fontSize: gW(25.0),
+              ),
+            ),
+            Text(
+             isPin?"Pinkodni o'zgartirish uchun tizimga qaytadan kirishingizga to'gri keladi": "Chiqqaningizdan keyin qayta ro'yxatdan o'tishingiz kerak bo'ladi",
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Colors.red,

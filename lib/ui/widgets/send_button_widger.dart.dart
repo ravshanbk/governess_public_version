@@ -5,7 +5,7 @@ import 'package:governess/consts/size_config.dart';
 class SendButtonWidget extends StatelessWidget {
   final String titleOfButton;
   final VoidCallback? onPressed;
-  const SendButtonWidget(this.onPressed, {required this.titleOfButton,Key? key}) : super(key: key);
+  const SendButtonWidget({required this.onPressed, required this.titleOfButton,Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
