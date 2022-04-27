@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/decorations.dart';
-import 'package:governess/consts/print_my.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/models/nurse_models/number_of_children_model.dart';
 import 'package:governess/models/nurse_models/v_model.dart';
-import 'package:governess/providers/nurse/editing_children_page_provider.dart';
+import 'package:governess/providers/nurse/enter_daily_children_page_provider.dart';
 import 'package:governess/services/nurse_service.dart';
 import 'package:governess/ui/nurse/nurse_home_page.dart';
 import 'package:governess/ui/widgets/add_button_widget.dart';
@@ -13,45 +12,50 @@ import 'package:governess/ui/widgets/cancel_button_widget.dart';
 import 'package:governess/ui/widgets/show_toast_function.dart';
 import 'package:provider/provider.dart';
 
-class NurseEditDailyChildrenPage extends StatelessWidget {
+class NurseEnterDailyChildrenPage extends StatelessWidget {
   final NumberOfChildren data;
-
-  const NurseEditDailyChildrenPage(this.data, {Key? key}) : super(key: key);
+  
+  const NurseEnterDailyChildrenPage(this.data, {Key? key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     List<Widget> inputFields = List.generate(
-      context.read<NurseChangeChildrenNumberPageProvider>().controllers!.length,
+      context
+          .read<NurseEnterChildrenNumberPageProvider>()
+          .controllers!
+          .length,
       (__) {
         return TextFormField(
           key: Key("$__ EditNumberOfChildren"),
           autofocus: false,
-          focusNode:
-              context.watch<NurseChangeChildrenNumberPageProvider>().nodes![__],
+          focusNode: context
+              .watch<NurseEnterChildrenNumberPageProvider>()
+              .nodes![__],
           keyboardType: TextInputType.number,
           cursorColor: mainColor,
           onFieldSubmitted: (v) {
             if (__ <
-                Provider.of<NurseChangeChildrenNumberPageProvider>(context,
+                Provider.of<NurseEnterChildrenNumberPageProvider>(context,
                             listen: false)
                         .nodes!
                         .length -
                     1) {
-              Provider.of<NurseChangeChildrenNumberPageProvider>(context,
+              Provider.of<NurseEnterChildrenNumberPageProvider>(context,
                       listen: false)
                   .nodes![__]
                   .unfocus();
               FocusScope.of(context).requestFocus(
-                  Provider.of<NurseChangeChildrenNumberPageProvider>(context,
+                  Provider.of<NurseEnterChildrenNumberPageProvider>(context,
                           listen: false)
                       .nodes![__ + 1]);
             } else {
-              Provider.of<NurseChangeChildrenNumberPageProvider>(context,
+              Provider.of<NurseEnterChildrenNumberPageProvider>(context,
                       listen: false)
                   .nodes![__]
                   .unfocus();
               FocusScope.of(context).requestFocus(
-                  Provider.of<NurseChangeChildrenNumberPageProvider>(context,
+                  Provider.of<NurseEnterChildrenNumberPageProvider>(context,
                           listen: false)
                       .nodes![0]);
             }
@@ -62,7 +66,7 @@ class NurseEditDailyChildrenPage extends StatelessWidget {
             }
           },
           controller: context
-              .read<NurseChangeChildrenNumberPageProvider>()
+              .read<NurseEnterChildrenNumberPageProvider>()
               .controllers![__],
           decoration: DecorationMy.inputDecoration("Yosh toifa: ",
               data.perDayList![0].numberOfChildrenDtoList![__].ageGroupName),
@@ -73,7 +77,7 @@ class NurseEditDailyChildrenPage extends StatelessWidget {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Form(
-        key: context.read<NurseChangeChildrenNumberPageProvider>().formKey,
+        key: context.read<NurseEnterChildrenNumberPageProvider>().formKey,
         child: Column(
           children: [
             ListView.separated(
@@ -114,7 +118,7 @@ class NurseEditDailyChildrenPage extends StatelessWidget {
   AddButtonWidget _addButton(BuildContext context) {
     return AddButtonWidget(
       callBack: () async {
-        if (Provider.of<NurseChangeChildrenNumberPageProvider>(context,
+        if (Provider.of<NurseEnterChildrenNumberPageProvider>(context,
                 listen: false)
             .formKey
             .currentState!
@@ -126,34 +130,31 @@ class NurseEditDailyChildrenPage extends StatelessWidget {
                 ageGroupId: data
                     .perDayList![0].numberOfChildrenDtoList![index].ageGroupId,
                 number: int.parse(
-                    Provider.of<NurseChangeChildrenNumberPageProvider>(context,
+                    Provider.of<NurseEnterChildrenNumberPageProvider>(context,
                             listen: false)
                         .controllers![index]
                         .text),
               );
             },
           );
-          p("IDdddd: " + data.perDayList![0].id!.toString());
-          NurseService()
-              .changeDailyChildrenNumber(v, data.perDayList![0].id!)
-              .then(
-            (value) {
-              if (value.success!) {
-                showToast(value.text!, true, false);
-                context
-                    .read<NurseChangeChildrenNumberPageProvider>()
-                    .clearControllers();
+          NurseService().enterDailyChildrenNumber(v).then(
+              (value) {
+                if (value.success!) {
+                  showToast(value.text!, true, false);
+                  context
+                      .read<NurseEnterChildrenNumberPageProvider>()
+                      .clearControllers();
 
-                Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const NurseHomePage()),
-                    (route) => false);
-              } else {
-                return showToast(value.text!, value.success!, false);
-              }
-            },
-          );
+                  Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const NurseHomePage()),
+                      (route) => false);
+                } else {
+                  return showToast(value.text!, false, false);
+                }
+              },
+            );
         }
       },
     );

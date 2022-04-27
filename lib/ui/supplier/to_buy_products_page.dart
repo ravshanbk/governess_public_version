@@ -438,7 +438,9 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
           _divider(),
           _textInRow("Qadoqlangandan so'ng (miq)", data.weightPack.toString()),
           _divider(),
-          SendButtonWidget(onPressed:(data.status! == "TO'LIQ TUGALLANGAN")
+          SendButtonWidget(
+            width: gW(200.0),
+            onPressed:(data.status! == "TO'LIQ TUGALLANGAN")
               ? null
               : () {
                   Provider.of<ToBuyProductPageProvider>(context, listen: false)
@@ -569,7 +571,9 @@ class _SendProductShowDialogContentWidget extends StatelessWidget {
   }
 
   SendButtonWidget _sendButtonInShowDialog(BuildContext con, Product data) {
-    return SendButtonWidget(onPressed:() async {
+    return SendButtonWidget(
+      width: gW(200.0),
+      onPressed:() async {
       if ((Provider.of<ToBuyProductPageProvider>(con, listen: false)
               .numberController
               .text

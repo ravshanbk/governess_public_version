@@ -59,6 +59,7 @@ class _PinCodePageState extends State<PinCodePage> {
 
   SendButtonWidget _submitButton(BuildContext context) {
     return SendButtonWidget(
+      width: gW(200.0),
         onPressed: context.watch<PinCodePageProvider>().idf
             ? () async {
                 await UserHive().pinSave(

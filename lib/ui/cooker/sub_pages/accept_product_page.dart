@@ -3,6 +3,7 @@ import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/decorations.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/models/cooker/receive_product_model.dart';
+import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/models/supplier/product_model.dart';
 import 'package:governess/providers/cooker/accept_product_provider.dart';
 import 'package:governess/services/cooker_service.dart';
@@ -86,27 +87,29 @@ class CookerAcceptProductPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                primary: mainColor,
-                elevation: 0,
-                shadowColor: Colors.transparent,
+            Padding(
+              padding:  EdgeInsets.symmetric(horizontal: gW(20.0)),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  primary: mainColor,
+                  elevation: 0,
+                  shadowColor: Colors.transparent,
+                ),
+                onPressed: () {
+                  _shownputDialog(context, data);
+                },
+                child: const Text("Qabul qilish"),
               ),
-              onPressed: () {
-                _shownputDialog(context, data);
-              },
-              child: const Text("Qabul qilish"),
             ),
             SizedBox(height: gH(10.0)),
             _textInRow("Korxona nomi", data.companyName.toString()),
             _divider(),
             _textInRow("Zayavka nomi", data.orderNumber.toString()),
             _divider(),
-            _textInRow("Yuborilgan Sana", "DTFM.maker(data.sendDate!)"),
+            _textInRow("Yuborilgan Sana",
+                data.sendDate == null ? "null" : DTFM.maker(data.sendDate!)),
             _divider(),
             _textInRow("O'lchov birligi", data.measurementType.toString()),
-            _divider(),
-            _textInRow("Holati", data.status.toString()),
             _divider(),
             _textInRow("Yaxlitlash miqdori", data.pack.toString()),
             _divider(),
@@ -228,7 +231,7 @@ class _SendProductShowDialogContentWidget extends StatelessWidget {
   }
 
   SendButtonWidget _sendButtonInShowDialog(BuildContext con, Product data) {
-    return SendButtonWidget(
+    return SendButtonWidget(width: gW(200.0),
       onPressed: () async {
         if ((Provider.of<CookerAcceptProductProvider>(con, listen: false)
                 .numberController

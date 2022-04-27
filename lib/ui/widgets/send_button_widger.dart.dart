@@ -3,9 +3,15 @@ import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/size_config.dart';
 
 class SendButtonWidget extends StatelessWidget {
+ final double width;
   final String titleOfButton;
   final VoidCallback? onPressed;
-  const SendButtonWidget({required this.onPressed, required this.titleOfButton,Key? key}) : super(key: key);
+  const SendButtonWidget(
+      {required this.width,
+      required this.onPressed,
+      required this.titleOfButton,
+      Key? key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -17,9 +23,10 @@ class SendButtonWidget extends StatelessWidget {
       ),
       style: ElevatedButton.styleFrom(
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        fixedSize: Size(gW(200.0), gH(40.0)),
+        fixedSize: Size(width, gH(40.0)),
+        // minimumSize: Size(gW(130.0), gH(40.0)),
         elevation: 0,
-        primary: Colors.green,
+        primary: mainColor,
         shape: RoundedRectangleBorder(
           side: const BorderSide(color: Colors.green),
           borderRadius: BorderRadius.circular(

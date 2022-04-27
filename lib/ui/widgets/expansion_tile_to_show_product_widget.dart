@@ -19,14 +19,11 @@ class ExpansionTileToShowProductWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: isExpanded ? whiteColor : mainColor_02,
-        borderRadius: BorderRadius.circular(
-          gW(10.0),
-        ),
-      ),
+    return Card(
+     
       child: ExpansionTile(
+        collapsedBackgroundColor: mainColor_02,
+        tilePadding: EdgeInsets.symmetric(horizontal: gW(10.0)),
         iconColor: Colors.grey,
         textColor: mainColor,
         key: Key(DateTime.now().toString()),
@@ -65,7 +62,7 @@ class ExpansionTileToShowProductWidget extends StatelessWidget {
           width: gW(5.0),
         ),
         Text(
-          data.status.toString(),
+          data.status!.length >21?data.status!.substring(0,20).replaceRange(19, 20, ".."):data.status!,
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: gW(14.0),

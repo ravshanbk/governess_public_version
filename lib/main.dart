@@ -40,7 +40,7 @@ void main() async {
           create: (context) => DailyMenuPageProvider(),
         ),
         ChangeNotifierProvider(
-          create: (context) => NurseEditingChildrenNumberPageProvider(),
+          create: (context) => NurseChangeChildrenNumberPageProvider(),
         ),
         ChangeNotifierProvider(
           create: (context) => ToBuyProductPageProvider(),

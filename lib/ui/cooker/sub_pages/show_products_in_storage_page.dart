@@ -10,6 +10,7 @@ import 'package:governess/providers/cooker/waste_product_cooker_page_provider.da
 import 'package:governess/services/cooker_service.dart';
 import 'package:governess/ui/widgets/future_builder_of_no_data_widget.dart';
 import 'package:governess/ui/widgets/indicator_widget.dart';
+import 'package:governess/ui/widgets/send_button_widger.dart.dart';
 import 'package:governess/ui/widgets/show_in_out_list_product_widget.dart';
 import 'package:governess/ui/widgets/show_toast_function.dart';
 import 'package:governess/ui/widgets/text_in_row_widget.dart';
@@ -29,7 +30,7 @@ class CookerShowExistingProductPage extends StatelessWidget {
         title: Text(DTFM.maker(DateTime.now().millisecondsSinceEpoch)),
       ),
       body: FutureBuilder(
-        future: CookerService().getExistingProduct(),
+        future: CookerService().getAvailbleProductsInStorage(),
         builder: (context, AsyncSnapshot<List<CookerProduct>> snap) {
           if (snap.connectionState == ConnectionState.done &&
               snap.data!.isNotEmpty) {
@@ -50,9 +51,7 @@ class CookerShowExistingProductPage extends StatelessWidget {
     return ListView.separated(
       shrinkWrap: true,
       physics: const BouncingScrollPhysics(),
-      padding: EdgeInsets.all(
-        gW(20.0),
-      ),
+      padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: gH(20.0)),
       itemBuilder: (_, __) {
         return ShowInOutListProductWidget(
           key: Key("$__ StarageProducts"),
@@ -83,97 +82,74 @@ class CookerShowExistingProductPage extends StatelessWidget {
 
   _inOutListProductChild(
       List<CookerProduct> data, int __, int index, BuildContext context) {
-    return Container(
+    return Card(
+      elevation: 0,
+      color: mainColor_02,
       margin: EdgeInsets.symmetric(
         horizontal: 10.0,
         vertical: gH(5.0),
       ),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.black),
-        borderRadius: BorderRadius.circular(
-          gW(7.0),
-        ),
-      ),
       child: ExpansionTile(
+        collapsedIconColor: Colors.transparent,
+        collapsedBackgroundColor: mainColor_02,
         textColor: Colors.black,
-        iconColor: Colors.grey,
+        iconColor: Colors.transparent,
         controlAffinity: ListTileControlAffinity.platform,
         onExpansionChanged: (v) {},
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              DTFM.maker(data[__].inOutList![index].enterDate!),
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: gW(18.0)),
-            ),
-            Container(
-              margin: EdgeInsets.only(bottom: gW(10.0)),
-              height: gH(40.0),
-              width: gW(130.0),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  primary: mainColor,
-                  elevation: 0,
-                ),
-                onPressed: () async {
-                  p("Bekor Qilish");
-                  //!
-                  CookerService()
-                      .deleteGarbage(data[0].productId!)
-                      .then((value) {
-                    if (value) {
-                      showToast("Muvaffaqiyat", true, false);
-                    } else {
-                      showToast("Chiqarilmadi", false, false);
-                    }
-                  });
-                },
-                child: const Text("Bekor qilish"),
-              ),
-            ),
-          ],
+        title: Text(
+          DTFM.maker(data[__].inOutList![index].enterDate!),
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: gW(18.0)),
         ),
-        subtitle: SizedBox(
-          height: gH(40.0),
-          width: gW(150.0),
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              primary: mainColor,
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                side: BorderSide(color: whiteColor),
-                borderRadius: BorderRadius.circular(
-                  gW(7.0),
-                ),
-              ),
-            ),
-            child: Text(
-              "Chiqarish",
-              style: TextStyle(
-                  color: whiteColor,
-                  letterSpacing: gW(2.0),
-                  fontSize: gW(18.0)),
-            ),
-            onPressed: () {
-              p("Chiqarish");
-
-              // p(data[__].productId.toString());
-              // p(data[__].inOutList![index].id!.toString());
-              // Provider.of<WasteProductCookerPageProvider>(context,
-              //         listen: false)
-              //     .clear();
-              // showDialog(
-              //   context: context,
-              //   builder: (context) {
-              //     return _ShowDialogDateContent(
-              //         data[__].productId, data[__].inOutList![index].id!);
-              //   },
-              // );
-            },
-          ),
-        ),
+        expandedAlignment: Alignment.center,
         children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              SendButtonWidget(
+                width: gW(160.0),
+                onPressed: () {
+                  p("Chiqarish");
+
+                  // p(data[__].productId.toString());
+                  // p(data[__].inOutList![index].id!.toString());
+                  // Provider.of<WasteProductCookerPageProvider>(context,
+                  //         listen: false)
+                  //     .clear();
+                  // showDialog(
+                  //   context: context,
+                  //   builder: (context) {
+                  //     return _ShowDialogDateContent(
+                  //         data[__].productId, data[__].inOutList![index].id!);
+                  //   },
+                  // );
+                },
+                titleOfButton: "Chiqarish",
+              ),
+              SizedBox(
+                height: gH(10.0),
+              ),
+              SendButtonWidget(
+                width: gW(130.0),
+                onPressed: () {
+                  p("Bekor Qilish");
+                  // //!
+                  // CookerService()
+                  //     .deleteGarbage(data[0].productId!)
+                  //     .then((value) {
+                  //   if (value) {
+                  //     showToast("Muvaffaqiyat", true, false);
+                  //   } else {
+                  //     showToast("Chiqarilmadi", false, false);
+                  //   }
+                  // });
+                },
+                titleOfButton: "Bekor qilish",
+              ),
+            ],
+          ),
+          SizedBox(height: gH(10.0)),
+          _divider(),
           TextInRowWidget(
               "O'lchov birligi", data[__].inOutList![index].measurementType!),
           _divider(),

@@ -6,8 +6,9 @@ import 'package:governess/models/nurse_models/number_of_children_model.dart';
 import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/providers/nurse/editing_children_page_provider.dart';
 import 'package:governess/ui/nurse/sub_pages/edit_daily_childred_page.dart';
+import 'package:governess/ui/nurse/sub_pages/enter_daily_children_page.dart';
+import 'package:governess/ui/nurse/sub_pages/nurse_enter_daily_children_page.dart';
 import 'package:governess/ui/widgets/date_time_show_button_widget.dart';
-import 'package:governess/ui/widgets/future_builder_of_no_data_widget.dart';
 import 'package:governess/ui/widgets/indicator_widget.dart';
 import 'package:governess/ui/widgets/number_of_children_widget.dart';
 import 'package:governess/services/nurse_service.dart';
@@ -42,8 +43,10 @@ class _NurseShowNumberOfChildrenPageState
             return _body(snap.data!, context);
           } else if (snap.connectionState == ConnectionState.done &&
               !snap.hasData) {
-            return const NoDataWidgetForFutureBuilder(
-                "Bu Kunga Hali Bolalar Soni Kiritilmagan!");
+            return const   NurseEnterDailyChildrenPage1();
+
+            //  const NoDataWidgetForFutureBuilder(
+            //     "Bu Kunga Hali Bolalar Soni Kiritilmagan!");
           } else {
             return IndicatorWidget(snap);
           }
@@ -75,13 +78,13 @@ class _NurseShowNumberOfChildrenPageState
         children: [
           NumberOfChildrenWidget(data: data),
           SizedBox(height: gH(20.0)),
-          _editButton(context, data),
+          _changeButton(context, data),
         ],
       ),
     );
   }
 
-  _editButton(BuildContext context, NumberOfChildren data) {
+  _changeButton(BuildContext context, NumberOfChildren data) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         shape: RoundedRectangleBorder(
@@ -108,8 +111,7 @@ class _NurseShowNumberOfChildrenPageState
                   : data.perDayList![0].numberOfChildrenDtoList![index].number
                       .toString());
         }).then(
-          (value) => Provider.of<NurseEditingChildrenNumberPageProvider>(
-                  context,
+          (value) => Provider.of<NurseChangeChildrenNumberPageProvider>(context,
                   listen: false)
               .initControllersAndNodes(value),
         );
@@ -119,7 +121,7 @@ class _NurseShowNumberOfChildrenPageState
           MaterialPageRoute(
             builder: (context) => NurseEditDailyChildrenPage(
               data,
-              idf: data.perDayList![0].id != null,
+            
             ),
           ),
         );

@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 
-class NurseChangeChildrenNumberPageProvider extends ChangeNotifier {
+class NurseEnterChildrenNumberPageProvider extends ChangeNotifier {
  
 
   /////////////////////

@@ -37,6 +37,7 @@ class ChangePasswordPage extends StatelessWidget {
               ),
               padding: const EdgeInsets.all(5.0),
               child: SendButtonWidget(
+                width: gW(200.0),
                 onPressed: () {
                   AuthService()
                       .changeLoginPassword(

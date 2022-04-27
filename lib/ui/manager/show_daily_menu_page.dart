@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:governess/consts/colors.dart';
+import 'package:governess/consts/print_my.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/models/nurse_models/daily_menu_model.dart';
 import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
@@ -10,6 +11,7 @@ import 'package:governess/ui/widgets/daily_menu_widget.dart';
 import 'package:governess/ui/widgets/date_time_show_button_widget.dart';
 import 'package:governess/ui/widgets/future_builder_of_no_data_widget.dart';
 import 'package:governess/ui/widgets/indicator_widget.dart';
+import 'package:governess/ui/widgets/show_toast_function.dart';
 
 class ManagerShowDailyMenuPage extends StatefulWidget {
   const ManagerShowDailyMenuPage({Key? key}) : super(key: key);
@@ -46,7 +48,7 @@ class _ManagerShowDailyMenuPageState extends State<ManagerShowDailyMenuPage> {
   }
 
   _body(DailyMenu? data, BuildContext context) {
-    idf = data!.status == "TASDIQLANGAN";
+    idf = data!.confirmation!;
 
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
@@ -54,16 +56,14 @@ class _ManagerShowDailyMenuPageState extends State<ManagerShowDailyMenuPage> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           _submitUnsubmitButton(data),
-          _status(),
-        DailyMenuWidget(data: data, con: context, onTap: (int __, int n) {}),
+          _status(data),
+          DailyMenuWidget(data: data, con: context, onTap: (int __, int n) {}),
         ],
       ),
     );
   }
 
-  
-
-  Padding _status() {
+  Padding _status(DailyMenu data) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: gW(20.0)),
       child: Row(
@@ -73,7 +73,7 @@ class _ManagerShowDailyMenuPageState extends State<ManagerShowDailyMenuPage> {
             style: TextStyle(color: Colors.grey, fontSize: gW(18.0)),
           ),
           Text(
-            idf ? "Tasdiqlangan" : 'Tasdiqlanmagan',
+           data.status!.toString(),
             style: TextStyle(
               fontSize: gW(20.0),
             ),
@@ -96,15 +96,21 @@ class _ManagerShowDailyMenuPageState extends State<ManagerShowDailyMenuPage> {
               gW(10.0),
             ),
           ),
-          primary: idf ? Colors.green : Colors.red,
+          primary: idf ? mainColor : Colors.red,
           elevation: 0,
           shadowColor: Colors.transparent,
         ),
-        onPressed: data!.status == "TASDIQLANGAN"
+        onPressed: data!.confirmation!
             ? null
-            : () {
+            : () async {
                 try {
-                  ManagerService().submitDailyMenu(data.id!);
+                  ManagerService().submitDailyMenu(data.id!).then((value) {
+                    if (value.success!) {
+                      showToast(value.text!, value.success!, true);
+                    } else {
+                      showToast(value.text!, value.success!, true);
+                    }
+                  });
                 } catch (e) {
                   throw Exception(
                       "Manager / show_daily_menu_page/ submitbutton: " +
@@ -122,7 +128,6 @@ class _ManagerShowDailyMenuPageState extends State<ManagerShowDailyMenuPage> {
     );
   }
 
- 
   AppBar _appBar() {
     return AppBar(
       backgroundColor: mainColor,

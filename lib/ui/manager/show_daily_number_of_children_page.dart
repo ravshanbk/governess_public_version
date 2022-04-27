@@ -54,6 +54,7 @@ class _ManagerShowNumberOfChildrenPageState
   }
 
   _body(NumberOfChildren data, BuildContext context) {
+ 
     return Padding(
       padding: EdgeInsets.only(
         left: gW(20.0),

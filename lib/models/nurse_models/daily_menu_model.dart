@@ -1,12 +1,3 @@
-// To parse this JSON data, do
-//
-//     final dailyMenu = dailyMenuFromJson(jsonString);
-
-import 'dart:convert';
-
-DailyMenu dailyMenuFromJson(String str) => DailyMenu.fromJson(json.decode(str));
-
-String dailyMenuToJson(DailyMenu data) => json.encode(data.toJson());
 
 class DailyMenu {
     DailyMenu({

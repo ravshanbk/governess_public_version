@@ -1,32 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:governess/consts/colors.dart';
+import 'package:governess/consts/print_my.dart';
 import 'package:governess/consts/size_config.dart';
 
-class NurseEnterDailyChildrenPage extends StatelessWidget {
-  const NurseEnterDailyChildrenPage({Key? key}) : super(key: key);
+class NurseEnterDailyChildrenPage1 extends StatelessWidget {
+  const NurseEnterDailyChildrenPage1({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text("Yosh Toifalar"),
-        backgroundColor: mainColor,
-        elevation: 0,
-      ),
       body: ListView.separated(
         padding: EdgeInsets.all(gW(20)),
         shrinkWrap: true,
         physics: const BouncingScrollPhysics(),
         itemBuilder: (_, __) {
-          return _groupButton(context, __);
+          return __ == 0
+              ? Text(
+                  "Yosh Toifalar",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: mainColor,
+                    fontSize: gW(20.0),
+                    fontWeight: FontWeight.bold,
+                  ),
+                )
+              : _groupButton(context, __);
         },
         separatorBuilder: (context, index) {
           return SizedBox(
             height: gH(20.0),
           );
         },
-        itemCount: 4,
+        itemCount: 5,
       ),
     );
   }
@@ -46,12 +51,15 @@ class NurseEnterDailyChildrenPage extends StatelessWidget {
           gH(60.0),
         ),
       ),
-      onPressed: () {},
+      onPressed: () {
+        _showDialog(context);
+      },
       child: Text("$__"),
     );
   }
 
-  Future<dynamic> _showDialog(BuildContext context) {//!
+  Future<dynamic> _showDialog(BuildContext context) {
+    //!
     return showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -79,7 +87,7 @@ class NurseEnterDailyChildrenPage extends StatelessWidget {
                 SizedBox(
                   height: gH(20.0),
                 ),
-                _addButton(),
+                _addButton(context),
               ],
             ),
           ),
@@ -88,7 +96,8 @@ class NurseEnterDailyChildrenPage extends StatelessWidget {
     );
   }
 
-  ElevatedButton _addButton() {//!
+  ElevatedButton _addButton(BuildContext context) {
+    //!
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         shape: RoundedRectangleBorder(
@@ -103,7 +112,10 @@ class NurseEnterDailyChildrenPage extends StatelessWidget {
           gH(62.0),
         ),
       ),
-      onPressed: () async {},
+      onPressed: () async {
+        p("Qo'shildi");
+        Navigator.pop(context);
+      },
       child: Text(
         "Qo'shish",
         style: TextStyle(
