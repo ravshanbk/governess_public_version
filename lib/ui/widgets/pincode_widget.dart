@@ -15,6 +15,7 @@ class PinCodeWidget extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: gW(80.0)),
       child: PinCodeTextField(
+      keyboardType: TextInputType.datetime,
         onChanged:( onComplete){},
         appContext: context,
         length: 4,

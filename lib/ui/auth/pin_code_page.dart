@@ -3,7 +3,6 @@ import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/local_storage/user_storage.dart';
 import 'package:governess/providers/auth/pin_code_page_provider.dart';
-import 'package:governess/ui/auth/auth_page.dart';
 import 'package:governess/ui/auth/check_pincode_page.dart';
 import 'package:governess/ui/widgets/governess_app_bar.dart';
 import 'package:governess/ui/widgets/pincode_widget.dart';
@@ -11,8 +10,18 @@ import 'package:governess/ui/widgets/send_button_widger.dart.dart';
 import 'package:governess/ui/widgets/show_toast_function.dart';
 import 'package:provider/provider.dart';
 
-class PinCodePage extends StatelessWidget {
+class PinCodePage extends StatefulWidget {
   const PinCodePage({Key? key}) : super(key: key);
+
+  @override
+  State<PinCodePage> createState() => _PinCodePageState();
+}
+
+class _PinCodePageState extends State<PinCodePage> {
+  final TextEditingController savePinCodeController = TextEditingController();
+
+  final TextEditingController repeatePinCodeController =
+      TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -53,16 +62,13 @@ class PinCodePage extends StatelessWidget {
         onPressed: context.watch<PinCodePageProvider>().idf
             ? () async {
                 await UserHive().pinSave(
-                  Provider.of<PinCodePageProvider>(context, listen: false)
-                      .savePinCodeController
-                      .text,
+                  savePinCodeController.text,
                 );
-                Provider.of<PinCodePageProvider>(context, listen: false)
-                    .clear();
+
                 Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const CheckingPinCodePage(),
+                      builder: (context) => CheckingPinCodePage(),
                     ),
                     (route) => false);
               }
@@ -76,36 +82,27 @@ class PinCodePage extends StatelessWidget {
       textAlign: TextAlign.center,
       style: TextStyle(
         color: mainColor,
-        fontSize: gW(20.0),
       ),
     );
   }
 
   PinCodeWidget _repeatPincodeField(BuildContext context) {
     return PinCodeWidget(
-      controller: Provider.of<PinCodePageProvider>(context, listen: false)
-          .repeatePinCodeController,
+      controller: repeatePinCodeController,
       onComplete: (v) {
-        if (Provider.of<PinCodePageProvider>(context, listen: false)
-                    .savePinCodeController
-                    .text ==
-                Provider.of<PinCodePageProvider>(context, listen: false)
-                    .repeatePinCodeController
-                    .text &&
-            Provider.of<PinCodePageProvider>(context, listen: false)
-                    .repeatePinCodeController
-                    .text
-                    .length ==
-                4) {
+        if (savePinCodeController.text == repeatePinCodeController.text &&
+            repeatePinCodeController.text.length == 4) {
           Provider.of<PinCodePageProvider>(context, listen: false)
               .changeIdf(true);
         } else {
-          Provider.of<PinCodePageProvider>(context, listen: false).clear();
           showToast(
             "Takror pinkodingiz pinkodingiz bilan bir hil emas.\n Qaytadan kiriting!",
             false,
             false,
           );
+          setState(() {
+            repeatePinCodeController.clear();
+          });
         }
       },
     );
@@ -113,20 +110,10 @@ class PinCodePage extends StatelessWidget {
 
   PinCodeWidget _newPincodeField(BuildContext context) {
     return PinCodeWidget(
-      controller: Provider.of<PinCodePageProvider>(context, listen: false)
-          .savePinCodeController,
+      controller: savePinCodeController,
       onComplete: (v) {
-        if (Provider.of<PinCodePageProvider>(context, listen: false)
-                    .savePinCodeController
-                    .text ==
-                Provider.of<PinCodePageProvider>(context, listen: false)
-                    .repeatePinCodeController
-                    .text &&
-            Provider.of<PinCodePageProvider>(context, listen: false)
-                    .repeatePinCodeController
-                    .text
-                    .length ==
-                4) {
+        if (savePinCodeController.text == repeatePinCodeController.text &&
+            repeatePinCodeController.text.length == 4) {
           Provider.of<PinCodePageProvider>(context, listen: false)
               .changeIdf(true);
         }

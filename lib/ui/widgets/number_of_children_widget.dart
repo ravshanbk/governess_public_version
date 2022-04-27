@@ -3,7 +3,7 @@ import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/models/nurse_models/number_of_children_model.dart';
 
-// ignore: must_be_immutable
+
 class NumberOfChildrenWidget extends StatelessWidget {
   NumberOfChildren? data;
   NumberOfChildrenWidget({required this.data, Key? key}) : super(key: key);
@@ -33,7 +33,8 @@ class NumberOfChildrenWidget extends StatelessWidget {
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (_, __) {
-              return _greyTextInRow(
+              return
+               _greyTextInRow(
                   data!.perDayList![0].numberOfChildrenDtoList![__].ageGroupName
                       .toString(),
                   data!.perDayList![0].numberOfChildrenDtoList![__].number
@@ -93,7 +94,7 @@ class NumberOfChildrenWidget extends StatelessWidget {
   }
 
   _greyTextInRow(String text1, String text2) {
-    Padding(
+   return Padding(
       padding: EdgeInsets.only(left: gW(30.0), right: gW(50.0)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

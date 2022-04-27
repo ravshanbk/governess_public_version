@@ -4,15 +4,20 @@ import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/decorations.dart';
 import 'package:governess/consts/print_my.dart';
 import 'package:governess/consts/size_config.dart';
-import 'package:governess/providers/auth/auth_page_provider.dart';
 import 'package:governess/services/auth_service.dart';
 import 'package:governess/ui/auth/pin_code_page.dart';
 import 'package:governess/ui/widgets/governess_app_bar.dart';
 import 'package:governess/ui/widgets/show_toast_function.dart';
-import 'package:provider/provider.dart';
 
 class AuthPage extends StatelessWidget {
-  const AuthPage({Key? key}) : super(key: key);
+  AuthPage({Key? key}) : super(key: key);
+
+  bool isInProgress = false;
+  final GlobalKey<FormState> formKey = GlobalKey();
+  final TextEditingController loginController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController retwritePasswordController =
+      TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +29,7 @@ class AuthPage extends StatelessWidget {
         child: Column(
           children: [
             Form(
-              key: context.read<AuthPageProvider>().formKey,
+              key: formKey,
               child: Padding(
                 padding: EdgeInsets.symmetric(
                   horizontal: gW(20.0),
@@ -34,7 +39,7 @@ class AuthPage extends StatelessWidget {
                   children: [
                     SizedBox(
                       height: gH(50.0),
-                      child: context.watch<AuthPageProvider>().isInProgress
+                      child: isInProgress
                           ? CupertinoActivityIndicator(
                               radius: gW(20.0),
                             )
@@ -57,37 +62,26 @@ class AuthPage extends StatelessWidget {
 
   ElevatedButton _submitButton(BuildContext context) {
     return ElevatedButton(
-      onPressed: context.watch<AuthPageProvider>().isInProgress
+      onPressed: isInProgress
           ? null
           : () async {
-              if (Provider.of<AuthPageProvider>(context, listen: false)
-                  .formKey
-                  .currentState!
-                  .validate()) {
-                Provider.of<AuthPageProvider>(context, listen: false)
-                    .changeIsInProgress(true);
+              if (loginController.text.isNotEmpty &&
+                  passwordController.text.isNotEmpty) {
+                isInProgress = true;
 
                 AuthService()
-                    .getUser(
-                        Provider.of<AuthPageProvider>(context, listen: false)
-                            .loginController
-                            .text,
-                        Provider.of<AuthPageProvider>(context, listen: false)
-                            .passwordController
-                            .text)
+                    .getUser(loginController.text, passwordController.text)
                     .then(
                   (value) {
                     if (value) {
                       showToast("Muvaffaqiyat !!!", true, false);
 
-                      Provider.of<AuthPageProvider>(context, listen: false)
-                          .changeIsInProgress(false);
-                      Provider.of<AuthPageProvider>(context, listen: false)
-                          .clear();
+                      isInProgress = false;
+
                       Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const PinCodePage(),
+                            builder: (context) => PinCodePage(),
                           ),
                           (route) => false);
                     } else {
@@ -106,18 +100,14 @@ class AuthPage extends StatelessWidget {
     return TextFormField(
       onChanged: (v) {
         p(v);
-        if (v.isEmpty &&
-            Provider.of<AuthPageProvider>(context, listen: false)
-                .isInProgress) {
-          Provider.of<AuthPageProvider>(context, listen: false).clear();
-          Provider.of<AuthPageProvider>(context, listen: false).changeIsInProgress(false);
+        if (v.isEmpty && isInProgress) {
+          isInProgress = false;
         }
       },
       validator: (v) {
         if (v!.isEmpty) return "Parolni kiriting !!!";
       },
-      controller: Provider.of<AuthPageProvider>(context, listen: false)
-          .passwordController,
+      controller: passwordController,
       decoration: DecorationMy.inputDecoration("Parol...", null),
     );
   }
@@ -126,19 +116,14 @@ class AuthPage extends StatelessWidget {
     return TextFormField(
       onChanged: (v) {
         p(v);
-        if (v.isEmpty &&
-            Provider.of<AuthPageProvider>(context, listen: false)
-                .isInProgress) {
-          Provider.of<AuthPageProvider>(context, listen: false).clear();
-          Provider.of<AuthPageProvider>(context, listen: false).changeIsInProgress(false);
-
+        if (v.isEmpty && isInProgress) {
+          isInProgress = false;
         }
       },
       validator: (v) {
         if (v!.isEmpty) return "Loginni kiriting !!!";
       },
-      controller:
-          Provider.of<AuthPageProvider>(context, listen: false).loginController,
+      controller: loginController,
       decoration: DecorationMy.inputDecoration("Login...", null),
     );
   }

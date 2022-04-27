@@ -11,11 +11,12 @@ import 'package:governess/services/cooker_service.dart';
 import 'package:governess/ui/widgets/future_builder_of_no_data_widget.dart';
 import 'package:governess/ui/widgets/indicator_widget.dart';
 import 'package:governess/ui/widgets/show_in_out_list_product_widget.dart';
+import 'package:governess/ui/widgets/show_toast_function.dart';
 import 'package:governess/ui/widgets/text_in_row_widget.dart';
 import 'package:provider/provider.dart';
 
-class CookerShowProductsInStoragePage extends StatelessWidget {
-  const CookerShowProductsInStoragePage({Key? key}) : super(key: key);
+class CookerShowExistingProductPage extends StatelessWidget {
+  const CookerShowExistingProductPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +29,7 @@ class CookerShowProductsInStoragePage extends StatelessWidget {
         title: Text(DTFM.maker(DateTime.now().millisecondsSinceEpoch)),
       ),
       body: FutureBuilder(
-        future: CookerService().getAvailbleProductsInStorage(),
+        future: CookerService().getExistingProduct(),
         builder: (context, AsyncSnapshot<List<CookerProduct>> snap) {
           if (snap.connectionState == ConnectionState.done &&
               snap.data!.isNotEmpty) {
@@ -116,8 +117,17 @@ class CookerShowProductsInStoragePage extends StatelessWidget {
                   elevation: 0,
                 ),
                 onPressed: () async {
+                  p("Bekor Qilish");
                   //!
-                  await CookerService().deleteGarbage(data[0].productId!);
+                  CookerService()
+                      .deleteGarbage(data[0].productId!)
+                      .then((value) {
+                    if (value) {
+                      showToast("Muvaffaqiyat", true, false);
+                    } else {
+                      showToast("Chiqarilmadi", false, false);
+                    }
+                  });
                 },
                 child: const Text("Bekor qilish"),
               ),
@@ -146,18 +156,20 @@ class CookerShowProductsInStoragePage extends StatelessWidget {
                   fontSize: gW(18.0)),
             ),
             onPressed: () {
-              p(data[__].productId.toString());
-              p(data[__].inOutList![index].id!.toString());
-              Provider.of<WasteProductCookerPageProvider>(context,
-                      listen: false)
-                  .clear();
-              showDialog(
-                context: context,
-                builder: (context) {
-                  return _ShowDialogDateContent(
-                      data[__].productId, data[__].inOutList![index].id!);
-                },
-              );
+              p("Chiqarish");
+
+              // p(data[__].productId.toString());
+              // p(data[__].inOutList![index].id!.toString());
+              // Provider.of<WasteProductCookerPageProvider>(context,
+              //         listen: false)
+              //     .clear();
+              // showDialog(
+              //   context: context,
+              //   builder: (context) {
+              //     return _ShowDialogDateContent(
+              //         data[__].productId, data[__].inOutList![index].id!);
+              //   },
+              // );
             },
           ),
         ),
@@ -187,13 +199,12 @@ class CookerShowProductsInStoragePage extends StatelessWidget {
       );
 }
 
-// ignore: must_be_immutable
 class _ShowDialogDateContent extends StatelessWidget {
-  dynamic productId;
+  final dynamic productId;
   final String id;
 
-  _ShowDialogDateContent(
-    productId,
+  const _ShowDialogDateContent(
+    this.productId,
     this.id, {
     Key? key,
   }) : super(key: key);

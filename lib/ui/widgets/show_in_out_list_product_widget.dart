@@ -18,16 +18,14 @@ class ShowInOutListProductWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Ink(
-      decoration: BoxDecoration(
-        color: isExpanded ? lightGreyColor : mainColor_02,
-        borderRadius: BorderRadius.circular(
-          gW(10.0),
-        ),
-      ),
+    return Card(
+    //  color: mainColor,
+     
       child: ExpansionTile(
+        collapsedBackgroundColor: mainColor_02,
         iconColor: Colors.grey,
-        textColor: Colors.black,
+        textColor:mainColor,
+        collapsedTextColor: Colors.black,
         key: Key(DateTime.now().toString()),
         initiallyExpanded: isExpanded,
         title: _title(),

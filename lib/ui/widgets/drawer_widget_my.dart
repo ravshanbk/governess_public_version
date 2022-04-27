@@ -60,6 +60,7 @@ class DrawerWidgetMy extends StatelessWidget {
             _divider(),
             SizedBox(height: gH(20.0)),
             _exitButton(
+              color: Colors.red,
               title: "Tizimdan Chiqish",
               context: context,
               icon: Icons.logout_outlined,
@@ -73,6 +74,7 @@ class DrawerWidgetMy extends StatelessWidget {
             ),
             SizedBox(height: gH(20.0)),
             _exitButton(
+                color: Colors.orange,
                 title: "Pinkodni O'zgartirish",
                 context: context,
                 icon: Icons.replay_outlined,
@@ -85,17 +87,19 @@ class DrawerWidgetMy extends StatelessWidget {
                 }),
             SizedBox(height: gH(20.0)),
             _exitButton(
-                title: "Pinkod O'zgartirish",
-                context: context,
-                icon: Icons.change_circle_outlined,
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ChangePasswordPage(),
-                    ),
-                  );
-                }),
+              color: mainColor,
+              title: "Parolni O'zgartirish",
+              context: context,
+              icon: Icons.change_circle_outlined,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ChangePasswordPage(),
+                  ),
+                );
+              },
+            ),
           ],
         ),
       ),
@@ -117,7 +121,8 @@ class DrawerWidgetMy extends StatelessWidget {
   }
 
   ElevatedButton _exitButton(
-      {required String title,
+      {required Color color,
+      required String title,
       required BuildContext context,
       required IconData icon,
       required VoidCallback onPressed}) {
@@ -125,14 +130,14 @@ class DrawerWidgetMy extends StatelessWidget {
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
         shape: RoundedRectangleBorder(
-          side: BorderSide(color: mainColor),
+          side: BorderSide(color: color),
           borderRadius: BorderRadius.circular(
             gW(
               25.0,
             ),
           ),
         ),
-        primary: mainColor_02,
+        primary: whiteColor,
         elevation: 0,
         shadowColor: whiteColor,
       ),
@@ -141,11 +146,11 @@ class DrawerWidgetMy extends StatelessWidget {
         children: [
           Text(
             title,
-            style: TextStyle(color: mainColor),
+            style: TextStyle(color: color),
           ),
           Icon(
             icon,
-            color: mainColor,
+            color: color,
           )
         ],
       ),
@@ -261,13 +266,18 @@ class _ShowDialogDateContent extends StatelessWidget {
                       "Ha...",
                       style: TextStyle(color: mainColor),
                     ),
-                    onPressed: () {
-                      UserHive().logOutUser();
+                    onPressed: () async {
+                      await UserHive().logOutUser();
                       Navigator.pushAndRemoveUntil(
                           context,
-                          MaterialPageRoute(
-                              builder: (context) => const AuthPage()),
+                          MaterialPageRoute(builder: (context) => AuthPage()),
                           (route) => false);
+
+                      // Navigator.pushAndRemoveUntil(
+                      //     context,
+                      //     MaterialPageRoute(
+                      //         builder: (context) => const AuthPage()),
+                      //     (route) => false);
                     },
                   ),
                 ),

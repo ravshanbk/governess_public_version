@@ -11,9 +11,17 @@ class PinCodePageProvider extends ChangeNotifier {
   TextEditingController savePinCodeController = TextEditingController();
   TextEditingController repeatePinCodeController = TextEditingController();
   clear() {
-    pinCodeController.clear();
-    savePinCodeController.clear();
-    repeatePinCodeController.clear();
+    pinCodeController.text = "";
+    savePinCodeController.text = "";
+    repeatePinCodeController.text = "";
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    pinCodeController.dispose();
+    savePinCodeController.dispose();
+    repeatePinCodeController.dispose();
+    super.dispose();
   }
 }

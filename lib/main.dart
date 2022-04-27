@@ -6,8 +6,6 @@ import 'package:governess/consts/size_config.dart';
 import 'package:governess/local_storage/boxes.dart';
 import 'package:governess/models/hive_models/user_h_model.dart';
 import 'package:governess/models/hive_models/pin_hive_model.dart';
-import 'package:governess/providers/auth/apply_application_page_provider.dart';
-import 'package:governess/providers/auth/auth_page_provider.dart';
 import 'package:governess/providers/auth/pin_code_page_provider.dart';
 import 'package:governess/providers/cooker/accept_product_provider.dart';
 import 'package:governess/providers/cooker/cooker_products_page_provider.dart';
@@ -39,9 +37,6 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (context) => AuthPageProvider(),
-        ),
-        ChangeNotifierProvider(
           create: (context) => DailyMenuPageProvider(),
         ),
         ChangeNotifierProvider(
@@ -58,9 +53,6 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create: (context) => FilterToBuyPageProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => ApplyApplicationPageProvider(),
         ),
         ChangeNotifierProvider(
           create: (context) => ShowInOutListProductProvider(),
@@ -96,11 +88,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    // ignore: unused_local_variable
-    List<Widget> widgets = const [
-      AuthPage(),
-      NoInternetConnectionPage(),
-    ];
+  
     listener = InternetConnectionChecker().onStatusChange.listen(
       (InternetConnectionStatus status) {
         switch (status) {
@@ -131,8 +119,8 @@ class _MyAppState extends State<MyApp> {
 
   _body() {
     return Boxes.getUser().values.isEmpty || Boxes.getPinUser().values.isEmpty
-        ? const AuthPage()
-        : const CheckingPinCodePage();
+        ? AuthPage()
+        : CheckingPinCodePage();
   }
 
   @override

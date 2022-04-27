@@ -3,7 +3,6 @@ import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/local_storage/boxes.dart';
 import 'package:governess/models/hive_models/pin_hive_model.dart';
-import 'package:governess/providers/auth/pin_code_page_provider.dart';
 import 'package:governess/ui/cooker/home_cooker_page.dart';
 import 'package:governess/ui/manager/home_manager_page.dart';
 import 'package:governess/ui/nurse/nurse_home_page.dart';
@@ -12,10 +11,10 @@ import 'package:governess/ui/widgets/governess_app_bar.dart';
 import 'package:governess/ui/widgets/pincode_widget.dart';
 import 'package:governess/ui/widgets/show_toast_function.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:provider/provider.dart';
 
 class CheckingPinCodePage extends StatelessWidget {
-  const CheckingPinCodePage({Key? key}) : super(key: key);
+  CheckingPinCodePage({Key? key}) : super(key: key);
+   TextEditingController controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -43,13 +42,11 @@ class CheckingPinCodePage extends StatelessWidget {
           SizedBox(height: gH(10.0)),
           PinCodeWidget(
               controller:
-                  Provider.of<PinCodePageProvider>(context, listen: false)
-                      .pinCodeController,
+               controller,
               onComplete: (String v) {
                 if (box.values.toList().cast<PinHive>()[0].pinUser == v) {
                   showToast("Muvaffaqiyat !!!", true, true);
-                  Provider.of<PinCodePageProvider>(context, listen: false)
-                      .clear();
+
                   Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
                     builder: (context) {
                       switch (Boxes.getUser().values.first.role) {
@@ -62,19 +59,15 @@ class CheckingPinCodePage extends StatelessWidget {
                         case "ROLE_OSHPAZ":
                           return const CookerHomePage();
                         default:
-                          return const CheckingPinCodePage();
+                          return CheckingPinCodePage();
                       }
                     },
                   ), (route) => false);
                 } else {
-                    Provider.of<PinCodePageProvider>(context, listen: false)
-                      .clear();
                   showToast(
                       "Pinkodni notog'ri kiritdingiz, Qaytadan urinib ko'ring!!!",
                       false,
                       true);
-                  Provider.of<PinCodePageProvider>(context, listen: false)
-                      .clear();
                 }
               }),
           Divider(

@@ -5,15 +5,18 @@ import 'package:governess/consts/size_config.dart';
 import 'package:governess/local_storage/boxes.dart';
 import 'package:governess/local_storage/user_storage.dart';
 import 'package:governess/models/user/change_user_info.dart';
-import 'package:governess/providers/auth/auth_page_provider.dart';
 import 'package:governess/services/auth_service.dart';
-import 'package:governess/ui/widgets/date_time_show_button_widget.dart';
 import 'package:governess/ui/widgets/send_button_widger.dart.dart';
 import 'package:governess/ui/widgets/show_toast_function.dart';
-import 'package:provider/provider.dart';
 
 class ChangePasswordPage extends StatelessWidget {
-  const ChangePasswordPage({Key? key}) : super(key: key);
+  ChangePasswordPage({Key? key}) : super(key: key);
+
+  GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  TextEditingController loginController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  TextEditingController retwritePasswordController = TextEditingController();
+
 
   @override
   Widget build(BuildContext context) {
@@ -39,16 +42,13 @@ class ChangePasswordPage extends StatelessWidget {
                       .changeLoginPassword(
                     info: ChangUserInfo(
                       newPassword:
-                          Provider.of<AuthPageProvider>(context, listen: false)
-                              .retwritePasswordController
+                       retwritePasswordController
                               .text,
                       oldPassword:
-                          Provider.of<AuthPageProvider>(context, listen: false)
-                              .passwordController
+                        passwordController
                               .text,
                       username:
-                          Provider.of<AuthPageProvider>(context, listen: false)
-                              .loginController
+                        loginController
                               .text,
                     ),
                   )
@@ -58,19 +58,17 @@ class ChangePasswordPage extends StatelessWidget {
                         var user = Boxes.getUser().values.first;
 
                         await UserHive().addUser(
-                            fatherName: user.fatherName,
-                            id: user.id,
-                            name: user.name,
-                            role: user.role,
-                            success: user.success,
-                            surname: user.surname,
-                            token: user.token,
-                            username: Provider.of<AuthPageProvider>(context,
-                                    listen: false)
-                                .loginController
-                                .text);
-                        Provider.of<AuthPageProvider>(context, listen: false)
-                            .clear();
+                          fatherName: user.fatherName,
+                          id: user.id,
+                          name: user.name,
+                          role: user.role,
+                          success: user.success,
+                          surname: user.surname,
+                          token: user.token,
+                          username: loginController
+                              .text,
+                        );
+
                         showToast(value.text!, value.success!, false);
                         Navigator.pop(context);
                       } else {
@@ -83,23 +81,13 @@ class ChangePasswordPage extends StatelessWidget {
               ),
             ),
           )
-          // DateTimeShowButton(
-          //   "O'zgartirish",
-          //   () {
-          //     if (Provider.of<AuthPageProvider>(context, listen: false)
-          //         .formKey
-          //         .currentState!
-          //         .validate()) {
-
-          //         }
-          //   },
-          // ),
+         
         ],
       ),
       body: Padding(
         padding: EdgeInsets.all(gW(20.0)),
         child: Form(
-          key: Provider.of<AuthPageProvider>(context, listen: false).formKey,
+          key: formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -118,8 +106,7 @@ class ChangePasswordPage extends StatelessWidget {
                   if (v!.isEmpty) return "Login kiriting";
                 },
                 controller:
-                    Provider.of<AuthPageProvider>(context, listen: false)
-                        .loginController,
+                 loginController,
                 decoration: DecorationMy.inputDecoration("Login...", null),
               ),
               SizedBox(
@@ -140,8 +127,7 @@ class ChangePasswordPage extends StatelessWidget {
                   if (v!.isEmpty) return "Parol kiriting";
                 },
                 controller:
-                    Provider.of<AuthPageProvider>(context, listen: false)
-                        .passwordController,
+                   passwordController,
                 decoration:
                     DecorationMy.inputDecoration("Joriy Parolingiz", null),
               ),
@@ -163,8 +149,7 @@ class ChangePasswordPage extends StatelessWidget {
                   if (v!.isEmpty) return "Parol kiriting";
                 },
                 controller:
-                    Provider.of<AuthPageProvider>(context, listen: false)
-                        .retwritePasswordController,
+               retwritePasswordController,
                 decoration:
                     DecorationMy.inputDecoration("Yangi Parolingiz", null),
               ),
