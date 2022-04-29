@@ -51,6 +51,11 @@ class FilterToBuyPageProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  clearFromTo() {
+    to = null;
+    from = null;
+    notifyListeners();
+  }
 //////////////////////////////////////
 
   int currentFilterIndex = 0;

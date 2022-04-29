@@ -1,8 +1,12 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:governess/consts/print_my.dart';
+import 'package:governess/models/nurse_models/age_group_model.dart';
 import 'package:governess/models/nurse_models/daily_menu_model.dart';
+import 'package:governess/models/nurse_models/enter_number_of_children_page_data_model.dart';
 import 'package:governess/models/nurse_models/number_of_children_model.dart';
-import 'package:governess/models/nurse_models/v_model.dart';
+import 'package:governess/models/nurse_models/age_group_id_and_number_model.dart';
+import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/models/other/post_res_model.dart';
 import 'package:governess/services/auth_service.dart';
 
@@ -22,12 +26,11 @@ class NurseService {
     }
   }
 
-  Future<ResModel> enterDailyChildrenNumber(List<AgeGroupIdAndNumber> v) async {
-    p("enterDailyChildrenNumber: " + v.toString());
-    await Future.delayed(const Duration(seconds: 1), () {});
+  Future<ResModel> enterDailyChildrenNumber(
+      List<AgeGroupIdAndNumber> v, DateTime date) async {
     try {
       var res = await Dio().post(
-        "${AuthService.localhost}/out/api/perDay",
+        "${AuthService.localhost}/out/api/perDay?date=${date.millisecondsSinceEpoch}",
         data: {"numberOfChildrenDTOList": v},
         options: AuthService.option,
       );
@@ -38,15 +41,14 @@ class NurseService {
   }
 
   Future<NumberOfChildren> getDailyChildrenNumber(DateTime date) async {
-    NumberOfChildren data;
+    p("Qachon: " + DTFM.maker(date.millisecondsSinceEpoch));
+    p(date.microsecondsSinceEpoch.toString());
     try {
       Response res = await Dio().get(
-        "${AuthService.localhost}/out/api/perDay?timestamp=${date.millisecondsSinceEpoch}",
+        "${AuthService.localhost}/out/api/perDay?date=${date.millisecondsSinceEpoch}",
         options: AuthService.option,
       );
-      data = NumberOfChildren.fromJson(res.data);
-      p("getDailyChildrenNumber: "+data.perDayList![0].id!.toString());
-      return data;
+      return NumberOfChildren.fromJson(res.data);
     } catch (e) {
       throw Exception("getChildrenNumber: " + e.toString());
     }
@@ -63,7 +65,30 @@ class NurseService {
       );
       return ResModel.fromJson(res.data);
     } catch (e) {
-      throw Exception("Edit Number Of Children: " + e.toString());
+      throw Exception(
+          "NurseService / Edit Number Of Children: " + e.toString());
+    }
+  }
+
+  Future<List<NurseEnterNumberChildrenPageData>> getAgeGroupList() async {
+    try {
+      Response res = await Dio().get(
+        "${AuthService.localhost}/out/api/ageGroup",
+        options: AuthService.option,
+      );
+      List<AgeGroup> data =
+          (res.data as List).map((e) => AgeGroup.fromJson(e)).toList();
+      return List.generate(
+        data.length,
+        (__) => NurseEnterNumberChildrenPageData(
+          ageGroupIdAndNumber: data[__],
+          controller: TextEditingController(),
+          idf: false,
+          nodes: FocusNode(),
+        ),
+      );
+    } catch (e) {
+      throw Exception("NurseService / getAgeGroupList" + e.toString());
     }
   }
 }

@@ -4,14 +4,16 @@ import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/models/nurse_models/daily_menu_model.dart';
 import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
+import 'package:governess/services/network.dart';
 import 'package:governess/services/nurse_service.dart';
 import 'package:governess/ui/widgets/daily_menu_widget.dart';
 import 'package:governess/ui/widgets/date_time_show_button_widget.dart';
 import 'package:governess/ui/widgets/future_builder_of_no_data_widget.dart';
 import 'package:governess/ui/widgets/indicator_widget.dart';
+import 'package:governess/ui/widgets/show_toast_function.dart';
 
 class NurseShowDailyMenuPage extends StatefulWidget {
- const  NurseShowDailyMenuPage({Key? key}) : super(key: key);
+  const NurseShowDailyMenuPage({Key? key}) : super(key: key);
 
   @override
   State<NurseShowDailyMenuPage> createState() => _NurseShowDailyMenuPageState();
@@ -57,8 +59,13 @@ class _NurseShowDailyMenuPageState extends State<NurseShowDailyMenuPage> {
       actions: [
         DateTimeShowButton(
           DTFM.maker(when.millisecondsSinceEpoch),
-          () {
-            _showDataPicker(context);
+          () async {
+            bool isTherInternet = await checkConnectivity();
+            if (isTherInternet) {
+              _showDataPicker(context);
+            } else {
+              showToast("Qurilma Internetga", false, true);
+            }
           },
         ),
       ],

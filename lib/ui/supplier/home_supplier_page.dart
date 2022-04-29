@@ -1,10 +1,13 @@
+
 import 'package:flutter/material.dart';
 import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/size_config.dart';
+import 'package:governess/services/network.dart';
 import 'package:governess/ui/supplier/get_shipped_product_page.dart';
 import 'package:governess/ui/supplier/to_buy_products_page.dart';
 import 'package:governess/ui/widgets/big_elevate_button_home_page.dart';
 import 'package:governess/ui/widgets/drawer_widget_my.dart';
+import 'package:governess/ui/widgets/show_toast_function.dart';
 
 class SupplierHomePage extends StatelessWidget {
   const SupplierHomePage({Key? key}) : super(key: key);
@@ -18,15 +21,12 @@ class SupplierHomePage extends StatelessWidget {
     ];
 
     return Scaffold(
-      drawer:const DrawerWidgetMy(),
+      drawer: const DrawerWidgetMy(),
       //  _drawer(),
       appBar: _appBar(),
       body: _body(doings, context),
     );
   }
-
- 
-  
 
   Center _body(List<String> doings, BuildContext context) {
     return Center(
@@ -40,23 +40,28 @@ class SupplierHomePage extends StatelessWidget {
         itemBuilder: (_, __) {
           return BigElevatedButtonHomePage(
             title: doings[__],
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    switch (__) {
-                      case 0:
-                        return  ToBuyProductsPage();
-                      case 1:
-                        return const GetShippedProductPage();
+            onPressed: () async {
+              bool therIsInternet = await checkConnectivity();
+              if (therIsInternet) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      switch (__) {
+                        case 0:
+                          return ToBuyProductsPage();
+                        case 1:
+                          return const GetShippedProductPage();
 
-                      default:
-                        return const SupplierHomePage();
-                    }
-                  },
-                ),
-              );
+                        default:
+                          return const SupplierHomePage();
+                      }
+                    },
+                  ),
+                );
+              } else {
+                showToast("Qurilma Internet Tarmog'iga Ulanmagan", false, true);
+              }
             },
           );
         },

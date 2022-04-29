@@ -1,12 +1,3 @@
-// To parse this JSON data, do
-//
-//     final numberOfChildren2 = numberOfChildren2FromJson(jsonString);
-
-import 'dart:convert';
-
-NumberOfChildren numberOfChildren2FromJson(String str) => NumberOfChildren.fromJson(json.decode(str));
-
-String numberOfChildren2ToJson(NumberOfChildren data) => json.encode(data.toJson());
 
 class NumberOfChildren {
     NumberOfChildren({

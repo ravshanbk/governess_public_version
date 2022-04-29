@@ -11,13 +11,15 @@ class NoDataWidgetForFutureBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        message,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          color: mainColor,
-          fontSize: gW(20.0),
+    return Scaffold(
+     body:  Center(
+        child: Text(
+          message,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: mainColor,
+            fontSize: gW(20.0),
+          ),
         ),
       ),
     );

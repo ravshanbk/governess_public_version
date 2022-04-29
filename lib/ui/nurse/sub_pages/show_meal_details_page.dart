@@ -4,7 +4,7 @@ import 'package:governess/consts/size_config.dart';
 import 'package:governess/models/nurse_models/daily_menu_model.dart';
 import 'package:governess/ui/widgets/meal_widget.dart';
 
-class ShowMealDetailsPage extends StatelessWidget {
+class ShowMealDetailsPage extends StatelessWidget {//!
   final List<MealAgeStandardResponseSaveDtoList> data;
   const ShowMealDetailsPage(this.data, {Key? key}) : super(key: key);
 

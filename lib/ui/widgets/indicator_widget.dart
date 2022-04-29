@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:governess/consts/size_config.dart';
 
 class IndicatorWidget extends StatelessWidget {
@@ -7,14 +8,16 @@ class IndicatorWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(snap.connectionState.name),
-          CupertinoActivityIndicator(
-            radius: gW(50.0),
-          ),
-        ],
+    return Scaffold(
+    body: Center(
+        child: Column(mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(snap.connectionState.name),
+            CupertinoActivityIndicator(
+              radius: gW(50.0),
+            ),
+          ],
+        ),
       ),
     );
   }

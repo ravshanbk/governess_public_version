@@ -14,7 +14,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 class CheckingPinCodePage extends StatelessWidget {
   CheckingPinCodePage({Key? key}) : super(key: key);
-   TextEditingController controller = TextEditingController();
+  TextEditingController controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -41,11 +41,10 @@ class CheckingPinCodePage extends StatelessWidget {
           ),
           SizedBox(height: gH(10.0)),
           PinCodeWidget(
-              controller:
-               controller,
+              controller: controller,
               onComplete: (String v) {
                 if (box.values.toList().cast<PinHive>()[0].pinUser == v) {
-                  showToast("Muvaffaqiyat !!!", true, true);
+                  showToast("Muvaffaqiyat !!!", true,false);
 
                   Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
                     builder: (context) {
@@ -64,10 +63,11 @@ class CheckingPinCodePage extends StatelessWidget {
                     },
                   ), (route) => false);
                 } else {
+                  controller.clear();
                   showToast(
                       "Pinkodni notog'ri kiritdingiz, Qaytadan urinib ko'ring!!!",
                       false,
-                      true);
+                      false);
                 }
               }),
           Divider(

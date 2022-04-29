@@ -11,6 +11,7 @@ import 'package:governess/providers/cooker/accept_product_provider.dart';
 import 'package:governess/providers/cooker/cooker_products_page_provider.dart';
 import 'package:governess/providers/nurse/daily_menu_page_provider.dart';
 import 'package:governess/providers/nurse/editing_children_page_provider.dart';
+import 'package:governess/providers/nurse/enter_daily_children_page_provider.dart';
 import 'package:governess/providers/supplier/filter_to_buy_page_provider.dart';
 import 'package:governess/providers/supplier/get_shipped_products_provider.dart';
 import 'package:governess/providers/cooker/show_in_out_list_product_provider.dart';
@@ -41,6 +42,9 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create: (context) => NurseChangeChildrenNumberPageProvider(),
+        ),
+          ChangeNotifierProvider(
+          create: (context) => NurseEnterChildrenNumberPageProvider(),
         ),
         ChangeNotifierProvider(
           create: (context) => ToBuyProductPageProvider(),
@@ -88,7 +92,6 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-  
     listener = InternetConnectionChecker().onStatusChange.listen(
       (InternetConnectionStatus status) {
         switch (status) {
@@ -135,6 +138,7 @@ class NoInternetConnectionPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    SizeConfig().init(context);
     return Scaffold(
       backgroundColor: whiteColor,
       appBar: governessAppBar,

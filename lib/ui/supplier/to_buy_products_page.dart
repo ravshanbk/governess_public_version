@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:governess/consts/strings.dart';
+import 'package:governess/services/network.dart';
+import 'package:governess/ui/supplier/home_supplier_page.dart';
 import 'package:governess/ui/widgets/future_builder_of_no_data_widget.dart';
 import 'package:governess/ui/widgets/indicator_widget.dart';
 import 'package:provider/provider.dart';
@@ -146,59 +149,91 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
   }
 
   _noDataBody(BuildContext context) {
-    return Container(
-      alignment: Alignment.center,
-      height: gH(400.0),
-      child: RichText(
-        textAlign: TextAlign.center,
-        text: TextSpan(
-            style: TextStyle(color: Colors.black, fontSize: gW(18.0)),
-            children: context
-                        .watch<FilterToBuyPageProvider>()
-                        .currentFilterIndex ==
-                    0
-                ? [const TextSpan(text: "Hozirda malumotlar mavjud emas")]
-                : [
-                    TextSpan(
-                        text: "Tanlangan " +
-                            (context
-                                        .watch<FilterToBuyPageProvider>()
-                                        .currentFilterIndex ==
-                                    1
-                                ? "sana \n"
-                                : "korxona nomi ")),
-                    TextSpan(
-                      text: context
-                                  .watch<FilterToBuyPageProvider>()
-                                  .currentFilterIndex ==
-                              1
-                          ? DTFM.maker(Provider.of<FilterToBuyPageProvider>(
-                                  context,
-                                  listen: false)
-                              .from!
-                              .millisecondsSinceEpoch)
-                          : Provider.of<FilterToBuyPageProvider>(context,
-                                  listen: false)
-                              .currentCompName,
-                      style: TextStyle(color: Colors.red, fontSize: gW(22.0)),
-                    ),
-                    TextSpan(text: " / ", style: TextStyle(fontSize: gW(22.0))),
-                    TextSpan(
-                      text: context
-                                  .watch<FilterToBuyPageProvider>()
-                                  .currentFilterIndex ==
-                              1
-                          ? DTFM.maker(
-                              Provider.of<FilterToBuyPageProvider>(context)
-                                  .to!
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          RichText(
+            textAlign: TextAlign.center,
+            text: TextSpan(
+                style: TextStyle(color: Colors.black, fontSize: gW(18.0)),
+                children: context
+                            .watch<FilterToBuyPageProvider>()
+                            .currentFilterIndex ==
+                        0
+                    ? [const TextSpan(text: "Hozirda malumotlar mavjud emas")]
+                    : [
+                        TextSpan(
+                            text: "Tanlangan " +
+                                (context
+                                            .watch<FilterToBuyPageProvider>()
+                                            .currentFilterIndex ==
+                                        1
+                                    ? "sana \n"
+                                    : "korxona nomi ")),
+                        TextSpan(
+                          text: context
+                                      .watch<FilterToBuyPageProvider>()
+                                      .currentFilterIndex ==
+                                  1
+                              ? DTFM.maker(Provider.of<FilterToBuyPageProvider>(
+                                      context,
+                                      listen: false)
+                                  .from!
                                   .millisecondsSinceEpoch)
-                          : Provider.of<FilterToBuyPageProvider>(context,
-                                  listen: false)
-                              .currentCompName,
-                      style: TextStyle(color: Colors.red, fontSize: gW(22.0)),
-                    ),
-                    const TextSpan(text: " bo'yicha ma'lumot topilmadi"),
-                  ]),
+                              : Provider.of<FilterToBuyPageProvider>(context,
+                                      listen: false)
+                                  .currentCompName,
+                          style:
+                              TextStyle(color: Colors.red, fontSize: gW(22.0)),
+                        ),
+                        TextSpan(
+                            text: " / ", style: TextStyle(fontSize: gW(22.0))),
+                        TextSpan(
+                          text: context
+                                      .watch<FilterToBuyPageProvider>()
+                                      .currentFilterIndex ==
+                                  1
+                              ? DTFM.maker(
+                                  Provider.of<FilterToBuyPageProvider>(context)
+                                      .to!
+                                      .millisecondsSinceEpoch)
+                              : Provider.of<FilterToBuyPageProvider>(context,
+                                      listen: false)
+                                  .currentCompName,
+                          style:
+                              TextStyle(color: Colors.red, fontSize: gW(22.0)),
+                        ),
+                        const TextSpan(text: " bo'yicha ma'lumot topilmadi"),
+                      ]),
+          ),
+          SizedBox(height: gH(30.0)),
+          SendButtonWidget(
+              width: gW(335),
+              onPressed: () async {
+                bool isThereInternet = await checkConnectivity();
+                if (isThereInternet) {
+                  Provider.of<FilterToBuyPageProvider>(context, listen: false)
+                      .changeCurrentFilterIndex(0);
+                  Provider.of<ToBuyProductPageProvider>(context, listen: false)
+                      .changeCurrent(-1);
+                } else {
+                  Provider.of<FilterToBuyPageProvider>(context, listen: false)
+                      .changeCurrentFilterIndex(0);
+
+                  Provider.of<ToBuyProductPageProvider>(context, listen: false)
+                      .changeCurrent(-1);
+
+                  showToast(noNet, false, true);
+                  Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const SupplierHomePage()),
+                      (route) => false);
+                }
+              },
+              titleOfButton: "OK")
+        ],
       ),
     );
   }
@@ -440,13 +475,16 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
           _divider(),
           SendButtonWidget(
             width: gW(200.0),
-            onPressed:(data.status! == "TO'LIQ TUGALLANGAN")
-              ? null
-              : () {
-                  Provider.of<ToBuyProductPageProvider>(context, listen: false)
-                      .clear();
-                  _showDialogSend(data, context);
-                },titleOfButton: "YUBORISH",),
+            onPressed: (data.status! == "TO'LIQ TUGALLANGAN")
+                ? null
+                : () {
+                    Provider.of<ToBuyProductPageProvider>(context,
+                            listen: false)
+                        .clear();
+                    _showDialogSend(data, context);
+                  },
+            titleOfButton: "YUBORISH",
+          ),
           SizedBox(
             height: gH(10.0),
           ),
@@ -573,58 +611,60 @@ class _SendProductShowDialogContentWidget extends StatelessWidget {
   SendButtonWidget _sendButtonInShowDialog(BuildContext con, Product data) {
     return SendButtonWidget(
       width: gW(200.0),
-      onPressed:() async {
-      if ((Provider.of<ToBuyProductPageProvider>(con, listen: false)
-              .numberController
-              .text
-              .isNotEmpty) &&
-          (int.parse(Provider.of<ToBuyProductPageProvider>(con, listen: false)
-                  .numberController
-                  .text) >
-              0)) {
-        int number = (int.parse(
-                    Provider.of<ToBuyProductPageProvider>(con, listen: false)
-                        .numberController
-                        .text) *
-                (data.pack! > 0 ? data.pack! : 1))
-            .toInt();
-        await SupplierService()
-            .sendProduct(
-          v: SendProduct(
-            comment: Provider.of<ToBuyProductPageProvider>(con, listen: false)
-                .commentController
-                .text,
-            companyId: data.companyId,
-            measurementType: data.measurementType,
-            orderNumber: data.orderNumber,
-            price: 500,
-            productId: data.productId,
-            weightPack: number,
-            pack: 400,
-            numberPack: int.parse(
-              Provider.of<ToBuyProductPageProvider>(con, listen: false)
-                  .numberController
+      onPressed: () async {
+        if ((Provider.of<ToBuyProductPageProvider>(con, listen: false)
+                .numberController
+                .text
+                .isNotEmpty) &&
+            (int.parse(Provider.of<ToBuyProductPageProvider>(con, listen: false)
+                    .numberController
+                    .text) >
+                0)) {
+          int number = (int.parse(
+                      Provider.of<ToBuyProductPageProvider>(con, listen: false)
+                          .numberController
+                          .text) *
+                  (data.pack! > 0 ? data.pack! : 1))
+              .toInt();
+          await SupplierService()
+              .sendProduct(
+            v: SendProduct(
+              comment: Provider.of<ToBuyProductPageProvider>(con, listen: false)
+                  .commentController
                   .text,
+              companyId: data.companyId,
+              measurementType: data.measurementType,
+              orderNumber: data.orderNumber,
+              price: 500,
+              productId: data.productId,
+              weightPack: number,
+              pack: 400,
+              numberPack: int.parse(
+                Provider.of<ToBuyProductPageProvider>(con, listen: false)
+                    .numberController
+                    .text,
+              ),
             ),
-          ),
-          id: data.id!,
-        )
-            .then((value) {
-          if (value.success!) {
-            showToast(value.text!.toString(), value.success!, false);
+            id: data.id!,
+          )
+              .then((value) {
+            if (value.success!) {
+              showToast(value.text!.toString(), value.success!, false);
 
-            Provider.of<ToBuyProductPageProvider>(con, listen: false).clear();
-            Provider.of<ToBuyProductPageProvider>(con, listen: false)
-                .changeCurrent(-1);
-            Navigator.pop(con);
-          } else {
-            showToast(value.text!.toString(), value.success!, false);
-          }
-        });
-      } else {
-        showToast("Miqdorni kiriting, nol bolmasin", false, false);
-      }
-    },titleOfButton: "YUBORISH",);
+              Provider.of<ToBuyProductPageProvider>(con, listen: false).clear();
+              Provider.of<ToBuyProductPageProvider>(con, listen: false)
+                  .changeCurrent(-1);
+              Navigator.pop(con);
+            } else {
+              showToast(value.text!.toString(), value.success!, false);
+            }
+          });
+        } else {
+          showToast("Miqdorni kiriting, nol bolmasin", false, false);
+        }
+      },
+      titleOfButton: "YUBORISH",
+    );
   }
 
   _numberInputField(BuildContext context, Product data) {
@@ -806,6 +846,9 @@ class _ShowDialogDateContent extends StatelessWidget {
         if (isFrom) {
           Provider.of<FilterToBuyPageProvider>(context, listen: false)
               .initFrom(date);
+          Provider.of<FilterToBuyPageProvider>(context, listen: false)
+              .initTo(date);
+          _getDataByDateTime(dataw!, context);
         } else {
           Provider.of<FilterToBuyPageProvider>(context, listen: false)
               .initTo(date);

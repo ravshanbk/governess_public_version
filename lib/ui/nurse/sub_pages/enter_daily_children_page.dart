@@ -1,154 +1,327 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:governess/consts/colors.dart';
-import 'package:governess/consts/print_my.dart';
 import 'package:governess/consts/size_config.dart';
+import 'package:governess/models/nurse_models/age_group_id_and_number_model.dart';
+import 'package:governess/models/nurse_models/enter_number_of_children_page_data_model.dart';
+import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
+import 'package:governess/providers/nurse/enter_daily_children_page_provider.dart';
+import 'package:governess/services/nurse_service.dart';
+import 'package:governess/ui/widgets/date_time_show_button_widget.dart';
+import 'package:governess/ui/widgets/future_builder_of_no_data_widget.dart';
+import 'package:governess/ui/widgets/indicator_widget.dart';
+import 'package:governess/ui/widgets/show_toast_function.dart';
+import 'package:provider/provider.dart';
 
-class NurseEnterDailyChildrenPage1 extends StatelessWidget {
-  const NurseEnterDailyChildrenPage1({Key? key}) : super(key: key);
+class NurseEnterDailyChildrenPage extends StatelessWidget {
+  const NurseEnterDailyChildrenPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: ListView.separated(
-        padding: EdgeInsets.all(gW(20)),
-        shrinkWrap: true,
-        physics: const BouncingScrollPhysics(),
-        itemBuilder: (_, __) {
-          return __ == 0
-              ? Text(
-                  "Yosh Toifalar",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: mainColor,
-                    fontSize: gW(20.0),
-                    fontWeight: FontWeight.bold,
-                  ),
+    return WillPopScope(
+      onWillPop: () {
+        Navigator.pop(
+          context,
+        );
+        return Future.value(true);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          elevation: 0,
+          backgroundColor: mainColor,
+          actions: [
+            _dateTimeShowButton(context),
+          ],
+        ),
+        backgroundColor: mainColor,
+        body: FutureBuilder<List<NurseEnterNumberChildrenPageData>>(
+          future: NurseService().getAgeGroupList(),
+          builder: (BuildContext context,
+              AsyncSnapshot<List<NurseEnterNumberChildrenPageData>> snap) {
+            if (snap.connectionState == ConnectionState.done && snap.hasData) {
+              return _body(context, snap.data!);
+            } else if (snap.connectionState == ConnectionState.done &&
+                !snap.hasData) {
+              return const NoDataWidgetForFutureBuilder(
+                  "Hozircha Yosh Toifalar kiritilmagan!");
+            } else {
+              return IndicatorWidget(snap);
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  _body(BuildContext context, List<NurseEnterNumberChildrenPageData> data) {
+    return context.watch<NurseEnterChildrenNumberPageProvider>().idf
+        ? SingleChildScrollView(
+            padding: EdgeInsets.symmetric(
+              horizontal: gW(10.0),
+              vertical: gH(20.0),
+            ),
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+              children: [
+                _topText(),
+                Divider(
+                  height: gH(3.0),
+                  thickness: gW(3.0),
+                  color: whiteColor,
+                  indent: gW(50.0),
+                  endIndent: gW(50.0),
+                ),
+                SizedBox(
+                  height: gH(20.0),
+                ),
+                _inputFields(data, context),
+                SizedBox(
+                  height: gH(20.0),
+                ),
+                _enterButton(
+                  context,
+                  () async {
+                    List<AgeGroupIdAndNumber> v = List.generate(
+                      data.length,
+                      (index) => AgeGroupIdAndNumber(
+                        ageGroupId: data[index].ageGroupIdAndNumber.ageGroupId,
+                        number: int.parse(
+                          Provider.of<NurseEnterChildrenNumberPageProvider>(
+                                  context,
+                                  listen: false)
+                              .controllers![index]
+                              .text,
+                        ),
+                      ),
+                    );
+                    NurseService()
+                        .enterDailyChildrenNumber(
+                      v,
+                      Provider.of<NurseEnterChildrenNumberPageProvider>(context,
+                              listen: false)
+                          .when,
+                    )
+                        .then(
+                      (value) {
+                        if (value.success!) {
+                          Provider.of<NurseEnterChildrenNumberPageProvider>(
+                                  context,
+                                  listen: false)
+                              .clearControllers();
+                          showToast(value.text!, value.success!, false);
+                             Navigator.pop(context);
+                        } else {
+                          showToast(value.text!, value.success!, false);
+                        }
+                      },
+                    );
+                  },
                 )
-              : _groupButton(context, __);
+              ],
+            ),
+          )
+        : Center(
+            child: _enterButton(
+              context,
+              () {
+                Provider.of<NurseEnterChildrenNumberPageProvider>(context,
+                        listen: false)
+                    .initControllersAndNodes(data.length);
+             
+              },
+            ),
+          );
+  }
+
+  Text _topText() {
+    return Text(
+      "Yosh toifalar",
+      style: TextStyle(
+        color: whiteColor,
+        fontSize: gW(24.0),
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+
+  Ink _enterButton(BuildContext context, VoidCallback onPressed) {
+    return Ink(
+      padding: EdgeInsets.all(gW(10.0)),
+      height: gH(80),
+      width: gW(250.0),
+      decoration: BoxDecoration(
+        color: whiteColor,
+        borderRadius: BorderRadius.circular(gW(10.0)),
+        border: Border.all(
+          color: whiteColor,
+          width: gW(3.0),
+        ),
+      ),
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          shape: const StadiumBorder(),
+          primary: mainColor,
+          elevation: 0,
+          shadowColor: Colors.transparent,
+        ),
+        child: const Text("Kiritish"),
+        onPressed: onPressed,
+      ),
+    );
+  }
+
+  Ink _inputFields(
+      List<NurseEnterNumberChildrenPageData> data, BuildContext context) {
+    return Ink(
+      decoration: BoxDecoration(
+        color: whiteColor,
+        borderRadius: BorderRadius.circular(
+          gW(30.0),
+        ),
+      ),
+      child: ListView.separated(
+        // keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        padding: EdgeInsets.all(gW(20.0)),
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemBuilder: (_, __) {
+          return _inputField(__, data[__].ageGroupIdAndNumber.name!, context);
         },
         separatorBuilder: (context, index) {
           return SizedBox(
             height: gH(20.0),
           );
         },
-        itemCount: 5,
+        itemCount: data.length,
       ),
     );
   }
 
-  ElevatedButton _groupButton(BuildContext context, int __) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(
-            gW(10.0),
-          ),
-        ),
-        primary: mainColor,
-        elevation: 0,
-        fixedSize: Size(
-          gW(335.0),
-          gH(60.0),
-        ),
-      ),
-      onPressed: () {
-        _showDialog(context);
-      },
-      child: Text("$__"),
-    );
-  }
+  SizedBox _inputField(int __, String prefix, BuildContext context) {
+    return SizedBox(
+      height: gH(60.0),
+      width: gW(300.0),
+      child: TextFormField(
+        onFieldSubmitted: (v) {
+          if (__ <
+              Provider.of<NurseEnterChildrenNumberPageProvider>(context,
+                          listen: false)
+                      .nodes!
+                      .length -
+                  1) {
+            Provider.of<NurseEnterChildrenNumberPageProvider>(context,
+                    listen: false)
+                .regenerateIdfs(__ + 1);
+            Provider.of<NurseEnterChildrenNumberPageProvider>(context,
+                    listen: false)
+                .nodes![__]
+                .unfocus();
+            FocusScope.of(context).requestFocus(
+                Provider.of<NurseEnterChildrenNumberPageProvider>(context,
+                        listen: false)
+                    .nodes![__ + 1]);
+          } else {
+            Provider.of<NurseEnterChildrenNumberPageProvider>(context,
+                    listen: false)
+                .regenerateIdfs(0);
 
-  Future<dynamic> _showDialog(BuildContext context) {
-    //!
-    return showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Material(
-          type: MaterialType.transparency,
-          child: Container(
-            height: gH(300.0),
-            padding: EdgeInsets.all(gW(20.0)),
-            margin: EdgeInsets.only(
-              top: gH(200.0),
-              left: gW(20.0),
-              right: gW(20.0),
-              bottom: gH(300.0),
-            ),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(
-                gW(20.0),
-              ),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _textField(context),
-                SizedBox(
-                  height: gH(20.0),
-                ),
-                _addButton(context),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  ElevatedButton _addButton(BuildContext context) {
-    //!
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(
-            gW(20.0),
-          ),
-        ),
-        primary: mainColor,
-        elevation: 0,
-        fixedSize: Size(
-          gW(200.0),
-          gH(62.0),
-        ),
-      ),
-      onPressed: () async {
-        p("Qo'shildi");
-        Navigator.pop(context);
-      },
-      child: Text(
-        "Qo'shish",
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          letterSpacing: gW(3.0),
-          fontSize: gW(20.0),
-        ),
-      ),
-    );
-  }
-
-  TextFormField _textField(BuildContext context) {
-    return TextFormField(
-      keyboardType: TextInputType.number,
-      style: TextStyle(fontSize: gW(18.0)),
-      cursorColor: mainColor,
-      decoration: InputDecoration(
-          fillColor: Colors.white,
+            Provider.of<NurseEnterChildrenNumberPageProvider>(context,
+                    listen: false)
+                .nodes![__]
+                .unfocus();
+            FocusScope.of(context).requestFocus(
+                Provider.of<NurseEnterChildrenNumberPageProvider>(context,
+                        listen: false)
+                    .nodes![0]);
+          }
+        },
+        onChanged: (v) {
+          if (v.codeUnitAt(v.length - 1) > 57 ||
+              v.codeUnitAt(v.length - 1) < 48) {
+            showToast("Iltimos, Butun Son Kiriting", false, true);
+            Provider.of<NurseEnterChildrenNumberPageProvider>(context,
+                    listen: false)
+                .clearOneController(__);
+          }
+        },
+        keyboardType: TextInputType.number,
+        textAlign: TextAlign.center,
+        focusNode:
+            context.watch<NurseEnterChildrenNumberPageProvider>().nodes![__],
+        decoration: InputDecoration(
+          hintStyle: TextStyle(color: mainColor),
+          fillColor: whiteColor,
           filled: true,
-          labelStyle: TextStyle(color: mainColor),
-          label: const Text("Nechta...?"),
-          border: _inputBorder(),
+          prefixIcon: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: gW(10.0),
+              ),
+              Text(
+                "  " + prefix,
+                style: const TextStyle(color: Colors.red),
+              ),
+            ],
+          ),
+          disabledBorder: _inputBorder(),
           focusedBorder: _inputBorder(),
-          enabledBorder: _inputBorder()),
+          enabledBorder: _inputBorder(),
+        ),
+        controller: context
+            .read<NurseEnterChildrenNumberPageProvider>()
+            .controllers![__],
+      ),
     );
   }
 
   OutlineInputBorder _inputBorder() {
     return OutlineInputBorder(
-      borderSide: BorderSide(color: mainColor),
+      borderSide: BorderSide(color: mainColor, width: gW(2.0)),
       borderRadius: BorderRadius.circular(
-        gW(10.0),
+        gW(30.0),
       ),
+    );
+  }
+
+  _showDataPicker(BuildContext context) {
+    return DatePicker.showPicker(
+      context,
+      showTitleActions: true,
+      theme: DatePickerTheme(
+        backgroundColor: lightGreyColor,
+        containerHeight: gH(200.0),
+        headerColor: mainColor,
+        itemStyle: const TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.bold,
+          fontSize: 18,
+        ),
+        doneStyle: TextStyle(
+          color: whiteColor,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          letterSpacing: gW(1.5),
+          decoration: TextDecoration.underline,
+        ),
+      ),
+      onConfirm: (date) {
+        context.read<NurseEnterChildrenNumberPageProvider>().changeWhen(date);
+      },
+      locale: LocaleType.en,
+    );
+  }
+
+  DateTimeShowButton _dateTimeShowButton(BuildContext context) {
+    return DateTimeShowButton(
+      DTFM.maker(context
+          .watch<NurseEnterChildrenNumberPageProvider>()
+          .when
+          .millisecondsSinceEpoch),
+      () {
+        _showDataPicker(context);
+      },
     );
   }
 }
