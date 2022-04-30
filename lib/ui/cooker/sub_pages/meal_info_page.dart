@@ -245,6 +245,7 @@ class CookerMealInfoPage extends StatelessWidget {
 
   SliverAppBar _sliverAppBar(MealInfo data) {
     return SliverAppBar(
+          automaticallyImplyLeading: false,
       floating: true,
       leadingWidth: 0.0,
       primary: false,
@@ -255,6 +256,7 @@ class CookerMealInfoPage extends StatelessWidget {
       collapsedHeight: gH(50.0),
       expandedHeight: gH(240.0),
       flexibleSpace: FlexibleSpaceBar(
+
         stretchModes: const [StretchMode.blurBackground],
         titlePadding: EdgeInsets.only(
           left: gW(10.0),
@@ -263,7 +265,7 @@ class CookerMealInfoPage extends StatelessWidget {
         collapseMode: CollapseMode.pin,
         centerTitle: true,
         title: Text(
-          data.name!,
+        data.name!,
           style: const TextStyle(
             fontStyle: FontStyle.italic,
           ),

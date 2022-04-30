@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:governess/consts/colors.dart';
@@ -8,8 +9,6 @@ import 'package:governess/providers/cooker/show_in_out_list_product_provider.dar
 import 'package:governess/providers/cooker/waste_product_cooker_page_provider.dart';
 import 'package:governess/services/cooker_service.dart';
 import 'package:governess/ui/widgets/date_time_show_button_widget.dart';
-import 'package:governess/ui/widgets/future_builder_of_no_data_widget.dart';
-import 'package:governess/ui/widgets/indicator_widget.dart';
 import 'package:governess/ui/widgets/show_in_out_list_product_widget.dart';
 import 'package:governess/ui/widgets/text_in_row_widget.dart';
 import 'package:provider/provider.dart';
@@ -64,18 +63,42 @@ class _CookerWastProductPageState extends State<CookerWastProductPage> {
             ],
           ),
           SliverToBoxAdapter(
-            child: FutureBuilder<List<CookerProduct>>(
+            child: FutureBuilder<List<CookerInOutListProduct>>(
               future: CookerService().getGarbage(start, end),
-              builder: (context, AsyncSnapshot<List<CookerProduct>> snap) {
+              builder: (context, AsyncSnapshot<List<CookerInOutListProduct>> snap) {
                 if (snap.connectionState == ConnectionState.done &&
                     snap.data!.isNotEmpty) {
                   return _body(context, snap.data!);
                 } else if (snap.connectionState == ConnectionState.done &&
                     snap.data!.isEmpty) {
-                  return const NoDataWidgetForFutureBuilder(
-                      "Hozircha Omborda Mahsulotlar Mavjud Emas");
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        SizedBox(height: gH(200.0)),
+                        Text(
+                         "Hozircha Chiqitga Chiqarilgan Mahsulotlar Mavjud Emas",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: mainColor,
+                            fontSize: gW(20.0),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
                 } else {
-                  return IndicatorWidget(snap);
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(snap.connectionState.name),
+                        CupertinoActivityIndicator(
+                          radius: gW(20.0),
+                        ),
+                      ],
+                    ),
+                  );
                 }
               },
             ),
@@ -85,7 +108,7 @@ class _CookerWastProductPageState extends State<CookerWastProductPage> {
     );
   }
 
-  ListView _body(BuildContext context, List<CookerProduct> data) {
+  _body(BuildContext context, List<CookerInOutListProduct> data) {
     return ListView.separated(
       key: Key(DateTime.now().toString()),
       shrinkWrap: true,
@@ -122,7 +145,7 @@ class _CookerWastProductPageState extends State<CookerWastProductPage> {
   }
 
   _inOutListProductChild(
-      List<CookerProduct> data, int __, int index, BuildContext context) {
+      List<CookerInOutListProduct> data, int __, int index, BuildContext context) {
     return Container(
       margin: EdgeInsets.symmetric(
         horizontal: 10.0,

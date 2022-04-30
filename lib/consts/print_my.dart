@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
 
-p(String v) {
-  debugPrint(v);
+p(dynamic v) {
+  debugPrint(v.toString());
 }

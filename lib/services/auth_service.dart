@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:governess/consts/print_my.dart';
 import 'package:governess/local_storage/boxes.dart';
 import 'package:governess/local_storage/user_storage.dart';
 import 'package:governess/models/other/post_res_model.dart';
@@ -7,22 +6,18 @@ import 'package:governess/models/user/change_user_info.dart';
 import 'package:governess/models/user/user_model.dart';
 
 class AuthService {
-
   static Options option = Options(headers: {
-    "Authorization":
-         Boxes.getUser().values.first.token,
+    "Authorization": Boxes.getUser().values.first.token,
   });
   static String localhost = "http://185.217.131.117:7788";
   // static String localhost = "http://192.168.68.110:7788";
- 
-  
 
   Future<bool> getUser(String login, String password) async {
     Response user;
     User decodedUser;
 
     try {
-      user = await Dio().post(
+      Response user = await Dio().post(
         "${AuthService.localhost}/out/api/user/signIn",
         data: {"login": login, "password": password},
       );
@@ -42,20 +37,14 @@ class AuthService {
 
         return true;
       } else {
-
         return false;
       }
     } catch (e) {
-      throw Exception("Getting User:::" + e.toString());
+      return false;
     }
   }
 
   Future<ResModel> changeLoginPassword({required ChangUserInfo info}) async {
-    p(Boxes.getUser().values.first.token);
-    p("${AuthService.localhost}/out/api/user");
-    p(info.username!);
-    p(info.newPassword!);
-    p(info.oldPassword!);
     try {
       Response res = await Dio().patch(
         "${AuthService.localhost}/out/api/user",

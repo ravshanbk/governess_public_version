@@ -1,5 +1,5 @@
-class CookerProduct {
-  CookerProduct({
+class CookerInOutListProduct {
+  CookerInOutListProduct({
     this.inOutList,
     this.productName,
     this.productId,
@@ -11,7 +11,7 @@ class CookerProduct {
   int? productId;
   double? weight;
 
-  factory CookerProduct.fromJson(Map<String, dynamic> json) => CookerProduct(
+  factory CookerInOutListProduct.fromJson(Map<String, dynamic> json) => CookerInOutListProduct(
         inOutList: List<InOutList>.from(
             json["inOutList"].map((x) => InOutList.fromJson(x))),
         productName: json["productName"],

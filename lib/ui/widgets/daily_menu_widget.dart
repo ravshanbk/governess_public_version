@@ -17,9 +17,7 @@ const DailyMenuWidget({required this.data, required this.con,required this.onTap
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Container(
-        margin: EdgeInsets.all(
-          gW(10.0),
-        ),
+        margin: EdgeInsets.symmetric(horizontal: gW(10.0),vertical: gH(20.0)),
         decoration: BoxDecoration(
           border: Border.all(color: Colors.black),
           borderRadius: BorderRadius.circular(

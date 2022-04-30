@@ -1,21 +1,32 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/decorations.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/models/cooker/receive_product_model.dart';
+import 'package:governess/models/cooker/to_accept_product_model.dart';
 import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
-import 'package:governess/models/supplier/product_model.dart';
 import 'package:governess/providers/cooker/accept_product_provider.dart';
 import 'package:governess/services/cooker_service.dart';
-import 'package:governess/ui/widgets/expansion_tile_to_show_product_widget.dart';
-import 'package:governess/ui/widgets/future_builder_of_no_data_widget.dart';
-import 'package:governess/ui/widgets/indicator_widget.dart';
+import 'package:governess/ui/widgets/cooker_show_product_expansion_tile_widget.dart';
+import 'package:governess/ui/widgets/date_time_show_button_widget.dart';
 import 'package:governess/ui/widgets/show_toast_function.dart';
 import 'package:governess/ui/widgets/send_button_widger.dart.dart';
 import 'package:provider/provider.dart';
 
-class CookerAcceptProductPage extends StatelessWidget {
+class CookerAcceptProductPage extends StatefulWidget {
   const CookerAcceptProductPage({Key? key}) : super(key: key);
+
+  @override
+  State<CookerAcceptProductPage> createState() =>
+      _CookerAcceptProductPageState();
+}
+
+class _CookerAcceptProductPageState extends State<CookerAcceptProductPage> {
+  DateTime start = DateTime(2022, 4, 28);
+
+  DateTime end = DateTime(2022, 4, 30);
 
   @override
   Widget build(BuildContext context) {
@@ -26,29 +37,91 @@ class CookerAcceptProductPage extends StatelessWidget {
         elevation: 0,
         title: const Text("Mahsulotlarni qabul qilish"),
       ),
-      body: FutureBuilder<List<Product>>(
-        future: CookerService().getSentProductFromWarehouse(),
-        builder: (context, AsyncSnapshot<List<Product>> snap) {
-          if (snap.connectionState == ConnectionState.done && snap.hasData) {
-            return _body(snap, context);
-          } else if (snap.connectionState == ConnectionState.done &&
-              !snap.hasData) {
-            return const NoDataWidgetForFutureBuilder(
-                "Hozircha Yuborilgan Mahsulotlar Mavjud Emas");
-          } else {
-            return IndicatorWidget(snap);
-          }
-        },
+      body: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
+        slivers: [
+          SliverAppBar(
+            floating: true,
+            pinned: false,
+            automaticallyImplyLeading: false,
+            backgroundColor: greyColor,
+            leadingWidth: 0.0,
+            actions: [
+              DateTimeShowButton(DTFM.maker(start.millisecondsSinceEpoch), () {
+                _showDataPicker(
+                  context,
+                  true,
+                );
+              }),
+              SizedBox(width: gW(50.0)),
+              DateTimeShowButton(DTFM.maker(end.millisecondsSinceEpoch), () {
+                _showDataPicker(
+                  context,
+                  false,
+                );
+              }),
+              SizedBox(width: gW(23.0)),
+            ],
+          ),
+          SliverToBoxAdapter(
+            child: FutureBuilder<List<CookerProduct>>(
+              future: CookerService().getInOut(start: start, end: end),
+              builder: (context, AsyncSnapshot<List<CookerProduct>> snap) {
+                if (snap.connectionState == ConnectionState.done &&
+                    snap.hasData) {
+                  return
+                      //  const Text("Success");
+                      _body(
+                    snap,
+                    context,
+                  );
+                } else if (snap.connectionState == ConnectionState.done &&
+                    !snap.hasData) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        SizedBox(height: gH(200.0)),
+                        Text(
+                          "Hozircha Mahsulotlar Mavjud Emas",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: mainColor,
+                            fontSize: gW(20.0),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                } else {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(snap.connectionState.name),
+                        CupertinoActivityIndicator(
+                          radius: gW(20.0),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  ListView _body(AsyncSnapshot<List<Product>> snap, BuildContext context) {
+  ListView _body(
+      AsyncSnapshot<List<CookerProduct>> snap, BuildContext context) {
     return ListView.separated(
+      shrinkWrap: true,
+      physics: const BouncingScrollPhysics(),
       padding: EdgeInsets.all(gW(20.0)),
       itemBuilder: (_, __) {
-        return ExpansionTileToShowProductWidget(
-          // children: [Text("data")],
+        return CookerShowProductExpansionTileWidget(
           key: Key("$__ CookerAcceptProductPage"),
           isExpanded:
               context.watch<CookerAcceptProductProvider>().current == __,
@@ -74,7 +147,7 @@ class CookerAcceptProductPage extends StatelessWidget {
     );
   }
 
-  List<Widget> _children(Product data, BuildContext context) {
+  List<Widget> _children(CookerProduct data, BuildContext context) {
     // p(DTFM.maker(data.sendDate!));
     return <Widget>[
       Ink(
@@ -88,7 +161,7 @@ class CookerAcceptProductPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Padding(
-              padding:  EdgeInsets.symmetric(horizontal: gW(20.0)),
+              padding: EdgeInsets.symmetric(horizontal: gW(20.0)),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   primary: mainColor,
@@ -102,12 +175,12 @@ class CookerAcceptProductPage extends StatelessWidget {
               ),
             ),
             SizedBox(height: gH(10.0)),
-            _textInRow("Korxona nomi", data.companyName.toString()),
+            _textInRow("Korxona nomi", data.senderName.toString()),
             _divider(),
-            _textInRow("Zayavka nomi", data.orderNumber.toString()),
+            // _textInRow("Zayavka nomi", data.orderNumber.toString()),
             _divider(),
             _textInRow("Yuborilgan Sana",
-                data.sendDate == null ? "null" : DTFM.maker(data.sendDate!)),
+                data.enterDate == null ? "null" : DTFM.maker(data.enterDate!)),
             _divider(),
             _textInRow("O'lchov birligi", data.measurementType.toString()),
             _divider(),
@@ -158,7 +231,7 @@ class CookerAcceptProductPage extends StatelessWidget {
     );
   }
 
-  _shownputDialog(BuildContext context, Product product) {
+  _shownputDialog(BuildContext context, CookerProduct product) {
     return showDialog(
       context: context,
       builder: (context) {
@@ -166,10 +239,44 @@ class CookerAcceptProductPage extends StatelessWidget {
       },
     );
   }
+
+  _showDataPicker(BuildContext context, bool idf) {
+    DatePicker.showPicker(
+      context,
+      showTitleActions: true,
+      theme: DatePickerTheme(
+        backgroundColor: lightGreyColor,
+        containerHeight: gH(200.0),
+        headerColor: mainColor,
+        itemStyle: const TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.bold,
+          fontSize: 18,
+        ),
+        doneStyle: TextStyle(
+          color: whiteColor,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          letterSpacing: gW(1.5),
+          decoration: TextDecoration.underline,
+        ),
+      ),
+      onConfirm: (date) {
+        if (idf) {
+          start = date;
+          setState(() {});
+        } else {
+          end = date;
+          setState(() {});
+        }
+      },
+      locale: LocaleType.en,
+    );
+  }
 }
 
 class _SendProductShowDialogContentWidget extends StatelessWidget {
-  final Product data;
+  final CookerProduct data;
   const _SendProductShowDialogContentWidget(this.data, {Key? key})
       : super(key: key);
 
@@ -201,12 +308,13 @@ class _SendProductShowDialogContentWidget extends StatelessWidget {
             _richTextInRow(["Umumiy:  ", data.weightPack.toString()]),
             const Spacer(),
             _numberInputField(context, data),
-            const Spacer(),
-            _priceInputField(context),
+            // const Spacer(),
+            // _priceInputField(context),
             const Spacer(),
             _commentInputField(context),
             const Spacer(),
-            _sendButtonInShowDialog(context, data),
+            _acceptButtonInShowDialog(context, data),
+            const Spacer(),
           ],
         ),
       ),
@@ -230,18 +338,20 @@ class _SendProductShowDialogContentWidget extends StatelessWidget {
     );
   }
 
-  SendButtonWidget _sendButtonInShowDialog(BuildContext con, Product data) {
-    return SendButtonWidget(width: gW(200.0),
+  SendButtonWidget _acceptButtonInShowDialog(
+      BuildContext con, CookerProduct data) {
+    return SendButtonWidget(
+      width: gW(200.0),
       onPressed: () async {
-        if ((Provider.of<CookerAcceptProductProvider>(con, listen: false)
+        if (Provider.of<CookerAcceptProductProvider>(con, listen: false)
                 .numberController
                 .text
-                .isNotEmpty) &&
-            (int.parse(
+                .isNotEmpty &&
+            int.parse(
                     Provider.of<CookerAcceptProductProvider>(con, listen: false)
                         .numberController
                         .text) >
-                0)) {
+                0) {
           int number = (int.parse(Provider.of<CookerAcceptProductProvider>(con,
                           listen: false)
                       .numberController
@@ -250,7 +360,8 @@ class _SendProductShowDialogContentWidget extends StatelessWidget {
               .toInt();
           await CookerService()
               .acceptProduct(
-            ReceiveProductModel(
+            id: data.id!,
+            data: ReceiveProductModel(
               comment:
                   Provider.of<CookerAcceptProductProvider>(con, listen: false)
                       .commentController
@@ -261,7 +372,6 @@ class _SendProductShowDialogContentWidget extends StatelessWidget {
                       .text),
               weightPack: number,
             ),
-            id: data.id!,
           )
               .then((value) {
             if (value.success!) {
@@ -284,7 +394,7 @@ class _SendProductShowDialogContentWidget extends StatelessWidget {
     );
   }
 
-  _numberInputField(BuildContext context, Product data) {
+  _numberInputField(BuildContext context, CookerProduct data) {
     return TextFormField(
       onChanged: (v) {
         if (double.parse(v) > data.numberPack!) {

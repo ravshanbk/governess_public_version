@@ -2,9 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/decorations.dart';
-import 'package:governess/consts/print_my.dart';
 import 'package:governess/consts/size_config.dart';
+import 'package:governess/consts/strings.dart';
 import 'package:governess/services/auth_service.dart';
+import 'package:governess/services/network.dart';
 import 'package:governess/ui/auth/pin_code_page.dart';
 import 'package:governess/ui/widgets/governess_app_bar.dart';
 import 'package:governess/ui/widgets/show_toast_function.dart';
@@ -65,30 +66,35 @@ class AuthPage extends StatelessWidget {
       onPressed: isInProgress
           ? null
           : () async {
-              if (loginController.text.isNotEmpty &&
-                  passwordController.text.isNotEmpty) {
-                isInProgress = true;
+              bool isInternet = await checkConnectivity();
+              if (isInternet) {
+                if (loginController.text.isNotEmpty &&
+                    passwordController.text.isNotEmpty) {
+                  isInProgress = true;
 
-                AuthService()
-                    .getUser(loginController.text, passwordController.text)
-                    .then(
-                  (value) {
-                    if (value) {
-                      showToast("Muvaffaqiyat !!!", true, false);
+                  AuthService()
+                      .getUser(loginController.text, passwordController.text)
+                      .then(
+                    (value) {
+                      if (value) {
+                        showToast("Muvaffaqiyat !!!", true, false);
 
-                      isInProgress = false;
+                        isInProgress = false;
 
-                      Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => PinCodePage(),
-                          ),
-                          (route) => false);
-                    } else {
-                      showToast("Nimadir hato bo'ldi", false, false);
-                    }
-                  },
-                );
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>const  PinCodePage(),
+                            ),
+                            (route) => false);
+                      } else {
+                        showToast("Nimadir hato bo'ldi", false, false);
+                      }
+                    },
+                  );
+                }
+              } else {
+                showToast(noNet, false, false);
               }
             },
       style: _elevatedButtonStyle(),
@@ -99,7 +105,6 @@ class AuthPage extends StatelessWidget {
   TextFormField _passwordInput(BuildContext context) {
     return TextFormField(
       onChanged: (v) {
-        p(v);
         if (v.isEmpty && isInProgress) {
           isInProgress = false;
         }
@@ -115,7 +120,6 @@ class AuthPage extends StatelessWidget {
   TextFormField _loginInput(BuildContext context) {
     return TextFormField(
       onChanged: (v) {
-        p(v);
         if (v.isEmpty && isInProgress) {
           isInProgress = false;
         }

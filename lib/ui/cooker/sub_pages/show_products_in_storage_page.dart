@@ -30,8 +30,8 @@ class CookerShowExistingProductPage extends StatelessWidget {
         title: Text(DTFM.maker(DateTime.now().millisecondsSinceEpoch)),
       ),
       body: FutureBuilder(
-        future: CookerService().getAvailbleProductsInStorage(),
-        builder: (context, AsyncSnapshot<List<CookerProduct>> snap) {
+        future: CookerService().getExistingProduct(),
+        builder: (context, AsyncSnapshot<List<CookerInOutListProduct>> snap) {
           if (snap.connectionState == ConnectionState.done &&
               snap.data!.isNotEmpty) {
             return _body(context, snap.data!);
@@ -47,7 +47,7 @@ class CookerShowExistingProductPage extends StatelessWidget {
     );
   }
 
-  ListView _body(BuildContext context, List<CookerProduct> data) {
+  ListView _body(BuildContext context, List<CookerInOutListProduct> data) {
     return ListView.separated(
       shrinkWrap: true,
       physics: const BouncingScrollPhysics(),
@@ -80,8 +80,8 @@ class CookerShowExistingProductPage extends StatelessWidget {
     );
   }
 
-  _inOutListProductChild(
-      List<CookerProduct> data, int __, int index, BuildContext context) {
+  _inOutListProductChild(List<CookerInOutListProduct> data, int __, int index,
+      BuildContext context) {
     return Card(
       elevation: 0,
       color: mainColor_02,
@@ -109,20 +109,13 @@ class CookerShowExistingProductPage extends StatelessWidget {
               SendButtonWidget(
                 width: gW(160.0),
                 onPressed: () {
-                  p("Chiqarish");
 
                   // p(data[__].productId.toString());
                   // p(data[__].inOutList![index].id!.toString());
                   // Provider.of<WasteProductCookerPageProvider>(context,
                   //         listen: false)
                   //     .clear();
-                  // showDialog(
-                  //   context: context,
-                  //   builder: (context) {
-                  //     return _ShowDialogDateContent(
-                  //         data[__].productId, data[__].inOutList![index].id!);
-                  //   },
-                  // );
+                  _showWasteDialog(context, data, __, index);
                 },
                 titleOfButton: "Chiqarish",
               ),
@@ -132,17 +125,16 @@ class CookerShowExistingProductPage extends StatelessWidget {
               SendButtonWidget(
                 width: gW(130.0),
                 onPressed: () {
-                  p("Bekor Qilish");
-                  // //!
-                  // CookerService()
-                  //     .deleteGarbage(data[0].productId!)
-                  //     .then((value) {
-                  //   if (value) {
-                  //     showToast("Muvaffaqiyat", true, false);
-                  //   } else {
-                  //     showToast("Chiqarilmadi", false, false);
-                  //   }
-                  // });
+
+                  CookerService()
+                      .deleteGarbage(data[0].productId!)
+                      .then((value) {
+                    if (value) {
+                      showToast("Muvaffaqiyat", true, false);
+                    } else {
+                      showToast("Chiqarilmadi", false, false);
+                    }
+                  });
                 },
                 titleOfButton: "Bekor qilish",
               ),
@@ -168,6 +160,16 @@ class CookerShowExistingProductPage extends StatelessWidget {
     );
   }
 
+  Future<dynamic> _showWasteDialog(BuildContext context, List<CookerInOutListProduct> data, int __, int index) {
+    return showDialog(
+                  context: context,
+                  builder: (context) {
+                    return _ShowDialogDateContent(
+                        data[__].productId, data[__].inOutList![index].id!);
+                  },
+                );
+  }
+
   Divider _divider() => Divider(
         color: mainColor,
         indent: gW(15.0),
@@ -191,7 +193,11 @@ class _ShowDialogDateContent extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.all(gW(20.0)),
         margin: EdgeInsets.only(
-            bottom: gH(500.0), left: gW(10.0), right: gW(10.0), top: gH(100.0)),
+          bottom: gH(500.0),
+          left: gW(10.0),
+          right: gW(10.0),
+          top: gH(100.0),
+        ),
         decoration: BoxDecoration(
           color: whiteColor,
           borderRadius: BorderRadius.circular(

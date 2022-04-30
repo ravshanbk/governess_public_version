@@ -24,9 +24,9 @@ class CookerShowProductsInStoragePage extends StatelessWidget {
         elevation: 0,
         title: Text(DTFM.maker(DateTime.now().millisecondsSinceEpoch)),
       ),
-      body: FutureBuilder<List<CookerProduct>>(
+      body: FutureBuilder<List<CookerInOutListProduct>>(
         future: CookerService().getAvailbleProductsInStorage(),
-        builder: (context, AsyncSnapshot<List<CookerProduct>> snap) {
+        builder: (context, AsyncSnapshot<List<CookerInOutListProduct>> snap) {
           if (snap.connectionState == ConnectionState.done &&
               snap.data!.isNotEmpty) {
             return _body(context, snap.data!);
@@ -42,7 +42,7 @@ class CookerShowProductsInStoragePage extends StatelessWidget {
     );
   }
 
-  ListView _body(BuildContext context, List<CookerProduct> data) {
+  ListView _body(BuildContext context, List<CookerInOutListProduct> data) {
     return ListView.separated(
       shrinkWrap: true,
       physics: const BouncingScrollPhysics(),

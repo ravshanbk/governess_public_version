@@ -13,18 +13,23 @@ class Product {
         this.id,
         this.createDate,
         this.updateDate,
+
         this.sendDate,
         this.orderNumber,
         this.price,
+
         this.pack,
         this.numberPack,
         this.weightPack,
+
         this.status,
         this.measurementType,
         this.companyName,
+
         this.companyId,
         this.productId,
         this.productName,
+        
         this.comment,
     });
 

@@ -1,18 +1,15 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:governess/consts/print_my.dart';
 import 'package:governess/models/nurse_models/age_group_model.dart';
 import 'package:governess/models/nurse_models/daily_menu_model.dart';
 import 'package:governess/models/nurse_models/enter_number_of_children_page_data_model.dart';
 import 'package:governess/models/nurse_models/number_of_children_model.dart';
 import 'package:governess/models/nurse_models/age_group_id_and_number_model.dart';
-import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/models/other/post_res_model.dart';
 import 'package:governess/services/auth_service.dart';
 
 class NurseService {
   Future<DailyMenu> getDailyMenu(DateTime date) async {
-    p(date.millisecondsSinceEpoch.toString());
 
     try {
       Response res = await Dio().get(
@@ -41,8 +38,6 @@ class NurseService {
   }
 
   Future<NumberOfChildren> getDailyChildrenNumber(DateTime date) async {
-    p("Qachon: " + DTFM.maker(date.millisecondsSinceEpoch));
-    p(date.microsecondsSinceEpoch.toString());
     try {
       Response res = await Dio().get(
         "${AuthService.localhost}/out/api/perDay?date=${date.millisecondsSinceEpoch}",
@@ -56,7 +51,6 @@ class NurseService {
 
   Future<ResModel> changeDailyChildrenNumber(
       List<AgeGroupIdAndNumber> v, int gardenId) async {
-    p("changeDailyChildrenNumber: " + v.toString());
     try {
       Response res = await Dio().patch(
         "${AuthService.localhost}/out/api/perDay/$gardenId",

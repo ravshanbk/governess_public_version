@@ -13,7 +13,7 @@ class MealInfo {
 
   int? id;
   String? name;
-  double? weight;//
+  double? weight;
   int? mealCategoryId;
   String? mealCategoryName;
   List<ProductMeal>? productMeals;
