@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:governess/consts/colors.dart';
+import 'package:governess/consts/size_config.dart';
 
 class CookerWastedProductsPage extends StatelessWidget {
   const CookerWastedProductsPage({Key? key}) : super(key: key);

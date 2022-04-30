@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/local_storage/boxes.dart';
 import 'package:governess/local_storage/user_storage.dart';

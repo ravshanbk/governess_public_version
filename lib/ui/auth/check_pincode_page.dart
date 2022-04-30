@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/size_config.dart';
+import 'package:governess/consts/strings.dart';
 import 'package:governess/local_storage/boxes.dart';
 import 'package:governess/models/hive_models/pin_hive_model.dart';
 import 'package:governess/ui/cooker/home_cooker_page.dart';
@@ -9,7 +9,6 @@ import 'package:governess/ui/nurse/nurse_home_page.dart';
 import 'package:governess/ui/supplier/home_supplier_page.dart';
 import 'package:governess/ui/widgets/governess_app_bar.dart';
 import 'package:governess/ui/widgets/pincode_widget.dart';
-import 'package:governess/ui/widgets/show_toast_function.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class CheckingPinCodePage extends StatelessWidget {

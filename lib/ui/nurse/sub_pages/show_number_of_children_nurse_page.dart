@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-import 'package:governess/consts/colors.dart';
+import 'package:governess/consts/date_time_picker_function.dart';
 import 'package:governess/consts/size_config.dart';
+import 'package:governess/consts/strings.dart';
 import 'package:governess/models/nurse_models/number_of_children_model.dart';
 import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/providers/nurse/editing_children_page_provider.dart';
@@ -14,7 +14,6 @@ import 'package:governess/ui/widgets/future_builder_of_no_data_widget.dart';
 import 'package:governess/ui/widgets/indicator_widget.dart';
 import 'package:governess/ui/widgets/number_of_children_widget.dart';
 import 'package:governess/services/nurse_service.dart';
-import 'package:governess/ui/widgets/show_toast_function.dart';
 import 'package:provider/provider.dart';
 
 class NurseShowNumberOfChildrenPage extends StatefulWidget {
@@ -92,11 +91,7 @@ class _NurseShowNumberOfChildrenPageState
                           setState(() {});
                         });
                       } else {
-                        showToast(
-                          "Qurilma Internet Tarmog'iga Ulanmagan",
-                          false,
-                          true,
-                        );
+                        showNoNetToast(false);
                       }
                     },
                     title: "Kiritish",
@@ -191,39 +186,13 @@ class _NurseShowNumberOfChildrenPageState
             .millisecondsSinceEpoch,
       ),
       () {
-        _showDataPicker(context);
+        showDataPicker(context, onDone: (date) {
+          Provider.of<NurseEnterChildrenNumberPageProvider>(context,
+                  listen: false)
+              .changeWhen(date);
+          setState(() {});
+        });
       },
-    );
-  }
-
-  _showDataPicker(BuildContext context) {
-    DatePicker.showPicker(
-      context,
-      showTitleActions: true,
-      theme: DatePickerTheme(
-        backgroundColor: lightGreyColor,
-        containerHeight: gH(200.0),
-        headerColor: mainColor,
-        itemStyle: const TextStyle(
-          color: Colors.black,
-          fontWeight: FontWeight.bold,
-          fontSize: 18,
-        ),
-        doneStyle: TextStyle(
-          color: whiteColor,
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-          letterSpacing: gW(1.5),
-          decoration: TextDecoration.underline,
-        ),
-      ),
-      onConfirm: (date) {
-        Provider.of<NurseEnterChildrenNumberPageProvider>(context,
-                listen: false)
-            .changeWhen(date);
-        setState(() {});
-      },
-      locale: LocaleType.en,
     );
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-import 'package:governess/consts/colors.dart';
+import 'package:governess/consts/date_time_picker_function.dart';
 import 'package:governess/consts/size_config.dart';
+import 'package:governess/consts/strings.dart';
 import 'package:governess/models/nurse_models/number_of_children_model.dart';
 import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/services/manager_service.dart';
@@ -10,7 +10,6 @@ import 'package:governess/ui/widgets/future_builder_of_no_data_widget.dart';
 import 'package:governess/ui/widgets/indicator_widget.dart';
 import 'package:governess/ui/widgets/number_of_children_widget.dart';
 import 'package:governess/services/nurse_service.dart';
-import 'package:governess/ui/widgets/show_toast_function.dart';
 
 class ManagerShowNumberOfChildrenPage extends StatefulWidget {
   const ManagerShowNumberOfChildrenPage({Key? key}) : super(key: key);
@@ -32,7 +31,10 @@ class _ManagerShowNumberOfChildrenPageState
         backgroundColor: mainColor,
         actions: [
           DateTimeShowButton(DTFM.maker(when.millisecondsSinceEpoch), () {
-            _showDataPicker(context);
+            showDataPicker(context, onDone: (date) {
+              when = date;
+              setState(() {});
+            });
           })
         ],
       ),
@@ -54,7 +56,6 @@ class _ManagerShowNumberOfChildrenPageState
   }
 
   _body(NumberOfChildren data, BuildContext context) {
- 
     return Padding(
       padding: EdgeInsets.only(
         left: gW(20.0),
@@ -87,7 +88,8 @@ class _ManagerShowNumberOfChildrenPageState
           gH(52.0),
         ),
       ),
-      onPressed: data.perDayList![0].status == "TASDIQLANDI"||data.perDayList![0].status == "NOANIQ"
+      onPressed: data.perDayList![0].status == "TASDIQLANDI" ||
+              data.perDayList![0].status == "NOANIQ"
           ? null
           : () async {
               ManagerService()
@@ -109,35 +111,6 @@ class _ManagerShowNumberOfChildrenPageState
           fontSize: gW(20.0),
         ),
       ),
-    );
-  }
-
-  _showDataPicker(BuildContext context) {
-    DatePicker.showPicker(
-      context,
-      showTitleActions: true,
-      theme: DatePickerTheme(
-        backgroundColor: lightGreyColor,
-        containerHeight: gH(200.0),
-        headerColor: mainColor,
-        itemStyle: const TextStyle(
-          color: Colors.black,
-          fontWeight: FontWeight.bold,
-          fontSize: 18,
-        ),
-        doneStyle: TextStyle(
-          color: whiteColor,
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-          letterSpacing: gW(1.5),
-          decoration: TextDecoration.underline,
-        ),
-      ),
-      onConfirm: (date) {
-        when = date;
-        setState(() {});
-      },
-      locale: LocaleType.en,
     );
   }
 }

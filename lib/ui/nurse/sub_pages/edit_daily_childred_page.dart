@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/decorations.dart';
 import 'package:governess/consts/size_config.dart';
+import 'package:governess/consts/strings.dart';
 import 'package:governess/models/nurse_models/number_of_children_model.dart';
 import 'package:governess/models/nurse_models/age_group_id_and_number_model.dart';
 import 'package:governess/providers/nurse/editing_children_page_provider.dart';
 import 'package:governess/services/nurse_service.dart';
 import 'package:governess/ui/widgets/cancel_button_widget.dart';
-import 'package:governess/ui/widgets/show_toast_function.dart';
 import 'package:provider/provider.dart';
 
 class NurseEditDailyChildrenPage extends StatelessWidget {

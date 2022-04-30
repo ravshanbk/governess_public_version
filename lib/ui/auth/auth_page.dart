@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/decorations.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/consts/strings.dart';
@@ -8,8 +7,6 @@ import 'package:governess/services/auth_service.dart';
 import 'package:governess/services/network.dart';
 import 'package:governess/ui/auth/pin_code_page.dart';
 import 'package:governess/ui/widgets/governess_app_bar.dart';
-import 'package:governess/ui/widgets/show_toast_function.dart';
-
 class AuthPage extends StatelessWidget {
   AuthPage({Key? key}) : super(key: key);
 

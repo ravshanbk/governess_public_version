@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/size_config.dart';
+import 'package:governess/consts/strings.dart';
 import 'package:governess/local_storage/user_storage.dart';
 import 'package:governess/providers/auth/pin_code_page_provider.dart';
 import 'package:governess/ui/auth/check_pincode_page.dart';
 import 'package:governess/ui/widgets/governess_app_bar.dart';
 import 'package:governess/ui/widgets/pincode_widget.dart';
 import 'package:governess/ui/widgets/send_button_widger.dart.dart';
-import 'package:governess/ui/widgets/show_toast_function.dart';
 import 'package:provider/provider.dart';
 
 class PinCodePage extends StatefulWidget {

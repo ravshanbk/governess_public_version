@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:governess/consts/date_time_picker_function.dart';
 import 'package:governess/consts/strings.dart';
 import 'package:governess/services/network.dart';
 import 'package:governess/ui/supplier/home_supplier_page.dart';
 import 'package:governess/ui/widgets/future_builder_of_no_data_widget.dart';
 import 'package:governess/ui/widgets/indicator_widget.dart';
 import 'package:provider/provider.dart';
-import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/decorations.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
@@ -17,7 +16,6 @@ import 'package:governess/providers/supplier/filter_to_buy_page_provider.dart';
 import 'package:governess/providers/supplier/to_buy_products_page_provider.dart.dart';
 import 'package:governess/services/supplier_service.dart';
 import 'package:governess/ui/widgets/expansion_tile_to_show_product_widget.dart';
-import 'package:governess/ui/widgets/show_toast_function.dart';
 import 'package:governess/ui/widgets/send_button_widger.dart.dart';
 
 // ignore: must_be_immutable//!
@@ -319,9 +317,7 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
             });
           } else if (__ == 1) {
             _showDialogDate(context);
-            // _showDataPicker(true);
-            // showToast("Qachondan ?", false, isCentr: true);
-          }
+                   }
         } else {
           showNoNetToast(false);
         }
@@ -815,7 +811,15 @@ class _ShowDialogDateContent extends StatelessWidget {
                     ),
                     child: const Text("dan..."),
                     onPressed: () {
-                      _showDataPicker(true, context);
+                      showDataPicker(context, onDone: (DateTime date) {
+                        Provider.of<FilterToBuyPageProvider>(context,
+                                listen: false)
+                            .initFrom(date);
+                        Provider.of<FilterToBuyPageProvider>(context,
+                                listen: false)
+                            .initTo(date);
+                        _getDataByDateTime(dataw!, context);
+                      });
                     },
                   ),
                 ),
@@ -830,7 +834,12 @@ class _ShowDialogDateContent extends StatelessWidget {
                     ),
                     child: const Text("gacha..."),
                     onPressed: () {
-                      _showDataPicker(false, context);
+                      showDataPicker(context, onDone: (DateTime date) {
+                        Provider.of<FilterToBuyPageProvider>(context,
+                                listen: false)
+                            .initTo(date);
+                        _getDataByDateTime(dataw!, context);
+                      });
                     },
                   ),
                 ),
@@ -839,43 +848,6 @@ class _ShowDialogDateContent extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-
-  _showDataPicker(bool isFrom, BuildContext context) {
-    DatePicker.showPicker(
-      context,
-      showTitleActions: true,
-      theme: DatePickerTheme(
-        backgroundColor: lightGreyColor,
-        containerHeight: gH(200.0),
-        headerColor: mainColor,
-        itemStyle: const TextStyle(
-          color: Colors.black,
-          fontWeight: FontWeight.bold,
-          fontSize: 18,
-        ),
-        doneStyle: TextStyle(
-            color: whiteColor,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            letterSpacing: gW(1.5),
-            decoration: TextDecoration.underline),
-      ),
-      onConfirm: (date) {
-        if (isFrom) {
-          Provider.of<FilterToBuyPageProvider>(context, listen: false)
-              .initFrom(date);
-          Provider.of<FilterToBuyPageProvider>(context, listen: false)
-              .initTo(date);
-          _getDataByDateTime(dataw!, context);
-        } else {
-          Provider.of<FilterToBuyPageProvider>(context, listen: false)
-              .initTo(date);
-          _getDataByDateTime(dataw!, context);
-        }
-      },
-      locale: LocaleType.en,
     );
   }
 

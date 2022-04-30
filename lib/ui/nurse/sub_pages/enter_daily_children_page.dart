@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-import 'package:governess/consts/colors.dart';
+import 'package:governess/consts/date_time_picker_function.dart';
 import 'package:governess/consts/size_config.dart';
+import 'package:governess/consts/strings.dart';
 import 'package:governess/models/nurse_models/age_group_id_and_number_model.dart';
-import 'package:governess/models/nurse_models/enter_number_of_children_page_data_model.dart';
+import 'package:governess/models/nurse_models/age_group_model.dart';
 import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/providers/nurse/enter_daily_children_page_provider.dart';
 import 'package:governess/services/nurse_service.dart';
 import 'package:governess/ui/widgets/date_time_show_button_widget.dart';
 import 'package:governess/ui/widgets/future_builder_of_no_data_widget.dart';
 import 'package:governess/ui/widgets/indicator_widget.dart';
-import 'package:governess/ui/widgets/show_toast_function.dart';
 import 'package:provider/provider.dart';
 
 class NurseEnterDailyChildrenPage extends StatelessWidget {
@@ -35,10 +34,9 @@ class NurseEnterDailyChildrenPage extends StatelessWidget {
           ],
         ),
         backgroundColor: mainColor,
-        body: FutureBuilder<List<NurseEnterNumberChildrenPageData>>(
+        body: FutureBuilder<List<AgeGroup>>(
           future: NurseService().getAgeGroupList(),
-          builder: (BuildContext context,
-              AsyncSnapshot<List<NurseEnterNumberChildrenPageData>> snap) {
+          builder: (BuildContext context, AsyncSnapshot<List<AgeGroup>> snap) {
             if (snap.connectionState == ConnectionState.done && snap.hasData) {
               return _body(context, snap.data!);
             } else if (snap.connectionState == ConnectionState.done &&
@@ -54,7 +52,7 @@ class NurseEnterDailyChildrenPage extends StatelessWidget {
     );
   }
 
-  _body(BuildContext context, List<NurseEnterNumberChildrenPageData> data) {
+  _body(BuildContext context, List<AgeGroup> data) {
     return context.watch<NurseEnterChildrenNumberPageProvider>().idf
         ? SingleChildScrollView(
             padding: EdgeInsets.symmetric(
@@ -85,7 +83,7 @@ class NurseEnterDailyChildrenPage extends StatelessWidget {
                     List<AgeGroupIdAndNumber> v = List.generate(
                       data.length,
                       (index) => AgeGroupIdAndNumber(
-                        ageGroupId: data[index].ageGroupIdAndNumber.ageGroupId,
+                        ageGroupId: data[index].ageGroupId,
                         number: int.parse(
                           Provider.of<NurseEnterChildrenNumberPageProvider>(
                                   context,
@@ -110,7 +108,7 @@ class NurseEnterDailyChildrenPage extends StatelessWidget {
                                   listen: false)
                               .clearControllers();
                           showToast(value.text!, value.success!, false);
-                             Navigator.pop(context);
+                          Navigator.pop(context);
                         } else {
                           showToast(value.text!, value.success!, false);
                         }
@@ -128,7 +126,6 @@ class NurseEnterDailyChildrenPage extends StatelessWidget {
                 Provider.of<NurseEnterChildrenNumberPageProvider>(context,
                         listen: false)
                     .initControllersAndNodes(data.length);
-             
               },
             ),
           );
@@ -171,8 +168,7 @@ class NurseEnterDailyChildrenPage extends StatelessWidget {
     );
   }
 
-  Ink _inputFields(
-      List<NurseEnterNumberChildrenPageData> data, BuildContext context) {
+  Ink _inputFields(List<AgeGroup> data, BuildContext context) {
     return Ink(
       decoration: BoxDecoration(
         color: whiteColor,
@@ -181,12 +177,11 @@ class NurseEnterDailyChildrenPage extends StatelessWidget {
         ),
       ),
       child: ListView.separated(
-        // keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         padding: EdgeInsets.all(gW(20.0)),
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (_, __) {
-          return _inputField(__, data[__].ageGroupIdAndNumber.name!, context);
+          return _inputField(__, data[__].name!, context);
         },
         separatorBuilder: (context, index) {
           return SizedBox(
@@ -285,33 +280,6 @@ class NurseEnterDailyChildrenPage extends StatelessWidget {
     );
   }
 
-  _showDataPicker(BuildContext context) {
-    return DatePicker.showPicker(
-      context,
-      showTitleActions: true,
-      theme: DatePickerTheme(
-        backgroundColor: lightGreyColor,
-        containerHeight: gH(200.0),
-        headerColor: mainColor,
-        itemStyle: const TextStyle(
-          color: Colors.black,
-          fontWeight: FontWeight.bold,
-          fontSize: 18,
-        ),
-        doneStyle: TextStyle(
-          color: whiteColor,
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-          letterSpacing: gW(1.5),
-          decoration: TextDecoration.underline,
-        ),
-      ),
-      onConfirm: (date) {
-        context.read<NurseEnterChildrenNumberPageProvider>().changeWhen(date);
-      },
-      locale: LocaleType.en,
-    );
-  }
 
   DateTimeShowButton _dateTimeShowButton(BuildContext context) {
     return DateTimeShowButton(
@@ -320,7 +288,9 @@ class NurseEnterDailyChildrenPage extends StatelessWidget {
           .when
           .millisecondsSinceEpoch),
       () {
-        _showDataPicker(context);
+        showDataPicker(context,onDone:  (date) {
+        context.read<NurseEnterChildrenNumberPageProvider>().changeWhen(date);
+      });
       },
     );
   }

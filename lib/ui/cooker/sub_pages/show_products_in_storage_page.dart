@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/size_config.dart';
+import 'package:governess/consts/strings.dart';
 import 'package:governess/models/cooker/product_cooker_product.dart';
 import 'package:governess/models/cooker/waste_product_model.dart';
 import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
@@ -10,7 +10,6 @@ import 'package:governess/ui/widgets/future_builder_of_no_data_widget.dart';
 import 'package:governess/ui/widgets/indicator_widget.dart';
 import 'package:governess/ui/widgets/send_button_widger.dart.dart';
 import 'package:governess/ui/widgets/show_in_out_list_product_widget.dart';
-import 'package:governess/ui/widgets/show_toast_function.dart';
 import 'package:governess/ui/widgets/text_in_row_widget.dart';
 import 'package:provider/provider.dart';
 

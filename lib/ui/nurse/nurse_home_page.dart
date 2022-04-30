@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/consts/strings.dart';
 import 'package:governess/providers/nurse/enter_daily_children_page_provider.dart';
@@ -8,7 +7,6 @@ import 'package:governess/ui/nurse/sub_pages/show_menu_daily_page.dart';
 import 'package:governess/ui/nurse/sub_pages/show_number_of_children_nurse_page.dart';
 import 'package:governess/ui/widgets/big_elevate_button_home_page.dart';
 import 'package:governess/ui/widgets/drawer_widget_my.dart';
-import 'package:governess/ui/widgets/show_toast_function.dart';
 import 'package:provider/provider.dart';
 
 class NurseHomePage extends StatelessWidget {
@@ -32,6 +30,7 @@ class NurseHomePage extends StatelessWidget {
   Center _body(List<String> doings, BuildContext context) {
     return Center(
       child: ListView.separated(
+        padding: EdgeInsets.symmetric(horizontal: gW(20.0),vertical: gH(30.0)),
         itemBuilder: (_, __) {
           return BigElevatedButtonHomePage(
               onPressed: () async {

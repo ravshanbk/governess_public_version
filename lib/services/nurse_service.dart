@@ -1,8 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:governess/models/nurse_models/age_group_model.dart';
 import 'package:governess/models/nurse_models/daily_menu_model.dart';
-import 'package:governess/models/nurse_models/enter_number_of_children_page_data_model.dart';
 import 'package:governess/models/nurse_models/number_of_children_model.dart';
 import 'package:governess/models/nurse_models/age_group_id_and_number_model.dart';
 import 'package:governess/models/other/post_res_model.dart';
@@ -10,7 +8,6 @@ import 'package:governess/services/auth_service.dart';
 
 class NurseService {
   Future<DailyMenu> getDailyMenu(DateTime date) async {
-
     try {
       Response res = await Dio().get(
         "${AuthService.localhost}/out/api/multiMenu/getMenuKin?timestamp=${date.millisecondsSinceEpoch}",
@@ -64,23 +61,14 @@ class NurseService {
     }
   }
 
-  Future<List<NurseEnterNumberChildrenPageData>> getAgeGroupList() async {
+  Future<List<AgeGroup>> getAgeGroupList() async {
     try {
       Response res = await Dio().get(
         "${AuthService.localhost}/out/api/ageGroup",
         options: AuthService.option,
       );
-      List<AgeGroup> data =
-          (res.data as List).map((e) => AgeGroup.fromJson(e)).toList();
-      return List.generate(
-        data.length,
-        (__) => NurseEnterNumberChildrenPageData(
-          ageGroupIdAndNumber: data[__],
-          controller: TextEditingController(),
-          idf: false,
-          nodes: FocusNode(),
-        ),
-      );
+
+      return (res.data as List).map((e) => AgeGroup.fromJson(e)).toList();
     } catch (e) {
       throw Exception("NurseService / getAgeGroupList" + e.toString());
     }

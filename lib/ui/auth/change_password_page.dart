@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/decorations.dart';
 import 'package:governess/consts/size_config.dart';
+import 'package:governess/consts/strings.dart';
 import 'package:governess/local_storage/boxes.dart';
 import 'package:governess/local_storage/user_storage.dart';
 import 'package:governess/models/user/change_user_info.dart';
 import 'package:governess/services/auth_service.dart';
 import 'package:governess/ui/widgets/send_button_widger.dart.dart';
-import 'package:governess/ui/widgets/show_toast_function.dart';
 
 class ChangePasswordPage extends StatelessWidget {
   ChangePasswordPage({Key? key}) : super(key: key);

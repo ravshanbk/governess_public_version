@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-import 'package:governess/consts/colors.dart';
+import 'package:governess/consts/date_time_picker_function.dart';
 import 'package:governess/consts/decorations.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/consts/strings.dart';
@@ -13,7 +12,6 @@ import 'package:governess/services/cooker_service.dart';
 import 'package:governess/services/network.dart';
 import 'package:governess/ui/widgets/cooker_show_product_expansion_tile_widget.dart';
 import 'package:governess/ui/widgets/date_time_show_button_widget.dart';
-import 'package:governess/ui/widgets/show_toast_function.dart';
 import 'package:governess/ui/widgets/send_button_widger.dart.dart';
 import 'package:provider/provider.dart';
 
@@ -65,10 +63,12 @@ class _CookerAcceptProductPageState extends State<CookerAcceptProductPage> {
                         : DTFM.maker(start.millisecondsSinceEpoch), () async {
                   bool isNet = await checkConnectivity();
                   if (isNet) {
-                    _showDataPicker(
-                      context,
-                      true,
-                    );
+                    showDataPicker(context, onDone: (date) {
+                      start = date;
+                      end = date;
+                      isDefault = false;
+                      setState(() {});
+                    });
                   } else {
                     showNoNetToast(false);
                   }
@@ -80,10 +80,12 @@ class _CookerAcceptProductPageState extends State<CookerAcceptProductPage> {
                         : DTFM.maker(end.millisecondsSinceEpoch), () async {
                   bool isNet = await checkConnectivity();
                   if (isNet) {
-                    _showDataPicker(
-                      context,
-                      false,
-                    );
+                    showDataPicker(context, onDone: (date) {
+                      end = date;
+                      isDefault = false;
+
+                      setState(() {});
+                    });
                   } else {
                     showNoNetToast(false);
                   }
@@ -98,8 +100,7 @@ class _CookerAcceptProductPageState extends State<CookerAcceptProductPage> {
                 builder: (context, AsyncSnapshot<List<CookerProduct>> snap) {
                   if (snap.connectionState == ConnectionState.done &&
                       snap.data!.isNotEmpty) {
-                    return
-                        _body(
+                    return _body(
                       snap,
                       context,
                     );
@@ -270,44 +271,6 @@ class _CookerAcceptProductPageState extends State<CookerAcceptProductPage> {
       builder: (context) {
         return _SendProductShowDialogContentWidget(product);
       },
-    );
-  }
-
-  _showDataPicker(BuildContext context, bool idf) {
-    DatePicker.showPicker(
-      context,
-      showTitleActions: true,
-      theme: DatePickerTheme(
-        backgroundColor: lightGreyColor,
-        containerHeight: gH(200.0),
-        headerColor: mainColor,
-        itemStyle: const TextStyle(
-          color: Colors.black,
-          fontWeight: FontWeight.bold,
-          fontSize: 18,
-        ),
-        doneStyle: TextStyle(
-          color: whiteColor,
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-          letterSpacing: gW(1.5),
-          decoration: TextDecoration.underline,
-        ),
-      ),
-      onConfirm: (date) {
-        if (idf) {
-          start = date;
-          end = date;
-          isDefault = false;
-          setState(() {});
-        } else {
-          end = date;
-          isDefault = false;
-
-          setState(() {});
-        }
-      },
-      locale: LocaleType.en,
     );
   }
 }
