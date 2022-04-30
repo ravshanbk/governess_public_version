@@ -17,27 +17,35 @@ class CookerShowProductsInStoragePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: mainColor,
-        elevation: 0,
-        title: Text(DTFM.maker(DateTime.now().millisecondsSinceEpoch)),
-      ),
-      body: FutureBuilder<List<CookerInOutListProduct>>(
-        future: CookerService().getAvailbleProductsInStorage(),
-        builder: (context, AsyncSnapshot<List<CookerInOutListProduct>> snap) {
-          if (snap.connectionState == ConnectionState.done &&
-              snap.data!.isNotEmpty) {
-            return _body(context, snap.data!);
-          } else if (snap.connectionState == ConnectionState.done &&
-              snap.data!.isEmpty) {
-            return const NoDataWidgetForFutureBuilder(
-                "Hozircha Omborda Mahsulotlar Mavjud Emas");
-          } else {
-            return IndicatorWidget(snap);
-          }
-        },
+    return WillPopScope(
+      onWillPop: () {
+        Provider.of<ShowInOutListProductProvider>(context, listen: false)
+            .changeCurrent(-1);
+            
+        return Future.value(true);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          backgroundColor: mainColor,
+          elevation: 0,
+          title: Text(DTFM.maker(DateTime.now().millisecondsSinceEpoch)),
+        ),
+        body: FutureBuilder<List<CookerInOutListProduct>>(
+          future: CookerService().getAvailbleProductsInStorage(),
+          builder: (context, AsyncSnapshot<List<CookerInOutListProduct>> snap) {
+            if (snap.connectionState == ConnectionState.done &&
+                snap.data!.isNotEmpty) {
+              return _body(context, snap.data!);
+            } else if (snap.connectionState == ConnectionState.done &&
+                snap.data!.isEmpty) {
+              return const NoDataWidgetForFutureBuilder(
+                  "Hozircha Omborda Mahsulotlar Mavjud Emas");
+            } else {
+              return IndicatorWidget(snap);
+            }
+          },
+        ),
       ),
     );
   }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/size_config.dart';
+import 'package:governess/consts/strings.dart';
+import 'package:governess/services/network.dart';
 import 'package:governess/ui/cooker/sub_pages/accept_product_page.dart';
 import 'package:governess/ui/cooker/sub_pages/existing_product_cooker_show.dart';
 import 'package:governess/ui/cooker/sub_pages/show_products_in_storage_page.dart';
@@ -21,7 +23,7 @@ class CookerProductsPage extends StatelessWidget {
         backgroundColor: mainColor,
         elevation: 0,
         centerTitle: true,
-        title: const Text("Mahsulotlard"),
+        title: const Text("Mahsulotlar"),
       ),
       body: ListView.separated(
         padding: EdgeInsets.all(
@@ -29,26 +31,31 @@ class CookerProductsPage extends StatelessWidget {
         ),
         itemBuilder: (_, __) {
           return ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    switch (__) {
-                      case 0:
-                        return const CookerAcceptProductPage();
-                      case 1:
-                        return const CookerShowProductsInStoragePage();
-                      case 2:
-                        return const CookerShowExistingProductPage();
-                      case 3:
-                        return const CookerWastProductPage();
-                      default:
-                        return const CookerProductsPage();
-                    }
-                  },
-                ),
-              );
+            onPressed: () async {
+              bool isNet = await checkConnectivity();
+              if (isNet) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      switch (__) {
+                        case 0:
+                          return const CookerAcceptProductPage();
+                        case 1:
+                          return const CookerShowProductsInStoragePage();
+                        case 2:
+                          return const CookerShowExistingProductPage();
+                        case 3:
+                          return const CookerWastProductPage();
+                        default:
+                          return const CookerProductsPage();
+                      }
+                    },
+                  ),
+                );
+              } else {
+                showNoNetToast(false);
+              }
             },
             style: ElevatedButton.styleFrom(
               fixedSize: Size(

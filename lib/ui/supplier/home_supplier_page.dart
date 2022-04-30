@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/size_config.dart';
+import 'package:governess/consts/strings.dart';
 import 'package:governess/services/network.dart';
 import 'package:governess/ui/supplier/get_shipped_product_page.dart';
 import 'package:governess/ui/supplier/to_buy_products_page.dart';
@@ -60,7 +61,7 @@ class SupplierHomePage extends StatelessWidget {
                   ),
                 );
               } else {
-                showToast("Qurilma Internet Tarmog'iga Ulanmagan", false, true);
+                showNoNetToast(false);
               }
             },
           );

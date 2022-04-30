@@ -4,7 +4,6 @@ import 'package:governess/consts/size_config.dart';
 import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/models/supplier/product_model.dart';
 import 'package:governess/providers/supplier/get_shipped_products_provider.dart';
-import 'package:governess/providers/supplier/to_buy_products_page_provider.dart.dart';
 import 'package:governess/services/supplier_service.dart';
 import 'package:governess/ui/widgets/expansion_tile_to_show_product_widget.dart';
 import 'package:governess/ui/widgets/future_builder_of_no_data_widget.dart';
@@ -23,21 +22,28 @@ class _GetShippedProductPageState extends State<GetShippedProductPage> {
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
-    return Scaffold(
-      appBar: _appBar(),
-      body: FutureBuilder<List<Product>>(
-        future: SupplierService().getShippedProduct(),
-        builder: (context, AsyncSnapshot<List<Product>> snap) {
-          if (snap.connectionState == ConnectionState.done && snap.hasData) {
-            return _body(context, snap.data!);
-          } else if (snap.connectionState == ConnectionState.done &&
-              !snap.hasData) {
-            return const NoDataWidgetForFutureBuilder(
-                "Hozircha Yetkazilgan Mahsulotlar Mavjud Emas!");
-          } else {
-            return IndicatorWidget(snap);
-          }
-        },
+    return WillPopScope(
+      onWillPop: () {
+        Provider.of<GetShippedProductsProvider>(context, listen: false)
+            .changeCurrent(-1);
+        return Future.value(true);
+      },
+      child: Scaffold(
+        appBar: _appBar(),
+        body: FutureBuilder<List<Product>>(
+          future: SupplierService().getShippedProduct(),
+          builder: (context, AsyncSnapshot<List<Product>> snap) {
+            if (snap.connectionState == ConnectionState.done && snap.hasData) {
+              return _body(context, snap.data!);
+            } else if (snap.connectionState == ConnectionState.done &&
+                !snap.hasData) {
+              return const NoDataWidgetForFutureBuilder(
+                  "Hozircha Yetkazilgan Mahsulotlar Mavjud Emas!");
+            } else {
+              return IndicatorWidget(snap);
+            }
+          },
+        ),
       ),
     );
   }
@@ -56,11 +62,11 @@ class _GetShippedProductPageState extends State<GetShippedProductPage> {
                 children: _children(data[__], context),
                 onChanged: (bool newState) {
                   if (newState) {
-                    Provider.of<ToBuyProductPageProvider>(context,
+                    Provider.of<GetShippedProductsProvider>(context,
                             listen: false)
                         .changeCurrent(__);
                   } else {
-                    Provider.of<ToBuyProductPageProvider>(context,
+                    Provider.of<GetShippedProductsProvider>(context,
                             listen: false)
                         .changeCurrent(-1);
                   }

@@ -84,7 +84,7 @@ class AuthPage extends StatelessWidget {
                         Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>const  PinCodePage(),
+                              builder: (context) => const PinCodePage(),
                             ),
                             (route) => false);
                       } else {
@@ -94,7 +94,7 @@ class AuthPage extends StatelessWidget {
                   );
                 }
               } else {
-                showToast(noNet, false, false);
+                showNoNetToast(false);
               }
             },
       style: _elevatedButtonStyle(),

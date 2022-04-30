@@ -10,7 +10,6 @@ class CookerShowProductExpansionTileWidget extends StatelessWidget {
   final CookerProduct data;
   const CookerShowProductExpansionTileWidget({
     Key? key,
-
     required this.isExpanded,
     required this.children,
     required this.onChanged,
@@ -20,7 +19,6 @@ class CookerShowProductExpansionTileWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-     
       child: ExpansionTile(
         collapsedBackgroundColor: mainColor_02,
         tilePadding: EdgeInsets.symmetric(horizontal: gW(10.0)),
@@ -62,19 +60,19 @@ class CookerShowProductExpansionTileWidget extends StatelessWidget {
           width: gW(5.0),
         ),
         Text(
-          data.status!.length >21?data.status!.substring(0,20).replaceRange(19, 20, ".."):data.status!,
+          data.status!.length > 21
+              ? data.status!.substring(0, 20).replaceRange(19, 20, "..")
+              : data.status!,
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: gW(14.0),
             color: data.status == "YANGI"
                 ? Colors.green
-                : (data.status == "QISMAN TUGALLANDI"
+                : (data.status == "QISMAN QABUL QILINDI"
                     ? Colors.orange
                     : Colors.black),
           ),
         ),
-   
-      
       ],
     );
   }

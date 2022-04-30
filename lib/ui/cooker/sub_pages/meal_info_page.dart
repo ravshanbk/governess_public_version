@@ -56,7 +56,7 @@ class CookerMealInfoPage extends StatelessWidget {
           _mealProducts(data),
           _mealIngredients(data),
 
-          // _fake(data),
+        
         ],
       ),
     );

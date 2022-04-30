@@ -23,12 +23,15 @@ class CookerService {
   }
 
   Future<List<CookerProduct>> getInOut(
-      {required DateTime start, required DateTime end}) async {
+      {required DateTime start,
+      required DateTime end,
+      required isDefault}) async {
+    
     List<CookerProduct> data = [];
     try {
       Response<dynamic> res = await Dio().get(
-        // "http://185.217.131.117:7788/out/api/cook/getInOut?end=1653850800000&start=1648753200000",
-        "${AuthService.localhost}/out/api/cook/getInOut?end=${end.millisecondsSinceEpoch}&start=${start.millisecondsSinceEpoch}",
+      isDefault?  "${AuthService.localhost}/out/api/cook/getInOut"
+       :"${AuthService.localhost}/out/api/cook/getInOut?end=$end&start=$start",
 
         options: AuthService.option,
       );

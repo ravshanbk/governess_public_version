@@ -14,5 +14,10 @@ class WasteProductCookerPageProvider extends ChangeNotifier {
   notifyListeners();
 
   }
+  int current = -1;
+  changeCurrent(v) {
+    current = v;
+    notifyListeners();
+  }
   
 }

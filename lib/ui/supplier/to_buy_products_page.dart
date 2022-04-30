@@ -35,22 +35,29 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
   Widget build(BuildContext context) {
     SizeConfig().init(context);
 
-    return Scaffold(
-      appBar: _appBar(context),
-      body: FutureBuilder<ProductWithAvailableCompnayNames>(
-        future: SupplierService().getToBuyProducts(),
-        builder:
-            (context, AsyncSnapshot<ProductWithAvailableCompnayNames> snap) {
-          if (snap.connectionState == ConnectionState.done && snap.hasData) {
-            return _body(snap.data!, context);
-          } else if (snap.connectionState == ConnectionState.done &&
-              !snap.hasData) {
-            return const NoDataWidgetForFutureBuilder(
-                "Hozircha Harid Qilinadigan Mahsulotlar Mavjud Emas!");
-          } else {
-            return IndicatorWidget(snap);
-          }
-        },
+    return WillPopScope(
+      onWillPop: () {
+        Provider.of<ToBuyProductPageProvider>(context, listen: false)
+            .changeCurrent(-1);
+        return Future.value(true);
+      },
+      child: Scaffold(
+        appBar: _appBar(context),
+        body: FutureBuilder<ProductWithAvailableCompnayNames>(
+          future: SupplierService().getToBuyProducts(),
+          builder:
+              (context, AsyncSnapshot<ProductWithAvailableCompnayNames> snap) {
+            if (snap.connectionState == ConnectionState.done && snap.hasData) {
+              return _body(snap.data!, context);
+            } else if (snap.connectionState == ConnectionState.done &&
+                !snap.hasData) {
+              return const NoDataWidgetForFutureBuilder(
+                  "Hozircha Harid Qilinadigan Mahsulotlar Mavjud Emas!");
+            } else {
+              return IndicatorWidget(snap);
+            }
+          },
+        ),
       ),
     );
   }
@@ -224,7 +231,7 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
                   Provider.of<ToBuyProductPageProvider>(context, listen: false)
                       .changeCurrent(-1);
 
-                  showToast(noNet, false, true);
+                  showNoNetToast(false);
                   Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(
@@ -300,19 +307,24 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
   ElevatedButton _elevatedButton(int __, BuildContext context) {
     return ElevatedButton(
       focusNode: FocusNode(canRequestFocus: true),
-      onPressed: () {
-        if (__ == 0) {
-          Provider.of<FilterToBuyPageProvider>(context, listen: false)
-              .changeCurrentFilterIndex(0);
-          setState(() {
+      onPressed: () async {
+        bool isNet = await checkConnectivity();
+        if (isNet) {
+          if (__ == 0) {
             Provider.of<FilterToBuyPageProvider>(context, listen: false)
                 .changeCurrentFilterIndex(0);
-          });
-        } else if (__ == 1) {
-          _showDialogDate(context);
-          // _showDataPicker(true);
-          // showToast("Qachondan ?", false, isCentr: true);
-        } else {}
+            setState(() {
+              Provider.of<FilterToBuyPageProvider>(context, listen: false)
+                  .changeCurrentFilterIndex(0);
+            });
+          } else if (__ == 1) {
+            _showDialogDate(context);
+            // _showDataPicker(true);
+            // showToast("Qachondan ?", false, isCentr: true);
+          }
+        } else {
+          showNoNetToast(false);
+        }
       },
       style: ElevatedButton.styleFrom(
           minimumSize: const Size(0, 0),
@@ -612,55 +624,63 @@ class _SendProductShowDialogContentWidget extends StatelessWidget {
     return SendButtonWidget(
       width: gW(200.0),
       onPressed: () async {
-        if ((Provider.of<ToBuyProductPageProvider>(con, listen: false)
-                .numberController
-                .text
-                .isNotEmpty) &&
-            (int.parse(Provider.of<ToBuyProductPageProvider>(con, listen: false)
-                    .numberController
-                    .text) >
-                0)) {
-          int number = (int.parse(
+        bool isNet = await checkConnectivity();
+        if (isNet) {
+          if ((Provider.of<ToBuyProductPageProvider>(con, listen: false)
+                  .numberController
+                  .text
+                  .isNotEmpty) &&
+              (int.parse(
                       Provider.of<ToBuyProductPageProvider>(con, listen: false)
                           .numberController
-                          .text) *
-                  (data.pack! > 0 ? data.pack! : 1))
-              .toInt();
-          await SupplierService()
-              .sendProduct(
-            v: SendProduct(
-              comment: Provider.of<ToBuyProductPageProvider>(con, listen: false)
-                  .commentController
-                  .text,
-              companyId: data.companyId,
-              measurementType: data.measurementType,
-              orderNumber: data.orderNumber,
-              price: 500,
-              productId: data.productId,
-              weightPack: number,
-              pack: 400,
-              numberPack: int.parse(
-                Provider.of<ToBuyProductPageProvider>(con, listen: false)
-                    .numberController
-                    .text,
+                          .text) >
+                  0)) {
+            int number = (int.parse(Provider.of<ToBuyProductPageProvider>(con,
+                            listen: false)
+                        .numberController
+                        .text) *
+                    (data.pack! > 0 ? data.pack! : 1))
+                .toInt();
+            await SupplierService()
+                .sendProduct(
+              v: SendProduct(
+                comment:
+                    Provider.of<ToBuyProductPageProvider>(con, listen: false)
+                        .commentController
+                        .text,
+                companyId: data.companyId,
+                measurementType: data.measurementType,
+                orderNumber: data.orderNumber,
+                price: 500,
+                productId: data.productId,
+                weightPack: number,
+                pack: 400,
+                numberPack: int.parse(
+                  Provider.of<ToBuyProductPageProvider>(con, listen: false)
+                      .numberController
+                      .text,
+                ),
               ),
-            ),
-            id: data.id!,
-          )
-              .then((value) {
-            if (value.success!) {
-              showToast(value.text!.toString(), value.success!, false);
+              id: data.id!,
+            )
+                .then((value) {
+              if (value.success!) {
+                showToast(value.text!.toString(), value.success!, false);
 
-              Provider.of<ToBuyProductPageProvider>(con, listen: false).clear();
-              Provider.of<ToBuyProductPageProvider>(con, listen: false)
-                  .changeCurrent(-1);
-              Navigator.pop(con);
-            } else {
-              showToast(value.text!.toString(), value.success!, false);
-            }
-          });
+                Provider.of<ToBuyProductPageProvider>(con, listen: false)
+                    .clear();
+                Provider.of<ToBuyProductPageProvider>(con, listen: false)
+                    .changeCurrent(-1);
+                Navigator.pop(con);
+              } else {
+                showToast(value.text!.toString(), value.success!, false);
+              }
+            });
+          } else {
+            showToast("Miqdorni kiriting, nol bolmasin", false, false);
+          }
         } else {
-          showToast("Miqdorni kiriting, nol bolmasin", false, false);
+          showNoNetToast(false);
         }
       },
       titleOfButton: "YUBORISH",

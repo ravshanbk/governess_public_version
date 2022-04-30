@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:governess/consts/print_my.dart';
 import 'package:governess/models/other/post_res_model.dart';
 import 'package:governess/models/supplier/product_with_available_company_names_model.dart';
 import 'package:governess/models/supplier/send_product_model.dart';
@@ -6,18 +7,18 @@ import 'package:governess/models/supplier/product_model.dart';
 import 'package:governess/services/auth_service.dart';
 
 class SupplierService {
- 
   Future<ProductWithAvailableCompnayNames> getToBuyProducts() async {
-     List<Product> data;
+    List<Product> data;
     try {
       Response res = await Dio().get(
         "${AuthService.localhost}/out/api/supplier/getRequiredProduct",
         options: AuthService.option,
       );
+      p((res.data as List).length);
       List<String> container = [];
       data = (res.data as List).map((e) => Product.fromJson(e)).toList();
 
-          for (var item in data) {
+      for (var item in data) {
         if (!container.contains(item.companyName)) {
           container.add(item.companyName!);
         }

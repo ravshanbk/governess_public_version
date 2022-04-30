@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:governess/consts/colors.dart';
-import 'package:governess/consts/print_my.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/models/cooker/product_cooker_product.dart';
 import 'package:governess/models/cooker/waste_product_model.dart';
 import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
-import 'package:governess/providers/cooker/show_in_out_list_product_provider.dart';
 import 'package:governess/providers/cooker/waste_product_cooker_page_provider.dart';
 import 'package:governess/services/cooker_service.dart';
 import 'package:governess/ui/widgets/future_builder_of_no_data_widget.dart';
@@ -22,27 +20,35 @@ class CookerShowExistingProductPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: mainColor,
-        elevation: 0,
-        title: Text(DTFM.maker(DateTime.now().millisecondsSinceEpoch)),
-      ),
-      body: FutureBuilder(
-        future: CookerService().getExistingProduct(),
-        builder: (context, AsyncSnapshot<List<CookerInOutListProduct>> snap) {
-          if (snap.connectionState == ConnectionState.done &&
-              snap.data!.isNotEmpty) {
-            return _body(context, snap.data!);
-          } else if (snap.connectionState == ConnectionState.done &&
-              snap.data!.isEmpty) {
-            return const NoDataWidgetForFutureBuilder(
-                "Hozircha Omborda Mahsulotlar Mavjud Emas");
-          } else {
-            return IndicatorWidget(snap);
-          }
-        },
+    return WillPopScope(
+      onWillPop: () {
+Provider.of<WasteProductCookerPageProvider>(context,listen: false).changeCurrent(-1);
+        
+        return Future.value(true);
+
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          backgroundColor: mainColor,
+          elevation: 0,
+          title: Text(DTFM.maker(DateTime.now().millisecondsSinceEpoch)),
+        ),
+        body: FutureBuilder(
+          future: CookerService().getExistingProduct(),
+          builder: (context, AsyncSnapshot<List<CookerInOutListProduct>> snap) {
+            if (snap.connectionState == ConnectionState.done &&
+                snap.data!.isNotEmpty) {
+              return _body(context, snap.data!);
+            } else if (snap.connectionState == ConnectionState.done &&
+                snap.data!.isEmpty) {
+              return const NoDataWidgetForFutureBuilder(
+                  "Hozircha Omborda Mahsulotlar Mavjud Emas");
+            } else {
+              return IndicatorWidget(snap);
+            }
+          },
+        ),
       ),
     );
   }
@@ -57,16 +63,16 @@ class CookerShowExistingProductPage extends StatelessWidget {
           key: Key("$__ StarageProducts"),
           onChanged: (bool v) {
             if (v) {
-              Provider.of<ShowInOutListProductProvider>(context, listen: false)
+              Provider.of<WasteProductCookerPageProvider>(context, listen: false)
                   .changeCurrent(__);
             } else {
-              Provider.of<ShowInOutListProductProvider>(context, listen: false)
+              Provider.of<WasteProductCookerPageProvider>(context, listen: false)
                   .changeCurrent(-1);
             }
           },
           data: data[__],
           isExpanded:
-              context.watch<ShowInOutListProductProvider>().current == __,
+              context.watch<WasteProductCookerPageProvider>().current == __,
           children: List.generate(
             data[__].inOutList!.length,
             (index) => _inOutListProductChild(data, __, index, context),
@@ -109,7 +115,6 @@ class CookerShowExistingProductPage extends StatelessWidget {
               SendButtonWidget(
                 width: gW(160.0),
                 onPressed: () {
-
                   // p(data[__].productId.toString());
                   // p(data[__].inOutList![index].id!.toString());
                   // Provider.of<WasteProductCookerPageProvider>(context,
@@ -125,7 +130,6 @@ class CookerShowExistingProductPage extends StatelessWidget {
               SendButtonWidget(
                 width: gW(130.0),
                 onPressed: () {
-
                   CookerService()
                       .deleteGarbage(data[0].productId!)
                       .then((value) {
@@ -160,14 +164,15 @@ class CookerShowExistingProductPage extends StatelessWidget {
     );
   }
 
-  Future<dynamic> _showWasteDialog(BuildContext context, List<CookerInOutListProduct> data, int __, int index) {
+  Future<dynamic> _showWasteDialog(BuildContext context,
+      List<CookerInOutListProduct> data, int __, int index) {
     return showDialog(
-                  context: context,
-                  builder: (context) {
-                    return _ShowDialogDateContent(
-                        data[__].productId, data[__].inOutList![index].id!);
-                  },
-                );
+      context: context,
+      builder: (context) {
+        return _ShowDialogDateContent(
+            data[__].productId, data[__].inOutList![index].id!);
+      },
+    );
   }
 
   Divider _divider() => Divider(

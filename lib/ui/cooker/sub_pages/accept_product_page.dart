@@ -4,11 +4,13 @@ import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/decorations.dart';
 import 'package:governess/consts/size_config.dart';
+import 'package:governess/consts/strings.dart';
 import 'package:governess/models/cooker/receive_product_model.dart';
 import 'package:governess/models/cooker/to_accept_product_model.dart';
 import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/providers/cooker/accept_product_provider.dart';
 import 'package:governess/services/cooker_service.dart';
+import 'package:governess/services/network.dart';
 import 'package:governess/ui/widgets/cooker_show_product_expansion_tile_widget.dart';
 import 'package:governess/ui/widgets/date_time_show_button_widget.dart';
 import 'package:governess/ui/widgets/show_toast_function.dart';
@@ -24,92 +26,119 @@ class CookerAcceptProductPage extends StatefulWidget {
 }
 
 class _CookerAcceptProductPageState extends State<CookerAcceptProductPage> {
-  DateTime start = DateTime(2022, 4, 28);
+  bool isDefault = true;
+  DateTime start =
+      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
 
-  DateTime end = DateTime(2022, 4, 30);
+  DateTime end =
+      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: mainColor,
-        elevation: 0,
-        title: const Text("Mahsulotlarni qabul qilish"),
-      ),
-      body: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          SliverAppBar(
-            floating: true,
-            pinned: false,
-            automaticallyImplyLeading: false,
-            backgroundColor: greyColor,
-            leadingWidth: 0.0,
-            actions: [
-              DateTimeShowButton(DTFM.maker(start.millisecondsSinceEpoch), () {
-                _showDataPicker(
-                  context,
-                  true,
-                );
-              }),
-              SizedBox(width: gW(50.0)),
-              DateTimeShowButton(DTFM.maker(end.millisecondsSinceEpoch), () {
-                _showDataPicker(
-                  context,
-                  false,
-                );
-              }),
-              SizedBox(width: gW(23.0)),
-            ],
-          ),
-          SliverToBoxAdapter(
-            child: FutureBuilder<List<CookerProduct>>(
-              future: CookerService().getInOut(start: start, end: end),
-              builder: (context, AsyncSnapshot<List<CookerProduct>> snap) {
-                if (snap.connectionState == ConnectionState.done &&
-                    snap.hasData) {
-                  return
-                      //  const Text("Success");
-                      _body(
-                    snap,
-                    context,
-                  );
-                } else if (snap.connectionState == ConnectionState.done &&
-                    !snap.hasData) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        SizedBox(height: gH(200.0)),
-                        Text(
-                          "Hozircha Mahsulotlar Mavjud Emas",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: mainColor,
-                            fontSize: gW(20.0),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                } else {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(snap.connectionState.name),
-                        CupertinoActivityIndicator(
-                          radius: gW(20.0),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-              },
+    return WillPopScope(
+      onWillPop: () {
+        Provider.of<CookerAcceptProductProvider>(context, listen: false)
+            .changeCurrent(-1);
+        Navigator.pop(context);
+        return Future.value(true);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          backgroundColor: mainColor,
+          elevation: 0,
+          title: const Text("Mahsulotlarni qabul qilish"),
+        ),
+        body: CustomScrollView(
+          physics: const BouncingScrollPhysics(),
+          slivers: [
+            SliverAppBar(
+              floating: true,
+              pinned: false,
+              automaticallyImplyLeading: false,
+              backgroundColor: greyColor,
+              leadingWidth: 0.0,
+              actions: [
+                DateTimeShowButton(
+                    isDefault
+                        ? "__ . __ . ____"
+                        : DTFM.maker(start.millisecondsSinceEpoch), () async {
+                  bool isNet = await checkConnectivity();
+                  if (isNet) {
+                    _showDataPicker(
+                      context,
+                      true,
+                    );
+                  } else {
+                    showNoNetToast(false);
+                  }
+                }),
+                SizedBox(width: gW(50.0)),
+                DateTimeShowButton(
+                    isDefault
+                        ? "__ . __ . ____"
+                        : DTFM.maker(end.millisecondsSinceEpoch), () async {
+                  bool isNet = await checkConnectivity();
+                  if (isNet) {
+                    _showDataPicker(
+                      context,
+                      false,
+                    );
+                  } else {
+                    showNoNetToast(false);
+                  }
+                }),
+                SizedBox(width: gW(23.0)),
+              ],
             ),
-          ),
-        ],
+            SliverToBoxAdapter(
+              child: FutureBuilder<List<CookerProduct>>(
+                future: CookerService()
+                    .getInOut(start: start, end: end, isDefault: isDefault),
+                builder: (context, AsyncSnapshot<List<CookerProduct>> snap) {
+                  if (snap.connectionState == ConnectionState.done &&
+                      snap.data!.isNotEmpty) {
+                    return
+                        _body(
+                      snap,
+                      context,
+                    );
+                  } else if (snap.connectionState == ConnectionState.done &&
+                      snap.data!.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          SizedBox(height: gH(200.0)),
+                          Text(
+                            "Hozircha Mahsulotlar Mavjud Emas",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: mainColor,
+                              fontSize: gW(20.0),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  } else {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(snap.connectionState.name),
+                          CupertinoActivityIndicator(
+                            radius: gW(20.0),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -148,7 +177,6 @@ class _CookerAcceptProductPageState extends State<CookerAcceptProductPage> {
   }
 
   List<Widget> _children(CookerProduct data, BuildContext context) {
-    // p(DTFM.maker(data.sendDate!));
     return <Widget>[
       Ink(
         decoration: BoxDecoration(
@@ -168,8 +196,13 @@ class _CookerAcceptProductPageState extends State<CookerAcceptProductPage> {
                   elevation: 0,
                   shadowColor: Colors.transparent,
                 ),
-                onPressed: () {
-                  _shownputDialog(context, data);
+                onPressed: () async {
+                  bool isNet = await checkConnectivity();
+                  if (isNet) {
+                    _shownputDialog(context, data);
+                  } else {
+                    showNoNetToast(false);
+                  }
                 },
                 child: const Text("Qabul qilish"),
               ),
@@ -264,9 +297,13 @@ class _CookerAcceptProductPageState extends State<CookerAcceptProductPage> {
       onConfirm: (date) {
         if (idf) {
           start = date;
+          end = date;
+          isDefault = false;
           setState(() {});
         } else {
           end = date;
+          isDefault = false;
+
           setState(() {});
         }
       },
@@ -343,51 +380,57 @@ class _SendProductShowDialogContentWidget extends StatelessWidget {
     return SendButtonWidget(
       width: gW(200.0),
       onPressed: () async {
-        if (Provider.of<CookerAcceptProductProvider>(con, listen: false)
-                .numberController
-                .text
-                .isNotEmpty &&
-            int.parse(
-                    Provider.of<CookerAcceptProductProvider>(con, listen: false)
-                        .numberController
-                        .text) >
-                0) {
-          int number = (int.parse(Provider.of<CookerAcceptProductProvider>(con,
+        bool isNet = await checkConnectivity();
+        if (isNet) {
+          if (Provider.of<CookerAcceptProductProvider>(con, listen: false)
+                  .numberController
+                  .text
+                  .isNotEmpty &&
+              int.parse(Provider.of<CookerAcceptProductProvider>(con,
                           listen: false)
                       .numberController
-                      .text) *
-                  (data.pack! > 0 ? data.pack! : 1))
-              .toInt();
-          await CookerService()
-              .acceptProduct(
-            id: data.id!,
-            data: ReceiveProductModel(
-              comment:
-                  Provider.of<CookerAcceptProductProvider>(con, listen: false)
-                      .commentController
-                      .text,
-              numberPack: int.parse(
-                  Provider.of<CookerAcceptProductProvider>(con, listen: false)
-                      .numberController
-                      .text),
-              weightPack: number,
-            ),
-          )
-              .then((value) {
-            if (value.success!) {
-              showToast(value.text!.toString(), value.success!, false);
+                      .text) >
+                  0) {
+            int number = (int.parse(Provider.of<CookerAcceptProductProvider>(
+                            con,
+                            listen: false)
+                        .numberController
+                        .text) *
+                    (data.pack! > 0 ? data.pack! : 1))
+                .toInt();
+            CookerService()
+                .acceptProduct(
+              id: data.id!,
+              data: ReceiveProductModel(
+                comment:
+                    Provider.of<CookerAcceptProductProvider>(con, listen: false)
+                        .commentController
+                        .text,
+                numberPack: int.parse(
+                    Provider.of<CookerAcceptProductProvider>(con, listen: false)
+                        .numberController
+                        .text),
+                weightPack: number,
+              ),
+            )
+                .then((value) {
+              if (value.success!) {
+                showToast(value.text!.toString(), value.success!, false);
 
-              Provider.of<CookerAcceptProductProvider>(con, listen: false)
-                  .clear();
-              Provider.of<CookerAcceptProductProvider>(con, listen: false)
-                  .changeCurrent(-1);
-              Navigator.pop(con);
-            } else {
-              showToast(value.text!.toString(), value.success!, false);
-            }
-          });
+                Provider.of<CookerAcceptProductProvider>(con, listen: false)
+                    .clear();
+                Provider.of<CookerAcceptProductProvider>(con, listen: false)
+                    .changeCurrent(-1);
+                Navigator.pop(con);
+              } else {
+                showToast(value.text!.toString(), value.success!, false);
+              }
+            });
+          } else {
+            showToast("Miqdorni kiriting, nol bolmasin", false, false);
+          }
         } else {
-          showToast("Miqdorni kiriting, nol bolmasin", false, false);
+          showNoNetToast(false);
         }
       },
       titleOfButton: "Qabul Qilish",

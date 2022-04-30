@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/size_config.dart';
+import 'package:governess/consts/strings.dart';
 import 'package:governess/models/nurse_models/daily_menu_model.dart';
 import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
+import 'package:governess/services/network.dart';
 import 'package:governess/services/nurse_service.dart';
 import 'package:governess/ui/cooker/sub_pages/meal_info_page.dart';
 import 'package:governess/ui/widgets/daily_menu_widget.dart';
@@ -31,21 +33,31 @@ class _CookerShowDailyMenuPageState extends State<CookerShowDailyMenuPage> {
         future: NurseService().getDailyMenu(when),
         builder: (BuildContext context, AsyncSnapshot<DailyMenu> snap) {
           if (snap.connectionState == ConnectionState.done && snap.hasData) {
-            return DailyMenuWidget(data: snap.data!, con: context,onTap:  (int __,int n) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => CookerMealInfoPage(
-                          mealAgeStandartId: snap.data!
-                              .mealTimeStandardResponseSaveDtoList![__]
-                              .mealAgeStandardResponseSaveDtoList![n]
-                              .id,
-                          menuId: snap.data!.id,
-                          mealName: snap.data!.name!,
-                        ),
+            return DailyMenuWidget(
+              data: snap.data!,
+              con: context,
+              onTap: (int __, int n) async {
+                bool isNet = await checkConnectivity();
+                if (isNet) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CookerMealInfoPage(
+                        mealAgeStandartId: snap
+                            .data!
+                            .mealTimeStandardResponseSaveDtoList![__]
+                            .mealAgeStandardResponseSaveDtoList![n]
+                            .id,
+                        menuId: snap.data!.id,
+                        mealName: snap.data!.name!,
                       ),
-                    );
-                  },);
+                    ),
+                  );
+                } else {
+                  showNoNetToast(false);
+                }
+              },
+            );
           } else if (snap.connectionState == ConnectionState.done &&
               !snap.hasData) {
             return const NoDataWidgetForFutureBuilder(

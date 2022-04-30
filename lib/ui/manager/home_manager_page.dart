@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/size_config.dart';
+import 'package:governess/consts/strings.dart';
+import 'package:governess/services/network.dart';
 import 'package:governess/ui/manager/show_daily_menu_page.dart';
 import 'package:governess/ui/manager/show_daily_number_of_children_page.dart';
 import 'package:governess/ui/widgets/big_elevate_button_home_page.dart';
@@ -35,23 +37,28 @@ class ManagerHomePage extends StatelessWidget {
         itemCount: doings.length,
         itemBuilder: (_, __) {
           return BigElevatedButtonHomePage(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    switch (__) {
-                      case 0:
-                        return const ManagerShowDailyMenuPage();
-                      case 1:
-                        return const ManagerShowNumberOfChildrenPage();
+            onPressed: () async {
+              bool isNet = await checkConnectivity();
+              if (isNet) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      switch (__) {
+                        case 0:
+                          return const ManagerShowDailyMenuPage();
+                        case 1:
+                          return const ManagerShowNumberOfChildrenPage();
 
-                      default:
-                        return const ManagerHomePage();
-                    }
-                  },
-                ),
-              );
+                        default:
+                          return const ManagerHomePage();
+                      }
+                    },
+                  ),
+                );
+              } else {
+                showNoNetToast(false);
+              }
             },
             title: doings[__],
           );

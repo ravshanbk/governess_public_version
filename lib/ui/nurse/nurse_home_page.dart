@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:governess/consts/colors.dart';
 import 'package:governess/consts/size_config.dart';
+import 'package:governess/consts/strings.dart';
 import 'package:governess/providers/nurse/enter_daily_children_page_provider.dart';
 import 'package:governess/services/network.dart';
-import 'package:governess/ui/nurse/sub_pages/enter_daily_children_page.dart';
 import 'package:governess/ui/nurse/sub_pages/show_menu_daily_page.dart';
 import 'package:governess/ui/nurse/sub_pages/show_number_of_children_nurse_page.dart';
 import 'package:governess/ui/widgets/big_elevate_button_home_page.dart';
@@ -31,60 +31,41 @@ class NurseHomePage extends StatelessWidget {
 
   Center _body(List<String> doings, BuildContext context) {
     return Center(
-        child: Column(
-      children: [
-        SizedBox(
-          height: gH(30.0),
-        ),
-        BigElevatedButtonHomePage(
-          title: doings[0],
-          onPressed: () async {
-            bool isEnabledInternet = await checkConnectivity();
-            if (isEnabledInternet) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const NurseShowDailyMenuPage(),
-                ),
-              );
-            } else {
-              showToast("Qurilma Internet Tarmog'iga Ulanmagan", false, true);
-              // showSnackBarMessage(context, "Ошибка подключения!");
-            }
-          },
-        ),
-        SizedBox(
-          height: gH(30.0),
-        ),
-        BigElevatedButtonHomePage(
-            onPressed: () async {
-              bool isEnabledInternet = await checkConnectivity();
-              if (isEnabledInternet) {
-                Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                const NurseShowNumberOfChildrenPage()))
-                    .then((value) {
-                  Provider.of<NurseEnterChildrenNumberPageProvider>(context,
-                          listen: false)
-                      .changeWhen(DateTime.now());
-                });
-              } else {
-                showToast("Qurilma Internet Tarmog'iga Ulanmagan", false, true);
-                // showSnackBarMessage(context, "Ошибка подключения!");
-              }
-            },
-            // onPressed: () {
-            //   Navigator.push(
-            //       context,
-            //       MaterialPageRoute(
-            //           builder: (context) =>
-            //               const NurseShowNumberOfChildrenPage()));
-            // },
-            title: "Bolalar Soni")
-      ],
-    ));
+      child: ListView.separated(
+        itemBuilder: (_, __) {
+          return BigElevatedButtonHomePage(
+              onPressed: () async {
+                bool isEnabledInternet = await checkConnectivity();
+                if (isEnabledInternet) {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    switch (__) {
+                      case 0:
+                        return const NurseShowDailyMenuPage();
+                      case 1:
+                        return const NurseShowNumberOfChildrenPage();
+
+                      default:
+                        return const NurseHomePage();
+                    }
+                  })).then((value) {
+                    Provider.of<NurseEnterChildrenNumberPageProvider>(context,
+                            listen: false)
+                        .changeWhen(DateTime.now());
+                  });
+                } else {
+                  showNoNetToast(false);
+                }
+              },
+              title: doings[__]);
+        },
+        separatorBuilder: (context, index) {
+          return SizedBox(
+            height: gH(30.0),
+          );
+        },
+        itemCount: doings.length,
+      ),
+    );
   }
 
   Ink _button(bool isLeft, VoidCallback onPressed) {

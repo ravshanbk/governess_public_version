@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:governess/consts/strings.dart';
 
 showToast(String text, bool success, bool isCentr) {
   Fluttertoast.showToast(
@@ -11,4 +12,5 @@ showToast(String text, bool success, bool isCentr) {
     textColor: Colors.white,
     fontSize: 25.0,
   );
+
 }

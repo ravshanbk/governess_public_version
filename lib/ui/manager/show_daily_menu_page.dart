@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:governess/consts/colors.dart';
-import 'package:governess/consts/print_my.dart';
 import 'package:governess/consts/size_config.dart';
+import 'package:governess/consts/strings.dart';
 import 'package:governess/models/nurse_models/daily_menu_model.dart';
 import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/services/manager_service.dart';
+import 'package:governess/services/network.dart';
 import 'package:governess/services/nurse_service.dart';
 import 'package:governess/ui/widgets/daily_menu_widget.dart';
 import 'package:governess/ui/widgets/date_time_show_button_widget.dart';
@@ -73,7 +74,7 @@ class _ManagerShowDailyMenuPageState extends State<ManagerShowDailyMenuPage> {
             style: TextStyle(color: Colors.grey, fontSize: gW(18.0)),
           ),
           Text(
-           data.status!.toString(),
+            data.status!.toString(),
             style: TextStyle(
               fontSize: gW(20.0),
             ),
@@ -103,18 +104,23 @@ class _ManagerShowDailyMenuPageState extends State<ManagerShowDailyMenuPage> {
         onPressed: data!.confirmation!
             ? null
             : () async {
-                try {
-                  ManagerService().submitDailyMenu(data.id!).then((value) {
-                    if (value.success!) {
-                      showToast(value.text!, value.success!, true);
-                    } else {
-                      showToast(value.text!, value.success!, true);
-                    }
-                  });
-                } catch (e) {
-                  throw Exception(
-                      "Manager / show_daily_menu_page/ submitbutton: " +
-                          e.toString());
+                bool isNet = await checkConnectivity();
+                if (isNet) {
+                  try {
+                    ManagerService().submitDailyMenu(data.id!).then((value) {
+                      if (value.success!) {
+                        showToast(value.text!, value.success!, true);
+                      } else {
+                        showToast(value.text!, value.success!, true);
+                      }
+                    });
+                  } catch (e) {
+                    throw Exception(
+                        "Manager / show_daily_menu_page/ submitbutton: " +
+                            e.toString());
+                  }
+                } else {
+                  showNoNetToast(false);
                 }
               },
         child: Text(
