@@ -11,6 +11,18 @@ class ToBuyProductPageProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  bool isCashOnPayment = false;
+  changeIsCashOnPayment(bool v) {
+    isCashOnPayment = v;
+    notifyListeners();
+  }
+
+  bool statusOfPayment = false;
+  changeStatusOfPayment(bool v) {
+    statusOfPayment = v;
+    notifyListeners();
+  }
+
   clearNumberController() {
     numberController.clear();
     notifyListeners();

@@ -14,7 +14,7 @@ class SupplierService {
         "${AuthService.localhost}/out/api/supplier/getRequiredProduct",
         options: AuthService.option,
       );
-      p((res.data as List).length);
+      p(res.data);
       List<String> container = [];
       data = (res.data as List).map((e) => Product.fromJson(e)).toList();
 
@@ -45,7 +45,9 @@ class SupplierService {
           "pack": v.pack,
           "price": v.price,
           "productId": v.productId,
-          "weightPack": v.weightPack
+          "weightPack": v.weightPack,
+          "typeOfPayment": v.typeOfPayment,
+          "paymentStatus": v.paymentStatus,
         },
         options: AuthService.option,
       );

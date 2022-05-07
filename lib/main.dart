@@ -22,7 +22,6 @@ import 'package:governess/ui/widgets/governess_app_bar.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
@@ -77,7 +76,7 @@ void main() async {
     ),
   );
 }
-
+@immutable
 class MyApp extends StatefulWidget {
   bool hasInternet;
   MyApp(this.hasInternet, {Key? key}) : super(key: key);

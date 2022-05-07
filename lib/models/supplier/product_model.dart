@@ -4,55 +4,59 @@
 
 import 'dart:convert';
 
-List<Product> productFromJson(String str) => List<Product>.from(json.decode(str).map((x) => Product.fromJson(x)));
+List<Product> productFromJson(String str) =>
+    List<Product>.from(json.decode(str).map((x) => Product.fromJson(x)));
 
-String productToJson(List<Product> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+String productToJson(List<Product> data) =>
+    json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class Product {
-    Product({
-        this.id,
-        this.createDate,
-        this.updateDate,
+  Product({
+    this.id,
+    this.createDate,
+    this.updateDate,
+    this.sendDate,
+    this.orderNumber,
+    this.price,
+    this.pack,
+    this.numberPack,
+    this.weightPack,
+    this.status,
+    this.measurementType,
+    this.companyName,
+    this.companyId,
+    this.productId,
+    this.productName,
+    this.comment,
+    this.paymentStatus,
+    this.typeOfPayment,
+  });
 
-        this.sendDate,
-        this.orderNumber,
-        this.price,
+  String? id;
+  int? createDate;
+  int? updateDate;
 
-        this.pack,
-        this.numberPack,
-        this.weightPack,
+  int? sendDate;
+  String? orderNumber;
+  dynamic price;
 
-        this.status,
-        this.measurementType,
-        this.companyName,
+  double? pack;
+  double? numberPack;
+  double? weightPack;
 
-        this.companyId,
-        this.productId,
-        this.productName,
-        
-        this.comment,
-    });
+  String? status;
+  String? measurementType;
+  String? companyName;
 
-    String? id;
-    int? createDate;
-    int? updateDate;
-    int? sendDate;
+  int? companyId;
+  int? productId;
+  String? productName;
 
-    String? orderNumber;
-    dynamic price;
-    double? pack;
-    double? numberPack;
-    double? weightPack;
+  dynamic comment;
+  dynamic paymentStatus;
+  dynamic typeOfPayment;
 
-    String? status;
-    String? measurementType;
-    String? companyName;
-    int? companyId;
-    int? productId;
-    String? productName;
-    dynamic comment;
-
-    factory Product.fromJson(Map<String, dynamic> json) => Product(
+  factory Product.fromJson(Map<String, dynamic> json) => Product(
         id: json["id"],
         createDate: json["createDate"],
         updateDate: json["updateDate"],
@@ -69,24 +73,33 @@ class Product {
         productId: json["productId"],
         productName: json["productName"],
         comment: json["comment"],
-    );
+        paymentStatus: json["paymentStatus"],
+        typeOfPayment: json["typeOfPayment"],
+      );
 
-    Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => {
         "id": id,
         "createDate": createDate,
         "updateDate": updateDate,
+
         "sendDate": sendDate,
         "orderNumber": orderNumber,
         "price": price,
+
         "pack": pack,
         "numberPack": numberPack,
         "weightPack": weightPack,
+
         "status": status,
         "measurementType": measurementType,
         "companyName": companyName,
+
         "companyId": companyId,
         "productId": productId,
         "productName": productName,
+        
         "comment": comment,
-    };
+        "paymentStatus": paymentStatus,
+        "typeOfPayment": typeOfPayment,
+      };
 }

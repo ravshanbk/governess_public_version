@@ -1,5 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:governess/consts/date_time_picker_function.dart';
+import 'package:governess/consts/print_my.dart';
 import 'package:governess/consts/strings.dart';
 import 'package:governess/services/network.dart';
 import 'package:governess/ui/supplier/home_supplier_page.dart';
@@ -214,30 +216,32 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
           ),
           SizedBox(height: gH(30.0)),
           SendButtonWidget(
-              width: gW(335),
-              onPressed: () async {
-                bool isThereInternet = await checkConnectivity();
-                if (isThereInternet) {
-                  Provider.of<FilterToBuyPageProvider>(context, listen: false)
-                      .changeCurrentFilterIndex(0);
-                  Provider.of<ToBuyProductPageProvider>(context, listen: false)
-                      .changeCurrent(-1);
-                } else {
-                  Provider.of<FilterToBuyPageProvider>(context, listen: false)
-                      .changeCurrentFilterIndex(0);
+            width: gW(335),
+            onPressed: () async {
+              bool isThereInternet = await checkConnectivity();
+              if (isThereInternet) {
+                Provider.of<FilterToBuyPageProvider>(context, listen: false)
+                    .changeCurrentFilterIndex(0);
+                Provider.of<ToBuyProductPageProvider>(context, listen: false)
+                    .changeCurrent(-1);
+                setState(() {});
+              } else {
+                Provider.of<FilterToBuyPageProvider>(context, listen: false)
+                    .changeCurrentFilterIndex(0);
 
-                  Provider.of<ToBuyProductPageProvider>(context, listen: false)
-                      .changeCurrent(-1);
+                Provider.of<ToBuyProductPageProvider>(context, listen: false)
+                    .changeCurrent(-1);
 
-                  showNoNetToast(false);
-                  Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const SupplierHomePage()),
-                      (route) => false);
-                }
-              },
-              titleOfButton: "OK")
+                showNoNetToast(false);
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const SupplierHomePage()),
+                    (route) => false);
+              }
+            },
+            titleOfButton: "Qayta yuklash",
+          ),
         ],
       ),
     );
@@ -317,7 +321,7 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
             });
           } else if (__ == 1) {
             _showDialogDate(context);
-                   }
+          }
         } else {
           showNoNetToast(false);
         }
@@ -455,6 +459,7 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
   }
 
   List<Widget> _children(Product data, BuildContext context) {
+    p(data.weightPack.toString());
     return <Widget>[
       Ink(
         decoration: BoxDecoration(
@@ -479,7 +484,7 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
           _divider(),
           _textInRow("Qadoqlar soni", data.numberPack.toString()),
           _divider(),
-          _textInRow("Qadoqlangandan so'ng (miq)", data.weightPack.toString()),
+          _textInRow("Jami:", data.weightPack.toString()),
           _divider(),
           SendButtonWidget(
             width: gW(200.0),
@@ -569,7 +574,7 @@ class _SendProductShowDialogContentWidget extends StatelessWidget {
           top: gH(0.0),
           left: gW(10.0),
           right: gW(10.0),
-          bottom: gH(340.0),
+          bottom: gH(280.0),
         ),
         decoration: BoxDecoration(
           color: whiteColor,
@@ -592,11 +597,85 @@ class _SendProductShowDialogContentWidget extends StatelessWidget {
             const Spacer(),
             _commentInputField(context),
             const Spacer(),
+            _paymentStatusSwitch(context),
+            const Spacer(),
+            _paymentType(context),
+            const Spacer(),
             _sendButtonInShowDialog(context, data),
           ],
         ),
       ),
     );
+  }
+
+  _paymentStatusSwitch(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        Text(
+          context.watch<ToBuyProductPageProvider>().statusOfPayment
+              ? "To'landi"
+              : "To'lanmadi",
+          style: TextStyle(
+            fontSize: gW(22.0),
+            fontWeight: FontWeight.bold,
+            color: context.watch<ToBuyProductPageProvider>().statusOfPayment
+                ? mainColor
+                : Colors.red,
+          ),
+        ),
+        CupertinoSwitch(
+            value: context.watch<ToBuyProductPageProvider>().statusOfPayment,
+            onChanged: (bool v) {
+              if (v) {
+                Provider.of<ToBuyProductPageProvider>(context, listen: false)
+                    .changeStatusOfPayment(v);
+              } else {
+                Provider.of<ToBuyProductPageProvider>(context, listen: false)
+                    .changeStatusOfPayment(v);
+                Provider.of<ToBuyProductPageProvider>(context, listen: false)
+                    .changeIsCashOnPayment(v);
+              }
+            }),
+      ],
+    );
+  }
+
+  _paymentType(BuildContext context) {
+    return context.watch<ToBuyProductPageProvider>().statusOfPayment
+        ? Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Text(
+                context.watch<ToBuyProductPageProvider>().isCashOnPayment
+                    ? "Naqd"
+                    : "Naqdsiz",
+                style: TextStyle(
+                  fontSize: gW(22.0),
+                  fontWeight: FontWeight.bold,
+                  color:
+                      context.watch<ToBuyProductPageProvider>().isCashOnPayment
+                          ? mainColor
+                          : Colors.red,
+                ),
+              ),
+              CupertinoSwitch(
+                  value:
+                      context.watch<ToBuyProductPageProvider>().isCashOnPayment,
+                  onChanged: (bool v) {
+                    p(
+                      v.toString(),
+                    );
+                    Provider.of<ToBuyProductPageProvider>(context,
+                            listen: false)
+                        .changeIsCashOnPayment(v);
+                  }),
+            ],
+          )
+        : const SizedBox(
+            height: 0.1,
+            width: 0.1,
+          );
   }
 
   RichText _richTextInRow(List<String> text) {
@@ -631,12 +710,11 @@ class _SendProductShowDialogContentWidget extends StatelessWidget {
                           .numberController
                           .text) >
                   0)) {
-            int number = (int.parse(Provider.of<ToBuyProductPageProvider>(con,
-                            listen: false)
+            double number = (int.parse(
+                    Provider.of<ToBuyProductPageProvider>(con, listen: false)
                         .numberController
                         .text) *
-                    (data.pack! > 0 ? data.pack! : 1))
-                .toInt();
+                (data.pack! > 0 ? data.pack! : 1));
             await SupplierService()
                 .sendProduct(
               v: SendProduct(

@@ -1,12 +1,3 @@
-// To parse this JSON data, do
-//
-//     final sendProduct = sendProductFromJson(jsonString);
-
-import 'dart:convert';
-
-SendProduct sendProductFromJson(String str) => SendProduct.fromJson(json.decode(str));
-
-String sendProductToJson(SendProduct data) => json.encode(data.toJson());
 
 class SendProduct {
     SendProduct({
@@ -16,8 +7,10 @@ class SendProduct {
         this.numberPack,
         this.orderNumber,
         this.pack,
+        this.paymentStatus,
         this.price,
         this.productId,
+        this.typeOfPayment,
         this.weightPack,
     });
 
@@ -26,10 +19,12 @@ class SendProduct {
     String? measurementType;
     int? numberPack;
     String? orderNumber;
-    int? pack;
-    int? price;
+    double? pack;
+    bool? paymentStatus;
+    double? price;
     int? productId;
-    int? weightPack;
+    bool? typeOfPayment;
+    double? weightPack;
 
     factory SendProduct.fromJson(Map<String, dynamic> json) => SendProduct(
         comment: json["comment"],
@@ -38,8 +33,10 @@ class SendProduct {
         numberPack: json["numberPack"],
         orderNumber: json["orderNumber"],
         pack: json["pack"],
+        paymentStatus: json["paymentStatus"],
         price: json["price"],
         productId: json["productId"],
+        typeOfPayment: json["typeOfPayment"],
         weightPack: json["weightPack"],
     );
 
@@ -50,8 +47,11 @@ class SendProduct {
         "numberPack": numberPack,
         "orderNumber": orderNumber,
         "pack": pack,
+        "paymentStatus": paymentStatus,
         "price": price,
         "productId": productId,
+        "typeOfPayment": typeOfPayment,
+        
         "weightPack": weightPack,
     };
 }

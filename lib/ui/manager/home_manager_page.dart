@@ -6,6 +6,7 @@ import 'package:governess/ui/manager/show_daily_menu_page.dart';
 import 'package:governess/ui/manager/show_daily_number_of_children_page.dart';
 import 'package:governess/ui/widgets/big_elevate_button_home_page.dart';
 import 'package:governess/ui/widgets/drawer_widget_my.dart';
+import 'package:governess/ui/widgets/mtt_info_drawer_widget.dart';
 
 class ManagerHomePage extends StatelessWidget {
   const ManagerHomePage({Key? key}) : super(key: key);
@@ -19,6 +20,7 @@ class ManagerHomePage extends StatelessWidget {
     ];
 
     return Scaffold(
+            endDrawer: const MttInfoEndDrawer() ,
       drawer: const DrawerWidgetMy(),
       appBar: _appBar(),
       body: _body(doings, context),
@@ -77,6 +79,22 @@ class ManagerHomePage extends StatelessWidget {
           color: Colors.white,
         ),
       ),
+      actions: [
+        Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.more_vert),
+            onPressed: () async {
+                final isNet = await checkConnectivity();
+                if (isNet) {
+                  Scaffold.of(context).openEndDrawer();
+                } else {
+                  showNoNetToast(false);
+                }
+              },
+            tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
+          ),
+        ),
+      ],
     );
   }
 }

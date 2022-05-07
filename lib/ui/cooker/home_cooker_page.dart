@@ -8,6 +8,7 @@ import 'package:governess/ui/cooker/sub_pages/show_daily_menu_page.dart';
 import 'package:governess/ui/cooker/sub_pages/show_number_of_children_page.dart';
 import 'package:governess/ui/widgets/big_elevate_button_home_page.dart';
 import 'package:governess/ui/widgets/drawer_widget_my.dart';
+import 'package:governess/ui/widgets/mtt_info_drawer_widget.dart';
 
 class CookerHomePage extends StatelessWidget {
   const CookerHomePage({Key? key}) : super(key: key);
@@ -22,7 +23,7 @@ class CookerHomePage extends StatelessWidget {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       drawer: const DrawerWidgetMy(),
-
+      endDrawer: const MttInfoEndDrawer(),
       //  _drawer(),
       appBar: AppBar(
         centerTitle: true,
@@ -31,6 +32,22 @@ class CookerHomePage extends StatelessWidget {
         title: Text(
           DTFM.maker(DateTime.now().millisecondsSinceEpoch),
         ),
+        actions: [
+          Builder(
+            builder: (context) => IconButton(
+              icon: const Icon(Icons.more_vert),
+              onPressed: () async {
+                final isNet = await checkConnectivity();
+                if (isNet) {
+                  Scaffold.of(context).openEndDrawer();
+                } else {
+                  showNoNetToast(false);
+                }
+              },
+              tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
+            ),
+          ),
+        ],
       ),
       body: Center(
         child: ListView.separated(
