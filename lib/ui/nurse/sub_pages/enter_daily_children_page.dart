@@ -13,7 +13,10 @@ import 'package:governess/ui/widgets/indicator_widget.dart';
 import 'package:provider/provider.dart';
 
 class NurseEnterDailyChildrenPage extends StatelessWidget {
-  const NurseEnterDailyChildrenPage({Key? key}) : super(key: key);
+  int? kGId;
+  int? id;
+  NurseEnterDailyChildrenPage({required this.kGId, required id, Key? key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -83,6 +86,7 @@ class NurseEnterDailyChildrenPage extends StatelessWidget {
                     List<AgeGroupIdAndNumber> v = List.generate(
                       data.length,
                       (index) => AgeGroupIdAndNumber(
+                        id: kGId,
                         ageGroupId: data[index].ageGroupId,
                         number: int.parse(
                           Provider.of<NurseEnterChildrenNumberPageProvider>(
@@ -95,11 +99,13 @@ class NurseEnterDailyChildrenPage extends StatelessWidget {
                     );
                     NurseService()
                         .enterDailyChildrenNumber(
-                      v,
-                      Provider.of<NurseEnterChildrenNumberPageProvider>(context,
-                              listen: false)
-                          .when,
-                    )
+                            v: v,
+                            date: Provider.of<
+                                        NurseEnterChildrenNumberPageProvider>(
+                                    context,
+                                    listen: false)
+                                .when,
+                            kGId: kGId!)
                         .then(
                       (value) {
                         if (value.success!) {
@@ -110,7 +116,7 @@ class NurseEnterDailyChildrenPage extends StatelessWidget {
                           showToast(value.text!, value.success!, false);
                           Navigator.pop(context);
                         } else {
-                          showToast(value.text!, value.success!, false);
+                          showToast(value.text!, false, false);
                         }
                       },
                     );
@@ -280,7 +286,6 @@ class NurseEnterDailyChildrenPage extends StatelessWidget {
     );
   }
 
-
   DateTimeShowButton _dateTimeShowButton(BuildContext context) {
     return DateTimeShowButton(
       DTFM.maker(context
@@ -288,9 +293,9 @@ class NurseEnterDailyChildrenPage extends StatelessWidget {
           .when
           .millisecondsSinceEpoch),
       () {
-        showDataPicker(context,onDone:  (date) {
-        context.read<NurseEnterChildrenNumberPageProvider>().changeWhen(date);
-      });
+        showDataPicker(context, onDone: (date) {
+          context.read<NurseEnterChildrenNumberPageProvider>().changeWhen(date);
+        });
       },
     );
   }

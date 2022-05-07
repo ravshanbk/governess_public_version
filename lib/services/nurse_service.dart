@@ -20,17 +20,23 @@ class NurseService {
     }
   }
 
-  Future<ResModel> enterDailyChildrenNumber(
-      List<AgeGroupIdAndNumber> v, DateTime date) async {
+  Future<ResModel> enterDailyChildrenNumber({
+    required List<AgeGroupIdAndNumber> v,
+    required DateTime date,
+    required int kGId,
+  }) async {
     try {
-      var res = await Dio().post(
+      Response res = await Dio().post(
         "${AuthService.localhost}/out/api/perDay?date=${date.millisecondsSinceEpoch}",
-        data: {"numberOfChildrenDTOList": v},
         options: AuthService.option,
+        data: {
+          "kindergartenId": kGId,
+          "numberOfChildrenDTOList": v,
+        },
       );
       return ResModel.fromJson(res.data);
-    } catch (e) {
-      throw Exception("Enter Number Of Children: " + e.toString());
+    } on DioError catch (e) {
+      return ResModel.fromJson(e.response!.data);
     }
   }
 
@@ -55,9 +61,8 @@ class NurseService {
         options: AuthService.option,
       );
       return ResModel.fromJson(res.data);
-    } catch (e) {
-      throw Exception(
-          "NurseService / Edit Number Of Children: " + e.toString());
+    } on DioError catch (e) {
+      return ResModel.fromJson(e.response!.data);
     }
   }
 

@@ -9,8 +9,8 @@ class AuthService {
   static Options option = Options(headers: {
     "Authorization": Boxes.getUser().values.first.token,
   });
-  static String localhost = "http://185.217.131.117:7788";
-  // static String localhost = "http://192.168.68.110:7788";
+  // static String localhost = "http://185.217.131.117:7788";
+  static String localhost = "http://192.168.68.117:7788";
 
   Future<bool> getUser(String login, String password) async {
     User decodedUser;
@@ -59,8 +59,8 @@ class AuthService {
         },
       );
       return ResModel.fromJson(res.data);
-    } catch (e) {
-      throw Exception("AuthService / changeLoginPassword" + e.toString());
+    } on DioError catch (e) {
+      return ResModel.fromJson(e.response!.data);
     }
   }
 }

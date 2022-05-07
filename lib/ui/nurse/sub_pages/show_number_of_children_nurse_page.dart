@@ -71,23 +71,26 @@ class _NurseShowNumberOfChildrenPageState
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                _changeButton(data, idf),
+                _changeDailyChildrenButton(data, idf),
               ],
             ),
             SizedBox(height: gH(10.0)),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                _button(
+                _enterDailyChildrenButton(
                     callBack: () async {
                       bool isEnabledInternet = await checkConnectivity();
                       if (isEnabledInternet) {
                         Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const NurseEnterDailyChildrenPage()))
-                            .then((value) {
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => NurseEnterDailyChildrenPage(
+                              kGId: data.perDayList![0].kindergartenId!,
+                              id: data.perDayList![0].id,
+                            ),
+                          ),
+                        ).then((value) {
                           setState(() {});
                         });
                       } else {
@@ -104,8 +107,8 @@ class _NurseShowNumberOfChildrenPageState
     );
   }
 
-  _changeButton(NumberOfChildren data, bool idf) {
-    return _button(
+  _changeDailyChildrenButton(NumberOfChildren data, bool idf) {
+    return _enterDailyChildrenButton(
       idf: idf,
       title: "O'zgartirish",
       callBack: () async {
@@ -148,7 +151,7 @@ class _NurseShowNumberOfChildrenPageState
     );
   }
 
-  ElevatedButton _button(
+  ElevatedButton _enterDailyChildrenButton(
       {required VoidCallback callBack,
       required String title,
       required bool idf}) {

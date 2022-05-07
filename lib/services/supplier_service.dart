@@ -52,8 +52,8 @@ class SupplierService {
         options: AuthService.option,
       );
       return ResModel.fromJson(res.data);
-    } catch (e) {
-      throw Exception("SupplierService / getToBuyProducts: " + e.toString());
+    }  on DioError catch (e) {
+      return ResModel.fromJson(e.response!.data);
     }
   }
 

@@ -17,8 +17,8 @@ class CookerService {
         data: data,
       );
       return ResModel.fromJson(res.data);
-    } catch (e) {
-      throw Exception("Chef Service acceptProduct: " + e.toString());
+    }  on DioError catch (e) {
+      return ResModel.fromJson(e.response!.data);
     }
   }
 
