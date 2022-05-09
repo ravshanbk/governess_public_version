@@ -49,6 +49,7 @@ class _NurseShowNumberOfChildrenPageState
 
   _body(NumberOfChildren data, BuildContext context) {
     bool idf = data.perDayList![0].id == null;
+    bool isSubmitted = data.perDayList![0].status.toString() == 'TASDIQLANDI';
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -71,7 +72,11 @@ class _NurseShowNumberOfChildrenPageState
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                _changeDailyChildrenButton(data, idf),
+                _changeDailyChildrenButton(
+                  data: data,
+                  idf: idf,
+                  isSubmitted: isSubmitted,
+                ),
               ],
             ),
             SizedBox(height: gH(10.0)),
@@ -107,47 +112,73 @@ class _NurseShowNumberOfChildrenPageState
     );
   }
 
-  _changeDailyChildrenButton(NumberOfChildren data, bool idf) {
-    return _enterDailyChildrenButton(
-      idf: idf,
-      title: "O'zgartirish",
-      callBack: () async {
-        bool isEnabledInternet = await checkConnectivity();
+  _changeDailyChildrenButton({
+    required NumberOfChildren data,
+    required bool idf,
+    required bool isSubmitted,
+  }) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(
+            gW(10.0),
+          ),
+        ),
+        primary: mainColor,
+        elevation: 0,
+        fixedSize: Size(
+          gW(180.0),
+          gH(52.0),
+        ),
+      ),
+      onPressed: isSubmitted && !idf
+          ? null
+          : () async {
+              bool isEnabledInternet = await checkConnectivity();
 
-        await Future.delayed(const Duration(microseconds: 200), () {
-          return List.generate(
-              data.perDayList![0].numberOfChildrenDtoList!.length,
-              (index) => data
-                          .perDayList![0].numberOfChildrenDtoList![index].number
-                          .toString() ==
-                      "null"
-                  ? ""
-                  : data.perDayList![0].numberOfChildrenDtoList![index].number
-                      .toString());
-        }).then(
-          (value) => Provider.of<NurseChangeChildrenNumberPageProvider>(context,
-                  listen: false)
-              .initControllersAndNodes(value),
-        );
-        if (isEnabledInternet) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => NurseEditDailyChildrenPage(
-                data,
-              ),
-            ),
-          ).then((value) {
-            setState(() {});
-          });
-        } else {
-          showToast(
-            "Qurilma Internet Tarmog'iga Ulanmagan",
-            false,
-            true,
-          );
-        }
-      },
+              await Future.delayed(const Duration(microseconds: 200), () {
+                return List.generate(
+                    data.perDayList![0].numberOfChildrenDtoList!.length,
+                    (index) => data.perDayList![0]
+                                .numberOfChildrenDtoList![index].number
+                                .toString() ==
+                            "null"
+                        ? ""
+                        : data.perDayList![0].numberOfChildrenDtoList![index]
+                            .number
+                            .toString());
+              }).then(
+                (value) => Provider.of<NurseChangeChildrenNumberPageProvider>(
+                        context,
+                        listen: false)
+                    .initControllersAndNodes(value),
+              );
+              if (isEnabledInternet) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => NurseEditDailyChildrenPage(
+                      data,
+                    ),
+                  ),
+                ).then((value) {
+                  setState(() {});
+                });
+              } else {
+                showToast(
+                  "Qurilma Internet Tarmog'iga Ulanmagan",
+                  false,
+                  true,
+                );
+              }
+            },
+      child: Text(
+        "O'zgartirish",
+        style: TextStyle(
+          letterSpacing: gW(2.0),
+          fontSize: gW(20.0),
+        ),
+      ),
     );
   }
 

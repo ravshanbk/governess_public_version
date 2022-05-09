@@ -59,8 +59,8 @@ class CookerShowProductExpansionTileWidget extends StatelessWidget {
           width: gW(5.0),
         ),
         Text(
-          data.status!.length > 21
-              ? data.status!.substring(0, 20).replaceRange(19, 20, "..")
+          data.status!.length > 19
+              ? data.status!.substring(0, 18).replaceRange(18, 18, "..")
               : data.status!,
           style: TextStyle(
             fontWeight: FontWeight.bold,

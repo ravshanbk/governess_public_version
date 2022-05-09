@@ -8,8 +8,8 @@ class ReceiveProductModel {
     });
 
     String? comment;
-    int? numberPack;
-    int? weightPack;
+   double? numberPack;
+    double? weightPack;
 
     factory ReceiveProductModel.fromJson(Map<String, dynamic> json) => ReceiveProductModel(
         comment: json["comment"],

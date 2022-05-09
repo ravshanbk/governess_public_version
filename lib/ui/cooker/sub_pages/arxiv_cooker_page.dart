@@ -15,97 +15,42 @@ import 'package:governess/ui/widgets/date_time_show_button_widget.dart';
 import 'package:governess/ui/widgets/send_button_widger.dart.dart';
 import 'package:provider/provider.dart';
 
-class CookerAcceptProductPage extends StatefulWidget {
-  const CookerAcceptProductPage({Key? key}) : super(key: key);
+class CookerAcceptProductByDatePage extends StatefulWidget {
+  const CookerAcceptProductByDatePage({Key? key}) : super(key: key);
 
   @override
-  State<CookerAcceptProductPage> createState() =>
-      _CookerAcceptProductPageState();
+  State<CookerAcceptProductByDatePage> createState() =>
+      _CookerAcceptProductByDatePageState();
 }
 
-class _CookerAcceptProductPageState extends State<CookerAcceptProductPage> {
-  bool isDefault = true;
-  DateTime start =
-      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+class _CookerAcceptProductByDatePageState
+    extends State<CookerAcceptProductByDatePage> {
+  // bool isDefault = true;
+  DateTime start = DateTime.now();
 
-  DateTime end =
-      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+  DateTime end = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () {
-        Provider.of<CookerAcceptProductProvider>(context, listen: false)
-            .changeCurrent(-1);
-        Navigator.pop(context);
-        return Future.value(true);
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          backgroundColor: mainColor,
-          elevation: 0,
-          title: const Text("Mahsulotlarni qabul qilish"),
-        ),
-        body: CustomScrollView(
-          physics: const BouncingScrollPhysics(),
-          slivers: [
-            SliverAppBar(
-              floating: true,
-              pinned: false,
-              automaticallyImplyLeading: false,
-              backgroundColor: greyColor,
-              leadingWidth: 0.0,
-              actions: [
-                DateTimeShowButton(
-                    isDefault
-                        ? "__ . __ . ____"
-                        : DTFM.maker(start.millisecondsSinceEpoch), () async {
-                  bool isNet = await checkConnectivity();
-                  if (isNet) {
-                    showDataPicker(context, onDone: (date) {
-                      start = date;
-                      end = date;
-                      isDefault = false;
-                      setState(() {});
-                    });
-                  } else {
-                    showNoNetToast(false);
-                  }
-                }),
-                SizedBox(width: gW(50.0)),
-                DateTimeShowButton(
-                    isDefault
-                        ? "__ . __ . ____"
-                        : DTFM.maker(end.millisecondsSinceEpoch), () async {
-                  bool isNet = await checkConnectivity();
-                  if (isNet) {
-                    showDataPicker(context, onDone: (date) {
-                      end = date;
-                      isDefault = false;
-
-                      setState(() {});
-                    });
-                  } else {
-                    showNoNetToast(false);
-                  }
-                }),
-                SizedBox(width: gW(23.0)),
-              ],
-            ),
-            SliverToBoxAdapter(
-              child: FutureBuilder<List<CookerProduct>>(
-                future: CookerService()
-                    .getInOut(start: start, end: end, isDefault: isDefault),
-                builder: (context, AsyncSnapshot<List<CookerProduct>> snap) {
-                  if (snap.connectionState == ConnectionState.done &&
-                      snap.data!.isNotEmpty) {
+    return Scaffold(
+      body: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
+        slivers: [
+          _sliverAppBAr(context),
+          SliverToBoxAdapter(
+            child: FutureBuilder<List<CookerProduct>>(
+              future: CookerService().getInOutByDate(
+                startt: start,
+                endd: end,
+              ),
+              builder: (context, AsyncSnapshot<List<CookerProduct>> snap) {
+                if (snap.connectionState == ConnectionState.done) {
+                  if (snap.hasData) {
                     return _body(
                       snap,
                       context,
                     );
-                  } else if (snap.connectionState == ConnectionState.done &&
-                      snap.data!.isEmpty) {
+                  } else {
                     return Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.end,
@@ -122,23 +67,83 @@ class _CookerAcceptProductPageState extends State<CookerAcceptProductPage> {
                         ],
                       ),
                     );
+                  }
+                } else {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(snap.connectionState.name),
+                        CupertinoActivityIndicator(
+                          radius: gW(20.0),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  SliverAppBar _sliverAppBAr(BuildContext context) {
+    return SliverAppBar(
+      floating: true,
+      pinned: false,
+      automaticallyImplyLeading: false,
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      shadowColor: whiteColor,
+      leadingWidth: 0.0,
+      flexibleSpace: FlexibleSpaceBar(
+        background: Container(
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(
+              gW(15.0),
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              DateTimeShowButton(
+                DTFM.maker(start.millisecondsSinceEpoch),
+                () async {
+                  bool isNet = await checkConnectivity();
+                  if (isNet) {
+                    showDataPicker(context, onDone: (date) {
+                      start = date;
+
+                      setState(() {});
+                    });
                   } else {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(snap.connectionState.name),
-                          CupertinoActivityIndicator(
-                            radius: gW(20.0),
-                          ),
-                        ],
-                      ),
-                    );
+                    showNoNetToast(false);
                   }
                 },
               ),
-            ),
-          ],
+              DateTimeShowButton(
+                DTFM.maker(end.millisecondsSinceEpoch),
+                () async {
+                  bool isNet = await checkConnectivity();
+                  if (isNet) {
+                    showDataPicker(
+                      context,
+                      onDone: (date) {
+                        end = date;
+
+                        setState(() {});
+                      },
+                    );
+                  } else {
+                    showNoNetToast(false);
+                  }
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -179,57 +184,32 @@ class _CookerAcceptProductPageState extends State<CookerAcceptProductPage> {
 
   List<Widget> _children(CookerProduct data, BuildContext context) {
     return <Widget>[
-      Ink(
-        decoration: BoxDecoration(
-          border: Border.all(color: mainColor),
-          borderRadius: BorderRadius.circular(
-            gW(10.0),
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SizedBox(height: gH(10.0)),
+          _divider(),
+          _textInRow(
+              "Jo'natuvchi",
+              data.senderName!.length > 16
+                  ? data.senderName!.toString().substring(0, 15)
+                  : data.senderName!.toString()),
+          _divider(),
+          _textInRow("Yuborilgan Sana",
+              data.enterDate == null ? "null" : DTFM.maker(data.enterDate!)),
+          _divider(),
+          _textInRow("O'lchov birligi", data.measurementType.toString()),
+          _divider(),
+          _textInRow("Yaxlitlash miqdori", data.pack.toString()),
+          _divider(),
+          _textInRow("Qadoqlar soni", data.numberPack.toString()),
+          _divider(),
+          _textInRow("Qadoqlangandan so'ng (miq)", data.weightPack.toString()),
+          _divider(),
+          SizedBox(
+            height: gH(10.0),
           ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: gW(20.0)),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  primary: mainColor,
-                  elevation: 0,
-                  shadowColor: Colors.transparent,
-                ),
-                onPressed: () async {
-                  bool isNet = await checkConnectivity();
-                  if (isNet) {
-                    _shownputDialog(context, data);
-                  } else {
-                    showNoNetToast(false);
-                  }
-                },
-                child: const Text("Qabul qilish"),
-              ),
-            ),
-            SizedBox(height: gH(10.0)),
-            _textInRow("Korxona nomi", data.senderName.toString()),
-            _divider(),
-            // _textInRow("Zayavka nomi", data.orderNumber.toString()),
-            _divider(),
-            _textInRow("Yuborilgan Sana",
-                data.enterDate == null ? "null" : DTFM.maker(data.enterDate!)),
-            _divider(),
-            _textInRow("O'lchov birligi", data.measurementType.toString()),
-            _divider(),
-            _textInRow("Yaxlitlash miqdori", data.pack.toString()),
-            _divider(),
-            _textInRow("Qadoqlar soni", data.numberPack.toString()),
-            _divider(),
-            _textInRow(
-                "Qadoqlangandan so'ng (miq)", data.weightPack.toString()),
-            _divider(),
-            SizedBox(
-              height: gH(10.0),
-            ),
-          ],
-        ),
+        ],
       )
     ];
   }
@@ -269,7 +249,12 @@ class _CookerAcceptProductPageState extends State<CookerAcceptProductPage> {
     return showDialog(
       context: context,
       builder: (context) {
-        return _SendProductShowDialogContentWidget(product);
+        return _SendProductShowDialogContentWidget(
+          data: product,
+          toSetState: () {
+            setState(() {});
+          },
+        );
       },
     );
   }
@@ -277,7 +262,9 @@ class _CookerAcceptProductPageState extends State<CookerAcceptProductPage> {
 
 class _SendProductShowDialogContentWidget extends StatelessWidget {
   final CookerProduct data;
-  const _SendProductShowDialogContentWidget(this.data, {Key? key})
+  final VoidCallback toSetState;
+  const _SendProductShowDialogContentWidget(
+      {required this.data, required this.toSetState, Key? key})
       : super(key: key);
 
   @override
@@ -349,18 +336,16 @@ class _SendProductShowDialogContentWidget extends StatelessWidget {
                   .numberController
                   .text
                   .isNotEmpty &&
-              int.parse(Provider.of<CookerAcceptProductProvider>(con,
+              double.parse(Provider.of<CookerAcceptProductProvider>(con,
                           listen: false)
                       .numberController
                       .text) >
-                  0) {
-            int number = (int.parse(Provider.of<CookerAcceptProductProvider>(
-                            con,
-                            listen: false)
+                  0.0) {
+            double number = (double.parse(
+                    Provider.of<CookerAcceptProductProvider>(con, listen: false)
                         .numberController
                         .text) *
-                    (data.pack! > 0 ? data.pack! : 1))
-                .toInt();
+                (data.pack! > 0 ? data.pack! : 1));
             CookerService()
                 .acceptProduct(
               id: data.id!,
@@ -369,7 +354,7 @@ class _SendProductShowDialogContentWidget extends StatelessWidget {
                     Provider.of<CookerAcceptProductProvider>(con, listen: false)
                         .commentController
                         .text,
-                numberPack: int.parse(
+                numberPack: double.parse(
                     Provider.of<CookerAcceptProductProvider>(con, listen: false)
                         .numberController
                         .text),
@@ -379,17 +364,18 @@ class _SendProductShowDialogContentWidget extends StatelessWidget {
                 .then((value) {
               if (value.success!) {
                 showToast(value.text!.toString(), value.success!, false);
+                toSetState();
 
-                Provider.of<CookerAcceptProductProvider>(con, listen: false)
-                    .clear();
                 Provider.of<CookerAcceptProductProvider>(con, listen: false)
                     .changeCurrent(-1);
                 Navigator.pop(con);
               } else {
+                Navigator.pop(con);
                 showToast(value.text!.toString(), value.success!, false);
               }
             });
           } else {
+            toSetState();
             showToast("Miqdorni kiriting, nol bolmasin", false, false);
           }
         } else {
@@ -419,25 +405,13 @@ class _SendProductShowDialogContentWidget extends StatelessWidget {
     );
   }
 
-  TextField _priceInputField(BuildContext context) {
-    return TextField(
-      onChanged: (v) {},
-      keyboardType: TextInputType.number,
-      controller: context.read<CookerAcceptProductProvider>().priceController,
-      decoration: DecorationMy.inputDecoration(
-        "Narxi...",
-        null,
-      ),
-    );
-  }
-
   TextField _commentInputField(BuildContext context) {
     return TextField(
       onChanged: (v) {},
       keyboardType: TextInputType.text,
       controller: context.read<CookerAcceptProductProvider>().commentController,
       decoration: DecorationMy.inputDecoration(
-        "Comment...",
+        "Izoh...",
         null,
       ),
     );

@@ -124,8 +124,13 @@ class _GetShippedProductPageState extends State<GetShippedProductPage> {
           _divider(),
           TextInRowWidget("Qadoqlar soni", data.numberPack.toString()),
           _divider(),
+          TextInRowWidget("Jami", data.weightPack.toString()),
+          _divider(),
           TextInRowWidget(
-              "Qadoqlangandan so'ng (miq)", data.weightPack.toString()),
+              "To'langanligi", data.paymentStatus ? "To'langan" : "To'lanmagan"),
+          _divider(),
+          TextInRowWidget(
+              "To'lov turi", data.typeOfPayment ? "Naqd" : "Naqdsiz"),
           _divider(),
           SizedBox(
             height: gH(10.0),

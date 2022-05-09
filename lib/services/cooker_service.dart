@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:governess/consts/print_my.dart';
 import 'package:governess/models/cooker/meal_info_model.dart';
 import 'package:governess/models/cooker/product_cooker_product.dart';
 import 'package:governess/models/cooker/receive_product_model.dart';
@@ -11,28 +12,34 @@ class CookerService {
   Future<ResModel> acceptProduct(
       {required ReceiveProductModel data, required String id}) async {
     try {
-      Response res = await Dio().put(
+      Response res = await Dio(BaseOptions()).put(
         "${AuthService.localhost}/out/api/cook/receive/$id",
         options: AuthService.option,
         data: data,
       );
       return ResModel.fromJson(res.data);
-    }  on DioError catch (e) {
-      return ResModel.fromJson(e.response!.data);
+    } on DioError catch (e) {
+      p("Dio Errror: " + e.response!.data.toString());
+      return ResModel(
+        success: false,
+        text: "Nimadir hato bo'ldi",
+        object: {},
+      );
     }
   }
 
-  Future<List<CookerProduct>> getInOut(
-      {required DateTime start,
-      required DateTime end,
-      required isDefault}) async {
-    
+  Future<List<CookerProduct>> getInOutByDate({
+    required DateTime startt,
+    required DateTime endd,
+  }) async {
+    DateTime start = DateTime(startt.year, startt.month, startt.day);
+    DateTime end = DateTime(endd.year, endd.month, endd.day);
+    p(start.toIso8601String());
+    p(end.toIso8601String());
     List<CookerProduct> data = [];
     try {
       Response<dynamic> res = await Dio().get(
-      isDefault?  "${AuthService.localhost}/out/api/cook/getInOut"
-       :"${AuthService.localhost}/out/api/cook/getInOut?end=$end&start=$start",
-
+        "${AuthService.localhost}/out/api/cook/getInOut?end=${end.millisecondsSinceEpoch}&start=${start.millisecondsSinceEpoch}",
         options: AuthService.option,
       );
 
@@ -45,6 +52,25 @@ class CookerService {
     } catch (e) {
       throw Exception(
           "CookerService / getSentProductFromWarehouse: " + e.toString());
+    }
+  }
+
+  Future<List<CookerProduct>> getInOutDefault() async {
+    List<CookerProduct> data = [];
+    try {
+      Response<dynamic> res = await Dio().get(
+        "${AuthService.localhost}/out/api/cook/getInOut",
+        options: AuthService.option,
+      );
+
+      for (int i = 0; i < (res.data as List).length; i++) {
+        if (res.data[i] != null) {
+          data.add(CookerProduct.fromJson(res.data[i]));
+        }
+      }
+      return data;
+    } catch (e) {
+      throw Exception("CookerService / getInOutDefault: " + e.toString());
     }
   }
 
@@ -112,7 +138,7 @@ class CookerService {
       DateTime start, DateTime end) async {
     try {
       Response res = await Dio().get(
-        "http://185.217.131.117:7788/out/api/storage/garbageGet?end=1650430517333&start=1650948917333",
+        "${AuthService.localhost}/out/api/storage/garbageGet?end=${end.millisecondsSinceEpoch}&start=${start.millisecondsSinceEpoch}",
         options: AuthService.option,
       );
       return (res.data as List)

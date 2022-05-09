@@ -14,10 +14,11 @@ class DateTimeShowButton extends StatelessWidget {
       child: Ink(
         padding: EdgeInsets.all(gW(2.0)),
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(
-              gW(8.0),
-            ),
-            color: whiteColor),
+          borderRadius: BorderRadius.circular(
+            gW(8.0),
+          ),
+          color: whiteColor,
+        ),
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
             primary: mainColor_02,
