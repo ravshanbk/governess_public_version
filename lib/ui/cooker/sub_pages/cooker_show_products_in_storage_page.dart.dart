@@ -4,15 +4,19 @@ import 'package:governess/models/cooker/product_cooker_product.dart';
 import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/providers/cooker/show_in_out_list_product_provider.dart';
 import 'package:governess/services/cooker_service.dart';
-import 'package:governess/ui/widgets/future_builder_of_no_data_widget.dart';
 import 'package:governess/ui/widgets/indicator_widget.dart';
 import 'package:governess/ui/widgets/show_in_out_list_product_widget.dart';
 import 'package:governess/ui/widgets/text_in_row_widget.dart';
 import 'package:provider/provider.dart';
 
-class CookerShowProductsInStoragePage extends StatelessWidget {
+class CookerShowProductsInStoragePage extends StatefulWidget {
   const CookerShowProductsInStoragePage({Key? key}) : super(key: key);
 
+  @override
+  State<CookerShowProductsInStoragePage> createState() => _CookerShowProductsInStoragePageState();
+}
+
+class _CookerShowProductsInStoragePageState extends State<CookerShowProductsInStoragePage> {
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
@@ -20,7 +24,7 @@ class CookerShowProductsInStoragePage extends StatelessWidget {
       onWillPop: () {
         Provider.of<ShowInOutListProductProvider>(context, listen: false)
             .changeCurrent(-1);
-            
+
         return Future.value(true);
       },
       child: Scaffold(
@@ -33,13 +37,24 @@ class CookerShowProductsInStoragePage extends StatelessWidget {
         body: FutureBuilder<List<CookerInOutListProduct>>(
           future: CookerService().getAvailbleProductsInStorage(),
           builder: (context, AsyncSnapshot<List<CookerInOutListProduct>> snap) {
-            if (snap.connectionState == ConnectionState.done &&
-                snap.data!.isNotEmpty) {
+            if (snap.connectionState == ConnectionState.done) {
+              // ignore: prefer_is_empty
+              if (snap.data!.length < 1) {
+                return Center(
+                  child: Column(children: [
+                    IconButton(
+                      onPressed: () {
+                        setState(() {
+                          
+                        });
+                        
+                      },
+                      icon:const  Icon(Icons.refresh),
+                    ),
+                  ]),
+                );
+              }
               return _body(context, snap.data!);
-            } else if (snap.connectionState == ConnectionState.done &&
-                snap.data!.isEmpty) {
-              return const NoDataWidgetForFutureBuilder(
-                  "Hozircha Omborda Mahsulotlar Mavjud Emas");
             } else {
               return IndicatorWidget(snap);
             }

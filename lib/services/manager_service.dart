@@ -11,7 +11,7 @@ class ManagerService {
       );
       return ResModel.fromJson(res.data);
     }  on DioError catch (e) {
-      return ResModel.fromJson(e.response!.data);
+      return ResModel(object: {},text: e.message,success: false,);
     }
   }
 

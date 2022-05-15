@@ -56,6 +56,7 @@ class NurseEditDailyChildrenPage extends StatelessWidget {
             if (v!.isEmpty) {
               return "Hech bo'lmasa '0' kiriting";
             }
+            return null;
           },
           controller: context
               .read<NurseChangeChildrenNumberPageProvider>()

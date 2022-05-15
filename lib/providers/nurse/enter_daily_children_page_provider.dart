@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:governess/consts/print_my.dart';
+import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 
 class NurseEnterChildrenNumberPageProvider extends ChangeNotifier {
   int? length;
-  DateTime when = DateTime.now();
+  DateTime? when;
   changeWhen(DateTime date) {
+    p("ChangeWhen: "+DTFM.maker(date.millisecondsSinceEpoch));
     when = date;
     notifyListeners();
   }
@@ -17,7 +20,7 @@ class NurseEnterChildrenNumberPageProvider extends ChangeNotifier {
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   initControllersAndNodes(int v) {
-    when = DateTime.now();
+  
     length = v;
     idf = true;
     nodes = List.generate(v, (index) => FocusNode());

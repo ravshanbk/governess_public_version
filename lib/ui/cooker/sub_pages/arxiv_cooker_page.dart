@@ -1,10 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:governess/consts/date_time_picker_function.dart';
-import 'package:governess/consts/decorations.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/consts/strings.dart';
-import 'package:governess/models/cooker/receive_product_model.dart';
 import 'package:governess/models/cooker/to_accept_product_model.dart';
 import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/providers/cooker/accept_product_provider.dart';
@@ -12,7 +10,6 @@ import 'package:governess/services/cooker_service.dart';
 import 'package:governess/services/network.dart';
 import 'package:governess/ui/widgets/cooker_show_product_expansion_tile_widget.dart';
 import 'package:governess/ui/widgets/date_time_show_button_widget.dart';
-import 'package:governess/ui/widgets/send_button_widger.dart.dart';
 import 'package:provider/provider.dart';
 
 class CookerAcceptProductByDatePage extends StatefulWidget {
@@ -25,10 +22,41 @@ class CookerAcceptProductByDatePage extends StatefulWidget {
 
 class _CookerAcceptProductByDatePageState
     extends State<CookerAcceptProductByDatePage> {
-  // bool isDefault = true;
   DateTime start = DateTime.now();
-
   DateTime end = DateTime.now();
+
+  showDataPicker(BuildContext context, bool isStart) {
+    DatePicker.showPicker(
+      context,
+      showTitleActions: true,
+      theme: DatePickerTheme(
+        backgroundColor: lightGreyColor,
+        containerHeight: gH(200.0),
+        headerColor: mainColor,
+        itemStyle: const TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.bold,
+          fontSize: 18,
+        ),
+        doneStyle: TextStyle(
+          color: whiteColor,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          letterSpacing: gW(1.5),
+          decoration: TextDecoration.underline,
+        ),
+      ),
+      onConfirm: (date) {
+        if (isStart) {
+          start = date;
+        } else {
+          end = date;
+        }
+        setState(() {});
+      },
+      locale: LocaleType.en,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,17 +73,22 @@ class _CookerAcceptProductByDatePageState
               ),
               builder: (context, AsyncSnapshot<List<CookerProduct>> snap) {
                 if (snap.connectionState == ConnectionState.done) {
-                  if (snap.hasData) {
-                    return _body(
-                      snap,
-                      context,
-                    );
-                  } else {
+                  // ignore: prefer_is_empty
+                  if (snap.data!.length < 1) {
                     return Center(
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
+                        // mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          SizedBox(height: gH(200.0)),
+                          SizedBox(
+                            height: gH(200.0),
+                          ),
+                          IconButton(
+                              onPressed: () {
+                                setState(
+                                  () {},
+                                );
+                              },
+                              icon: const Icon(Icons.refresh)),
                           Text(
                             "Hozircha Mahsulotlar Mavjud Emas",
                             textAlign: TextAlign.center,
@@ -67,12 +100,19 @@ class _CookerAcceptProductByDatePageState
                         ],
                       ),
                     );
+                  } else {
+                    return _body(
+                      snap,
+                      context,
+                    );
                   }
                 } else {
                   return Center(
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        SizedBox(
+                          height: gH(200.0),
+                        ),
                         Text(snap.connectionState.name),
                         CupertinoActivityIndicator(
                           radius: gW(20.0),
@@ -114,11 +154,7 @@ class _CookerAcceptProductByDatePageState
                 () async {
                   bool isNet = await checkConnectivity();
                   if (isNet) {
-                    showDataPicker(context, onDone: (date) {
-                      start = date;
-
-                      setState(() {});
-                    });
+                    showDataPicker(context, true);
                   } else {
                     showNoNetToast(false);
                   }
@@ -131,11 +167,7 @@ class _CookerAcceptProductByDatePageState
                   if (isNet) {
                     showDataPicker(
                       context,
-                      onDone: (date) {
-                        end = date;
-
-                        setState(() {});
-                      },
+                      false,
                     );
                   } else {
                     showNoNetToast(false);
@@ -245,175 +277,6 @@ class _CookerAcceptProductByDatePageState
     );
   }
 
-  _shownputDialog(BuildContext context, CookerProduct product) {
-    return showDialog(
-      context: context,
-      builder: (context) {
-        return _SendProductShowDialogContentWidget(
-          data: product,
-          toSetState: () {
-            setState(() {});
-          },
-        );
-      },
-    );
-  }
+ 
 }
 
-class _SendProductShowDialogContentWidget extends StatelessWidget {
-  final CookerProduct data;
-  final VoidCallback toSetState;
-  const _SendProductShowDialogContentWidget(
-      {required this.data, required this.toSetState, Key? key})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      type: MaterialType.transparency,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: gW(20.0), vertical: gH(15)),
-        margin: EdgeInsets.only(
-          top: gH(0.0),
-          left: gW(10.0),
-          right: gW(10.0),
-          bottom: gH(340.0),
-        ),
-        decoration: BoxDecoration(
-          color: whiteColor,
-          border: Border.all(color: greyColor),
-          borderRadius: BorderRadius.circular(
-            gW(10.0),
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _richTextInRow(["Nomi:  ", data.productName!.toString()]),
-            _richTextInRow(["Yaxlitlash miqdaori:  ", data.pack.toString()]),
-            _richTextInRow(["Nechta:  ", data.numberPack.toString()]),
-            _richTextInRow(["Umumiy:  ", data.weightPack.toString()]),
-            const Spacer(),
-            _numberInputField(context, data),
-            // const Spacer(),
-            // _priceInputField(context),
-            const Spacer(),
-            _commentInputField(context),
-            const Spacer(),
-            _acceptButtonInShowDialog(context, data),
-            const Spacer(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  RichText _richTextInRow(List<String> text) {
-    return RichText(
-      text: TextSpan(
-        children: [
-          TextSpan(
-            text: text[0],
-            style: TextStyle(color: greyColor, fontSize: gW(14.0)),
-          ),
-          TextSpan(
-            text: text[1].length > 17 ? text[1].substring(0, 16) : text[1],
-            style: TextStyle(color: Colors.black, fontSize: gW(18.0)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  SendButtonWidget _acceptButtonInShowDialog(
-      BuildContext con, CookerProduct data) {
-    return SendButtonWidget(
-      width: gW(200.0),
-      onPressed: () async {
-        bool isNet = await checkConnectivity();
-        if (isNet) {
-          if (Provider.of<CookerAcceptProductProvider>(con, listen: false)
-                  .numberController
-                  .text
-                  .isNotEmpty &&
-              double.parse(Provider.of<CookerAcceptProductProvider>(con,
-                          listen: false)
-                      .numberController
-                      .text) >
-                  0.0) {
-            double number = (double.parse(
-                    Provider.of<CookerAcceptProductProvider>(con, listen: false)
-                        .numberController
-                        .text) *
-                (data.pack! > 0 ? data.pack! : 1));
-            CookerService()
-                .acceptProduct(
-              id: data.id!,
-              data: ReceiveProductModel(
-                comment:
-                    Provider.of<CookerAcceptProductProvider>(con, listen: false)
-                        .commentController
-                        .text,
-                numberPack: double.parse(
-                    Provider.of<CookerAcceptProductProvider>(con, listen: false)
-                        .numberController
-                        .text),
-                weightPack: number,
-              ),
-            )
-                .then((value) {
-              if (value.success!) {
-                showToast(value.text!.toString(), value.success!, false);
-                toSetState();
-
-                Provider.of<CookerAcceptProductProvider>(con, listen: false)
-                    .changeCurrent(-1);
-                Navigator.pop(con);
-              } else {
-                Navigator.pop(con);
-                showToast(value.text!.toString(), value.success!, false);
-              }
-            });
-          } else {
-            toSetState();
-            showToast("Miqdorni kiriting, nol bolmasin", false, false);
-          }
-        } else {
-          showNoNetToast(false);
-        }
-      },
-      titleOfButton: "Qabul Qilish",
-    );
-  }
-
-  _numberInputField(BuildContext context, CookerProduct data) {
-    return TextFormField(
-      onChanged: (v) {
-        if (double.parse(v) > data.numberPack!) {
-          showToast(
-              "Kiritilgan miqdor keraklisidan oshmasligi kerak", false, false);
-          Provider.of<CookerAcceptProductProvider>(context, listen: false)
-              .clearNumberController();
-        }
-      },
-      keyboardType: TextInputType.number,
-      controller: context.read<CookerAcceptProductProvider>().numberController,
-      decoration: DecorationMy.inputDecoration(
-        "Miqdor...",
-        null,
-      ),
-    );
-  }
-
-  TextField _commentInputField(BuildContext context) {
-    return TextField(
-      onChanged: (v) {},
-      keyboardType: TextInputType.text,
-      controller: context.read<CookerAcceptProductProvider>().commentController,
-      decoration: DecorationMy.inputDecoration(
-        "Izoh...",
-        null,
-      ),
-    );
-  }
-}

@@ -7,11 +7,14 @@ class CookerAcceptProductProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-   TextEditingController numberController = TextEditingController();
+  TextEditingController numberController = TextEditingController();
   TextEditingController commentController = TextEditingController();
   TextEditingController priceController = TextEditingController();
 
-  
+  initNumberController(String v) {
+    numberController.text = v;
+    notifyListeners();
+  }
 
   clearNumberController() {
     numberController.clear();
@@ -24,6 +27,7 @@ class CookerAcceptProductProvider extends ChangeNotifier {
     priceController.clear();
     notifyListeners();
   }
+
   notify() {
     notifyListeners();
   }

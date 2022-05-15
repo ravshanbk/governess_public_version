@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:governess/consts/date_time_picker_function.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:governess/consts/print_my.dart';
 import 'package:governess/consts/strings.dart';
 import 'package:governess/services/network.dart';
@@ -20,7 +20,7 @@ import 'package:governess/services/supplier_service.dart';
 import 'package:governess/ui/widgets/expansion_tile_to_show_product_widget.dart';
 import 'package:governess/ui/widgets/send_button_widger.dart.dart';
 
-// ignore: must_be_immutable//!
+//  ignore: must_be_immutable
 class ToBuyProductsPage extends StatefulWidget {
   ToBuyProductsPage({Key? key}) : super(key: key);
 
@@ -889,15 +889,7 @@ class _ShowDialogDateContent extends StatelessWidget {
                     ),
                     child: const Text("dan..."),
                     onPressed: () {
-                      showDataPicker(context, onDone: (DateTime date) {
-                        Provider.of<FilterToBuyPageProvider>(context,
-                                listen: false)
-                            .initFrom(date);
-                        Provider.of<FilterToBuyPageProvider>(context,
-                                listen: false)
-                            .initTo(date);
-                        _getDataByDateTime(dataw!, context);
-                      });
+                      showDataPicker(context, true);
                     },
                   ),
                 ),
@@ -912,12 +904,7 @@ class _ShowDialogDateContent extends StatelessWidget {
                     ),
                     child: const Text("gacha..."),
                     onPressed: () {
-                      showDataPicker(context, onDone: (DateTime date) {
-                        Provider.of<FilterToBuyPageProvider>(context,
-                                listen: false)
-                            .initTo(date);
-                        _getDataByDateTime(dataw!, context);
-                      });
+                      showDataPicker(context, false);
                     },
                   ),
                 ),
@@ -949,5 +936,43 @@ class _ShowDialogDateContent extends StatelessWidget {
     Provider.of<FilterToBuyPageProvider>(context, listen: false)
         .generateByTimeData(list);
     return m;
+  }
+
+  showDataPicker(BuildContext context, bool isFrom) {
+    DatePicker.showPicker(
+      context,
+      showTitleActions: true,
+      theme: DatePickerTheme(
+        backgroundColor: lightGreyColor,
+        containerHeight: gH(200.0),
+        headerColor: mainColor,
+        itemStyle: const TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.bold,
+          fontSize: 18,
+        ),
+        doneStyle: TextStyle(
+          color: whiteColor,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          letterSpacing: gW(1.5),
+          decoration: TextDecoration.underline,
+        ),
+      ),
+      onConfirm: (date) {
+        if (isFrom) {
+          Provider.of<FilterToBuyPageProvider>(context, listen: false)
+              .initFrom(date);
+          Provider.of<FilterToBuyPageProvider>(context, listen: false)
+              .initTo(date);
+          _getDataByDateTime(dataw!, context);
+        } else {
+          Provider.of<FilterToBuyPageProvider>(context, listen: false)
+              .initTo(date);
+          _getDataByDateTime(dataw!, context);
+        }
+      },
+      locale: LocaleType.en,
+    );
   }
 }

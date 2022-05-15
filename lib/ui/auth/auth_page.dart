@@ -7,6 +7,7 @@ import 'package:governess/services/auth_service.dart';
 import 'package:governess/services/network.dart';
 import 'package:governess/ui/auth/pin_code_page.dart';
 import 'package:governess/ui/widgets/governess_app_bar.dart';
+// ignore: must_be_immutable
 class AuthPage extends StatelessWidget {
   AuthPage({Key? key}) : super(key: key);
 
@@ -14,8 +15,8 @@ class AuthPage extends StatelessWidget {
   final GlobalKey<FormState> formKey = GlobalKey();
   final TextEditingController loginController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController retwritePasswordController =
-      TextEditingController();
+  // final TextEditingController retwritePasswordController =
+  //     TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +108,8 @@ class AuthPage extends StatelessWidget {
         }
       },
       validator: (v) {
-        if (v!.isEmpty) return "Parolni kiriting !!!";
+        if(v!.isEmpty) return "Parolni kiriting !!!";
+        return null;
       },
       controller: passwordController,
       decoration: DecorationMy.inputDecoration("Parol...", null),
@@ -123,6 +125,7 @@ class AuthPage extends StatelessWidget {
       },
       validator: (v) {
         if (v!.isEmpty) return "Loginni kiriting !!!";
+        return null;
       },
       controller: loginController,
       decoration: DecorationMy.inputDecoration("Login...", null),

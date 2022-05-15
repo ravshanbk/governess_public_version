@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:governess/consts/date_time_picker_function.dart';
+
+import 'package:governess/consts/print_my.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/consts/strings.dart';
 import 'package:governess/models/nurse_models/age_group_id_and_number_model.dart';
@@ -7,11 +8,11 @@ import 'package:governess/models/nurse_models/age_group_model.dart';
 import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/providers/nurse/enter_daily_children_page_provider.dart';
 import 'package:governess/services/nurse_service.dart';
-import 'package:governess/ui/widgets/date_time_show_button_widget.dart';
 import 'package:governess/ui/widgets/future_builder_of_no_data_widget.dart';
 import 'package:governess/ui/widgets/indicator_widget.dart';
 import 'package:provider/provider.dart';
 
+// ignore: must_be_immutable
 class NurseEnterDailyChildrenPage extends StatelessWidget {
   int? kGId;
   int? id;
@@ -29,18 +30,23 @@ class NurseEnterDailyChildrenPage extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
+          title: Text(  context.watch<NurseEnterChildrenNumberPageProvider>().when == null
+            ? DTFM.maker(DateTime.now().millisecondsSinceEpoch)
+            : DTFM.maker(context
+                .watch<NurseEnterChildrenNumberPageProvider>()
+                .when!
+                .millisecondsSinceEpoch),
+      ),
           centerTitle: true,
           elevation: 0,
           backgroundColor: mainColor,
-          actions: [
-            _dateTimeShowButton(context),
-          ],
+         
         ),
         backgroundColor: mainColor,
         body: FutureBuilder<List<AgeGroup>>(
           future: NurseService().getAgeGroupList(),
           builder: (BuildContext context, AsyncSnapshot<List<AgeGroup>> snap) {
-            if (snap.connectionState == ConnectionState.done && snap.hasData) {
+            if (snap.connectionState == ConnectionState.done) {
               return _body(context, snap.data!);
             } else if (snap.connectionState == ConnectionState.done &&
                 !snap.hasData) {
@@ -81,8 +87,8 @@ class NurseEnterDailyChildrenPage extends StatelessWidget {
                   height: gH(20.0),
                 ),
                 _enterButton(
-                  context,
-                  () async {
+                  context: context,
+                  onPressed: () async {
                     List<AgeGroupIdAndNumber> v = List.generate(
                       data.length,
                       (index) => AgeGroupIdAndNumber(
@@ -97,6 +103,12 @@ class NurseEnterDailyChildrenPage extends StatelessWidget {
                         ),
                       ),
                     );
+                    p("Servicega kirishdan oldin"+DTFM.maker(
+                        Provider.of<NurseEnterChildrenNumberPageProvider>(
+                                context,
+                                listen: false)
+                            .when!
+                            .millisecondsSinceEpoch));
                     NurseService()
                         .enterDailyChildrenNumber(
                             v: v,
@@ -104,7 +116,7 @@ class NurseEnterDailyChildrenPage extends StatelessWidget {
                                         NurseEnterChildrenNumberPageProvider>(
                                     context,
                                     listen: false)
-                                .when,
+                                .when!,
                             kGId: kGId!)
                         .then(
                       (value) {
@@ -127,8 +139,8 @@ class NurseEnterDailyChildrenPage extends StatelessWidget {
           )
         : Center(
             child: _enterButton(
-              context,
-              () {
+              context: context,
+              onPressed: () {
                 Provider.of<NurseEnterChildrenNumberPageProvider>(context,
                         listen: false)
                     .initControllersAndNodes(data.length);
@@ -148,7 +160,8 @@ class NurseEnterDailyChildrenPage extends StatelessWidget {
     );
   }
 
-  Ink _enterButton(BuildContext context, VoidCallback onPressed) {
+  Ink _enterButton(
+      {required BuildContext context, required VoidCallback onPressed}) {
     return Ink(
       padding: EdgeInsets.all(gW(10.0)),
       height: gH(80),
@@ -286,17 +299,5 @@ class NurseEnterDailyChildrenPage extends StatelessWidget {
     );
   }
 
-  DateTimeShowButton _dateTimeShowButton(BuildContext context) {
-    return DateTimeShowButton(
-      DTFM.maker(context
-          .watch<NurseEnterChildrenNumberPageProvider>()
-          .when
-          .millisecondsSinceEpoch),
-      () {
-        showDataPicker(context, onDone: (date) {
-          context.read<NurseEnterChildrenNumberPageProvider>().changeWhen(date);
-        });
-      },
-    );
-  }
+ 
 }

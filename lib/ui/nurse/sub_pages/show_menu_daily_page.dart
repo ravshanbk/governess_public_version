@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:governess/consts/date_time_picker_function.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/consts/strings.dart';
 import 'package:governess/models/nurse_models/daily_menu_model.dart';
@@ -61,16 +61,46 @@ class _NurseShowDailyMenuPageState extends State<NurseShowDailyMenuPage> {
           () async {
             bool isTherInternet = await checkConnectivity();
             if (isTherInternet) {
-              showDataPicker(context, onDone: (date) {
-                when = date;
-                setState(() {});
-              });
+              showDataPicker(
+                context,
+              );
             } else {
               showNoNetToast(false);
             }
           },
         ),
       ],
+    );
+  }
+
+  showDataPicker(
+    BuildContext context,
+  ) {
+    DatePicker.showPicker(
+      context,
+      showTitleActions: true,
+      theme: DatePickerTheme(
+        backgroundColor: lightGreyColor,
+        containerHeight: gH(200.0),
+        headerColor: mainColor,
+        itemStyle: const TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.bold,
+          fontSize: 18,
+        ),
+        doneStyle: TextStyle(
+          color: whiteColor,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          letterSpacing: gW(1.5),
+          decoration: TextDecoration.underline,
+        ),
+      ),
+      onConfirm: (DateTime date) {
+        when = date;
+        setState(() {});
+      },
+      locale: LocaleType.en,
     );
   }
 }

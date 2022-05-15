@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:governess/consts/date_time_picker_function.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:governess/consts/print_my.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/consts/strings.dart';
 import 'package:governess/models/nurse_models/number_of_children_model.dart';
@@ -31,8 +32,9 @@ class _NurseShowNumberOfChildrenPageState
     return FutureBuilder<NumberOfChildren>(
       future: NurseService().getDailyChildrenNumber(
           Provider.of<NurseEnterChildrenNumberPageProvider>(context,
-                  listen: false)
-              .when),
+                      listen: false)
+                  .when ??
+              DateTime.now()),
       builder: (context, AsyncSnapshot<NumberOfChildren> snap) {
         if (snap.connectionState == ConnectionState.done && snap.hasData) {
           return _body(snap.data!, context);
@@ -131,7 +133,7 @@ class _NurseShowNumberOfChildrenPageState
           gH(52.0),
         ),
       ),
-      onPressed: isSubmitted && !idf
+      onPressed: isSubmitted || idf
           ? null
           : () async {
               bool isEnabledInternet = await checkConnectivity();
@@ -213,20 +215,54 @@ class _NurseShowNumberOfChildrenPageState
 
   DateTimeShowButton _dateTimeShowButton(BuildContext context) {
     return DateTimeShowButton(
-      DTFM.maker(
+      Provider.of<NurseEnterChildrenNumberPageProvider>(context, listen: false)
+                  .when !=
+              null
+          ? DTFM.maker(Provider.of<NurseEnterChildrenNumberPageProvider>(
+                  context,
+                  listen: false)
+              .when!
+              .millisecondsSinceEpoch)
+          : DTFM.maker(DateTime.now().millisecondsSinceEpoch),
+      () {
+        showDataPicker(
+          context,
+        );
+      },
+    );
+  }
+
+  showDataPicker(
+    BuildContext context,
+  ) {
+    DatePicker.showPicker(
+      context,
+      showTitleActions: true,
+      theme: DatePickerTheme(
+        backgroundColor: lightGreyColor,
+        containerHeight: gH(200.0),
+        headerColor: mainColor,
+        itemStyle: const TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.bold,
+          fontSize: 18,
+        ),
+        doneStyle: TextStyle(
+          color: whiteColor,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          letterSpacing: gW(1.5),
+          decoration: TextDecoration.underline,
+        ),
+      ),
+      onConfirm: (date) {
+        p("Children Page: " + DTFM.maker(date.millisecondsSinceEpoch));
         Provider.of<NurseEnterChildrenNumberPageProvider>(context,
                 listen: false)
-            .when
-            .millisecondsSinceEpoch,
-      ),
-      () {
-        showDataPicker(context, onDone: (date) {
-          Provider.of<NurseEnterChildrenNumberPageProvider>(context,
-                  listen: false)
-              .changeWhen(date);
-          setState(() {});
-        });
+            .changeWhen(date);
+        setState(() {});
       },
+      locale: LocaleType.en,
     );
   }
 }

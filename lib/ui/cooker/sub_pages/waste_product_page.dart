@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:governess/consts/date_time_picker_function.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/models/cooker/product_cooker_product.dart';
 import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
@@ -52,17 +52,11 @@ class _CookerWastProductPageState extends State<CookerWastProductPage> {
               actions: [
                 DateTimeShowButton(DTFM.maker(start.millisecondsSinceEpoch),
                     () {
-                  showDataPicker(context, onDone: (DateTime date) {
-                    start = date;
-                    end = date;
-                    setState(() {});
-                  });
+                  showDataPicker(context, true);
                 }),
                 SizedBox(width: gW(50.0)),
                 DateTimeShowButton(DTFM.maker(end.millisecondsSinceEpoch), () {
-                  showDataPicker(context, onDone: (date) {
-                    end = date;
-                  });
+                  showDataPicker(context, false);
                 }),
                 SizedBox(width: gW(23.0)),
               ],
@@ -241,4 +235,39 @@ class _CookerWastProductPageState extends State<CookerWastProductPage> {
         indent: gW(15.0),
         endIndent: gW(15.0),
       );
+
+  showDataPicker(BuildContext context, bool isFrom) {
+    DatePicker.showPicker(
+      context,
+      showTitleActions: true,
+      theme: DatePickerTheme(
+        backgroundColor: lightGreyColor,
+        containerHeight: gH(200.0),
+        headerColor: mainColor,
+        itemStyle: const TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.bold,
+          fontSize: 18,
+        ),
+        doneStyle: TextStyle(
+          color: whiteColor,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          letterSpacing: gW(1.5),
+          decoration: TextDecoration.underline,
+        ),
+      ),
+      onConfirm: (date) {
+        if (isFrom) {
+          start = date;
+          end = date;
+          setState(() {});
+        } else {
+          end = date;
+          setState(() {});
+        }
+      },
+      locale: LocaleType.en,
+    );
+  }
 }

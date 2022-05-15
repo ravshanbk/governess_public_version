@@ -3,6 +3,7 @@ import 'package:governess/consts/size_config.dart';
 import 'package:governess/models/nurse_models/number_of_children_model.dart';
 
 
+// ignore: must_be_immutable
 class NumberOfChildrenWidget extends StatelessWidget {
   NumberOfChildren? data;
   NumberOfChildrenWidget({required this.data, Key? key}) : super(key: key);
@@ -42,7 +43,9 @@ class NumberOfChildrenWidget extends StatelessWidget {
             separatorBuilder: (context, index) {
               return SizedBox(
                 height: gH(5.0),
-                child: Divider(
+                child:
+                // Text(DTFM.maker(data!.perDayList![0].numberOfChildrenDtoList[0].))
+                 Divider(
                   color: mainColor,
                   endIndent: gW(25.0),
                   indent: gW(25.0),

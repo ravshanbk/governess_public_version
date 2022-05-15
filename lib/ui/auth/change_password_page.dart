@@ -8,6 +8,7 @@ import 'package:governess/models/user/change_user_info.dart';
 import 'package:governess/services/auth_service.dart';
 import 'package:governess/ui/widgets/send_button_widger.dart.dart';
 
+// ignore: must_be_immutable
 class ChangePasswordPage extends StatelessWidget {
   ChangePasswordPage({Key? key}) : super(key: key);
 
@@ -104,6 +105,7 @@ class ChangePasswordPage extends StatelessWidget {
               TextFormField(
                 validator: (v) {
                   if (v!.isEmpty) return "Login kiriting";
+                  return null;
                 },
                 controller:
                  loginController,
@@ -125,6 +127,7 @@ class ChangePasswordPage extends StatelessWidget {
               TextFormField(
                 validator: (v) {
                   if (v!.isEmpty) return "Parol kiriting";
+                  return null;
                 },
                 controller:
                    passwordController,
@@ -147,6 +150,7 @@ class ChangePasswordPage extends StatelessWidget {
               TextFormField(
                 validator: (v) {
                   if (v!.isEmpty) return "Parol kiriting";
+                  return null;
                 },
                 controller:
                retwritePasswordController,

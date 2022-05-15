@@ -11,6 +11,7 @@ import 'package:governess/ui/widgets/governess_app_bar.dart';
 import 'package:governess/ui/widgets/pincode_widget.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+// ignore: must_be_immutable
 class CheckingPinCodePage extends StatelessWidget {
   CheckingPinCodePage({Key? key}) : super(key: key);
   TextEditingController controller = TextEditingController();

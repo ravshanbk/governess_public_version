@@ -1,8 +1,10 @@
 import 'package:dio/dio.dart';
+import 'package:governess/consts/print_my.dart';
 import 'package:governess/models/nurse_models/age_group_model.dart';
 import 'package:governess/models/nurse_models/daily_menu_model.dart';
 import 'package:governess/models/nurse_models/number_of_children_model.dart';
 import 'package:governess/models/nurse_models/age_group_id_and_number_model.dart';
+import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/models/other/post_res_model.dart';
 import 'package:governess/services/auth_service.dart';
 
@@ -25,6 +27,8 @@ class NurseService {
     required DateTime date,
     required int kGId,
   }) async {
+    p(date.millisecondsSinceEpoch);
+    p(DTFM.maker(date.millisecondsSinceEpoch));
     try {
       Response res = await Dio().post(
         "${AuthService.localhost}/out/api/perDay?date=${date.millisecondsSinceEpoch}",
@@ -41,9 +45,16 @@ class NurseService {
   }
 
   Future<NumberOfChildren> getDailyChildrenNumber(DateTime date) async {
+    DateTime thisDay = DateTime(date.year, date.month, date.day);
+    // p("GEt daily childrenPage: " + thisDay.millisecondsSinceEpoch.toString());
+    // p("GEt daily childrenPage: " + thisDay.microsecondsSinceEpoch.toString());
+    // p("GEt daily childrenPage: " + DTFM.maker(thisDay.millisecondsSinceEpoch));
+    // p("GEt daily childrenPage: " + thisDay.timeZoneName);
+    int mixedDate = thisDay.millisecondsSinceEpoch + 18000001;
+
     try {
       Response res = await Dio().get(
-        "${AuthService.localhost}/out/api/perDay?date=${date.millisecondsSinceEpoch}",
+        "${AuthService.localhost}/out/api/perDay?date=$mixedDate",
         options: AuthService.option,
       );
       return NumberOfChildren.fromJson(res.data);

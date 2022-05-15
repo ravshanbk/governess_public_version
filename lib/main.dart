@@ -1,5 +1,5 @@
 import 'dart:async';
-// flutter build apk --build-name=1.11 --build-number=11
+// flutter build apk --build-name=1.14 --build-number=14
 import 'package:flutter/material.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/local_storage/boxes.dart';
@@ -77,6 +77,7 @@ void main() async {
   );
 }
 @immutable
+// ignore: must_be_immutable
 class MyApp extends StatefulWidget {
   bool hasInternet;
   MyApp(this.hasInternet, {Key? key}) : super(key: key);

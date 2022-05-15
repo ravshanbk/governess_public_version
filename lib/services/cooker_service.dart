@@ -56,6 +56,26 @@ class CookerService {
   }
 
   Future<List<CookerProduct>> getInOutDefault() async {
+    List<CookerProduct> hardDate = List.generate(
+      12,
+      (index) => CookerProduct(
+        comment: "",
+        enterDate: 1651920125853,
+        id: "5ece38bf-526a-4c7a-ac17-6586e3612819",
+        measurementType: "gramm",
+        numberPack: 1.0,
+        pack: 1.0,
+        price: 1.0,
+        productId: 1,
+        productName: "name $index",
+        senderName: "",
+        status: "",
+        usersId: null,
+        usersName: "",
+        weight: 1.0,
+        weightPack: 1.0,
+      ),
+    );
     List<CookerProduct> data = [];
     try {
       Response<dynamic> res = await Dio().get(
@@ -68,7 +88,8 @@ class CookerService {
           data.add(CookerProduct.fromJson(res.data[i]));
         }
       }
-      return data;
+      // return data;
+      return hardDate;
     } catch (e) {
       throw Exception("CookerService / getInOutDefault: " + e.toString());
     }
@@ -81,6 +102,8 @@ class CookerService {
         "${AuthService.localhost}/out/api/cook/getProductBalancer",
         options: AuthService.option,
       );
+
+      p(res.data);
       return (res.data as List)
           .map((e) => CookerInOutListProduct.fromJson(e))
           .toList();

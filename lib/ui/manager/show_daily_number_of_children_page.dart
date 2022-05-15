@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:governess/consts/date_time_picker_function.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/consts/strings.dart';
 import 'package:governess/models/nurse_models/number_of_children_model.dart';
@@ -19,9 +19,14 @@ class ManagerShowNumberOfChildrenPage extends StatefulWidget {
       _ManagerShowNumberOfChildrenPageState();
 }
 
+
+
+DateTime when = DateTime.now();
+
 class _ManagerShowNumberOfChildrenPageState
     extends State<ManagerShowNumberOfChildrenPage> {
-  DateTime when = DateTime.now();
+ 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,15 +36,12 @@ class _ManagerShowNumberOfChildrenPageState
         backgroundColor: mainColor,
         actions: [
           DateTimeShowButton(DTFM.maker(when.millisecondsSinceEpoch), () {
-            showDataPicker(context, onDone: (date) {
-              when = date;
-              setState(() {});
-            });
+            showDataPicker(context);
           })
         ],
       ),
       body: FutureBuilder<NumberOfChildren>(
-        future: NurseService().getDailyChildrenNumber(when),
+        future:NurseService().getDailyChildrenNumber(when),
         builder: (context, AsyncSnapshot<NumberOfChildren> snap) {
           if (snap.connectionState == ConnectionState.done && snap.hasData) {
             return _body(snap.data!, context);
@@ -93,14 +95,14 @@ class _ManagerShowNumberOfChildrenPageState
           ? null
           : () async {
               ManagerService()
-                  .submitDailyNumberOfChildren(
-                      data.perDayList![0].kindergartenId!)
+                  .submitDailyNumberOfChildren(data.perDayList![0].id!)
                   .then((value) {
                 if (value.success!) {
-                  setState(() {});
                   showToast(value.text!, value.success!, value.success!);
+                  setState(() {});
                 } else {
                   showToast(value.text!, value.success!, value.success!);
+                  setState(() {});
                 }
               });
             },
@@ -111,6 +113,38 @@ class _ManagerShowNumberOfChildrenPageState
           fontSize: gW(20.0),
         ),
       ),
+    );
+  }
+
+  showDataPicker(
+    BuildContext context,
+  ) {
+    DatePicker.showPicker(
+    
+      context,
+      showTitleActions: true,
+      theme: DatePickerTheme(
+        backgroundColor: lightGreyColor,
+        containerHeight: gH(200.0),
+        headerColor: mainColor,
+        itemStyle: const TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.bold,
+          fontSize: 18,
+        ),
+        doneStyle: TextStyle(
+          color: whiteColor,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          letterSpacing: gW(1.5),
+          decoration: TextDecoration.underline,
+        ),
+      ),
+      onConfirm: (date) {
+        when = date;
+        setState(() {});
+      },
+      locale: LocaleType.en,
     );
   }
 }

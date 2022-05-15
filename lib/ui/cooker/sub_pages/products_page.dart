@@ -39,7 +39,7 @@ class CookerProductsPage extends StatelessWidget {
                     builder: (context) {
                       switch (__) {
                         case 0:
-                          return CookerAcceptProductPageTab();
+                          return const CookerAcceptProductPageTab();
                         case 1:
                           return const CookerShowProductsInStoragePage();
                         case 2:

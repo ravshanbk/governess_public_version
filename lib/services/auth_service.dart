@@ -9,8 +9,8 @@ class AuthService {
   static Options option = Options(headers: {
     "Authorization": Boxes.getUser().values.first.token,
   });
-  // static String localhost = "http://185.217.131.117:7788";
-  static String localhost = "http://192.168.68.117:7788";
+  static String localhost = "http://185.217.131.117:7788";
+  // static String localhost = "http://192.168.68.133:7788";
 
   Future<bool> getUser(String login, String password) async {
     User decodedUser;

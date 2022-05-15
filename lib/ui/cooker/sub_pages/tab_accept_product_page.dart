@@ -6,6 +6,8 @@ import 'package:governess/ui/cooker/sub_pages/accept_cooker_page.dart';
 import 'package:provider/provider.dart';
 
 class CookerAcceptProductPageTab extends StatefulWidget {
+  const CookerAcceptProductPageTab({Key? key}) : super(key: key);
+
   @override
   _CookerAcceptProductPageTabState createState() =>
       _CookerAcceptProductPageTabState();
@@ -79,7 +81,7 @@ class _CookerAcceptProductPageTabState extends State<CookerAcceptProductPageTab>
               Expanded(
                 child: TabBarView(
                   controller: _tabController,
-                  children: const  [
+                  children: const [
                     CookerAcceptProductDefaultPage(),
                     CookerAcceptProductByDatePage(),
                   ],
