@@ -1,6 +1,9 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
 
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:governess/consts/print_my.dart';
+
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/consts/strings.dart';
 import 'package:governess/models/nurse_models/age_group_id_and_number_model.dart';
@@ -14,9 +17,11 @@ import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
 class NurseEnterDailyChildrenPage extends StatelessWidget {
-  int? kGId;
+  int kGId;
   int? id;
-  NurseEnterDailyChildrenPage({required this.kGId, required id, Key? key})
+  File? image;
+  NurseEnterDailyChildrenPage(
+      {required this.kGId, this.id, this.image, Key? key})
       : super(key: key);
 
   @override
@@ -30,17 +35,15 @@ class NurseEnterDailyChildrenPage extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text(  context.watch<NurseEnterChildrenNumberPageProvider>().when == null
-            ? DTFM.maker(DateTime.now().millisecondsSinceEpoch)
-            : DTFM.maker(context
+          title: Text(
+            DTFM.maker(context
                 .watch<NurseEnterChildrenNumberPageProvider>()
-                .when!
+                .when
                 .millisecondsSinceEpoch),
-      ),
+          ),
           centerTitle: true,
           elevation: 0,
           backgroundColor: mainColor,
-         
         ),
         backgroundColor: mainColor,
         body: FutureBuilder<List<AgeGroup>>(
@@ -89,7 +92,8 @@ class NurseEnterDailyChildrenPage extends StatelessWidget {
                 _enterButton(
                   context: context,
                   onPressed: () async {
-                    List<AgeGroupIdAndNumber> v = List.generate(
+                    p(image!.path);
+                    List<Map<String, dynamic>> v = List.generate(
                       data.length,
                       (index) => AgeGroupIdAndNumber(
                         id: kGId,
@@ -99,25 +103,41 @@ class NurseEnterDailyChildrenPage extends StatelessWidget {
                                   context,
                                   listen: false)
                               .controllers![index]
+                              .text.isEmpty? '0': Provider.of<NurseEnterChildrenNumberPageProvider>(
+                                  context,
+                                  listen: false)
+                              .controllers![index]
                               .text,
                         ),
-                      ),
+                      ).toJson(),
                     );
-                    p("Servicega kirishdan oldin"+DTFM.maker(
-                        Provider.of<NurseEnterChildrenNumberPageProvider>(
-                                context,
-                                listen: false)
-                            .when!
-                            .millisecondsSinceEpoch));
+                    String fileName = image!.path.split('/').last;
+                    FormData form = FormData.fromMap(
+                      {
+                        'jsonString': {
+                          "kindergartenId": kGId,
+                          "numberOfChildrenDTOList": v,
+                        }.toString(),
+                        'files': await MultipartFile.fromFile(
+                          image!.path,
+                          filename: fileName,
+                        ),
+                      },
+                    );
+                    // Map<String, dynamic>? formData;
+                    // formData!['jsonString'] = {
+                    //   "kindergartenId": kGId,
+                    //   "numberOfChildrenDTOList": [v],
+                    // };
+                    // formData['files'] = image;
                     NurseService()
                         .enterDailyChildrenNumber(
-                            v: v,
-                            date: Provider.of<
-                                        NurseEnterChildrenNumberPageProvider>(
-                                    context,
-                                    listen: false)
-                                .when!,
-                            kGId: kGId!)
+                      formData: form,
+                      date: Provider.of<NurseEnterChildrenNumberPageProvider>(
+                              context,
+                              listen: false)
+                          .when,
+                    )
                         .then(
                       (value) {
                         if (value.success!) {
@@ -298,6 +318,4 @@ class NurseEnterDailyChildrenPage extends StatelessWidget {
       ),
     );
   }
-
- 
 }

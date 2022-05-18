@@ -1,29 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:governess/consts/decorations.dart';
 import 'package:governess/consts/size_config.dart';
-import 'package:governess/consts/strings.dart';
-import 'package:governess/models/cooker/receive_product_model.dart';
 import 'package:governess/models/cooker/to_accept_product_model.dart';
 import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/providers/cooker/accept_product_provider.dart';
-import 'package:governess/services/cooker_service.dart';
-import 'package:governess/services/network.dart';
 import 'package:governess/ui/widgets/cooker_show_product_expansion_tile_widget.dart';
-import 'package:governess/ui/widgets/send_button_widger.dart.dart';
 import 'package:provider/provider.dart';
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 
-class AcceptProductBodyWidget extends StatefulWidget {
+class AcceptProductArxivBodyWidget extends StatefulWidget {
   final List<CookerProduct> data;
-  const AcceptProductBodyWidget({required this.data, Key? key})
+  const AcceptProductArxivBodyWidget({required this.data, Key? key})
       : super(key: key);
 
   @override
-  State<AcceptProductBodyWidget> createState() =>
-      _AcceptProductBodyWidgetState();
+  State<AcceptProductArxivBodyWidget> createState() =>
+      _AcceptProductArxivBodyWidgetState();
 }
 
-class _AcceptProductBodyWidgetState extends State<AcceptProductBodyWidget> {
+class _AcceptProductArxivBodyWidgetState extends State<AcceptProductArxivBodyWidget> {
   static const historyLength = 5;
   List<String> _searchHistory = [];
   List<CookerProduct> filteredSearchResult = [];
@@ -106,6 +100,7 @@ class _AcceptProductBodyWidgetState extends State<AcceptProductBodyWidget> {
   @override
   Widget build(BuildContext context) {
     return FloatingSearchBar(
+    
       controller: controller,
       body: FloatingSearchBarScrollNotifier(
         child: _body(
@@ -202,10 +197,6 @@ class _AcceptProductBodyWidgetState extends State<AcceptProductBodyWidget> {
                             onTap: () {
                               setState(
                                 () {
-                                  Provider.of<CookerAcceptProductProvider>(
-                                          context,
-                                          listen: false)
-                                      .changeCurrent(-1);
                                   extractResult(term);
                                   putSearchTermFirst(term);
                                   selectedTerm = term;
@@ -280,31 +271,7 @@ class _AcceptProductBodyWidgetState extends State<AcceptProductBodyWidget> {
       Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: gW(20.0)),
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                primary: mainColor,
-                elevation: 0,
-                shadowColor: Colors.transparent,
-              ),
-              onPressed: () async {
-                bool isNet = await checkConnectivity();
-                if (isNet) {
-                  Provider.of<CookerAcceptProductProvider>(context,
-                          listen: false)
-                      .clear();
-                  Provider.of<CookerAcceptProductProvider>(context,
-                          listen: false)
-                      .initNumberController(data.numberPack!.toString());
-                  _shownputDialog(context, data);
-                } else {
-                  showNoNetToast(false);
-                }
-              },
-              child: const Text("Qabul qilish"),
-            ),
-          ),
+         
           SizedBox(height: gH(10.0)),
           _textInRow("Korxona nomi", data.senderName.toString()),
           _divider(),
@@ -352,19 +319,7 @@ class _AcceptProductBodyWidgetState extends State<AcceptProductBodyWidget> {
     );
   }
 
-  _shownputDialog(BuildContext context, CookerProduct product) {
-    return showDialog(
-      context: context,
-      builder: (context) {
-        return _AcceptProductDialogContentWidget(
-          data: product,
-          toSetState: () {
-            setState(() {});
-          },
-        );
-      },
-    );
-  }
+ 
 
   Divider _divider() => Divider(
         color: mainColor,
@@ -373,158 +328,3 @@ class _AcceptProductBodyWidgetState extends State<AcceptProductBodyWidget> {
       );
 }
 
-class _AcceptProductDialogContentWidget extends StatelessWidget {
-  final CookerProduct data;
-  final VoidCallback toSetState;
-  const _AcceptProductDialogContentWidget(
-      {required this.toSetState, required this.data, Key? key})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      type: MaterialType.transparency,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: gW(20.0), vertical: gH(15)),
-        margin: EdgeInsets.only(
-          top: gH(0.0),
-          left: gW(10.0),
-          right: gW(10.0),
-          bottom: gH(340.0),
-        ),
-        decoration: BoxDecoration(
-          color: whiteColor,
-          border: Border.all(color: greyColor),
-          borderRadius: BorderRadius.circular(
-            gW(10.0),
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _richTextInRow(["Nomi:  ", data.productName!.toString()]),
-            _richTextInRow(["Yaxlitlash miqdaori:  ", data.pack.toString()]),
-            _richTextInRow(["Nechta:  ", data.numberPack.toString()]),
-            _richTextInRow(["Umumiy:  ", data.weightPack.toString()]),
-            const Spacer(),
-            _numberInputField(context, data),
-            // const Spacer(),
-            // _priceInputField(context),
-            const Spacer(),
-            _commentInputField(context),
-            const Spacer(),
-            _acceptButtonInShowDialog(context, data),
-            const Spacer(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  RichText _richTextInRow(List<String> text) {
-    return RichText(
-      text: TextSpan(
-        children: [
-          TextSpan(
-            text: text[0],
-            style: TextStyle(color: greyColor, fontSize: gW(14.0)),
-          ),
-          TextSpan(
-            text: text[1].length > 17 ? text[1].substring(0, 16) : text[1],
-            style: TextStyle(color: Colors.black, fontSize: gW(18.0)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  SendButtonWidget _acceptButtonInShowDialog(
-      BuildContext con, CookerProduct data) {
-    return SendButtonWidget(
-      width: gW(200.0),
-      onPressed: () async {
-        bool isNet = await checkConnectivity();
-        if (isNet) {
-          if (Provider.of<CookerAcceptProductProvider>(con, listen: false)
-              .numberController
-              .text
-              .isNotEmpty) {
-            double number = (double.parse(
-                    Provider.of<CookerAcceptProductProvider>(con, listen: false)
-                        .numberController
-                        .text) *
-                (data.pack! > 0 ? data.pack! : 1));
-            CookerService()
-                .acceptProduct(
-              id: data.id!,
-              data: ReceiveProductModel(
-                comment:
-                    Provider.of<CookerAcceptProductProvider>(con, listen: false)
-                        .commentController
-                        .text,
-                numberPack: double.parse(
-                    Provider.of<CookerAcceptProductProvider>(con, listen: false)
-                        .numberController
-                        .text),
-                weightPack: number,
-              ),
-            )
-                .then((value) {
-              if (value.success!) {
-                showToast(value.text!.toString(), value.success!, false);
-                toSetState();
-
-                Provider.of<CookerAcceptProductProvider>(con, listen: false)
-                    .changeCurrent(-1);
-                Navigator.pop(con);
-              } else {
-                toSetState();
-
-                showToast(value.text!.toString(), value.success!, false);
-                Navigator.pop(con);
-              }
-            });
-          } else {
-            toSetState();
-
-            showToast("Miqdorni kiriting, nol bolmasin", false, false);
-          }
-        } else {
-          showNoNetToast(false);
-        }
-      },
-      titleOfButton: "Qabul Qilish",
-    );
-  }
-
-  _numberInputField(BuildContext context, CookerProduct data) {
-    return TextFormField(
-      onChanged: (v) {
-        if (double.parse(v) > data.numberPack!) {
-          showToast(
-              "Kiritilgan miqdor keraklisidan oshmasligi kerak", false, false);
-          Provider.of<CookerAcceptProductProvider>(context, listen: false)
-              .clearNumberController();
-        }
-      },
-      keyboardType: TextInputType.number,
-      controller: context.read<CookerAcceptProductProvider>().numberController,
-      decoration: DecorationMy.inputDecoration(
-        "Miqdor...",
-        null,
-      ),
-    );
-  }
-
-  TextField _commentInputField(BuildContext context) {
-    return TextField(
-      onChanged: (v) {},
-      keyboardType: TextInputType.text,
-      controller: context.read<CookerAcceptProductProvider>().commentController,
-      decoration: DecorationMy.inputDecoration(
-        "Izoh...",
-        null,
-      ),
-    );
-  }
-}

@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-import 'package:governess/consts/print_my.dart';
 import 'package:governess/consts/strings.dart';
 import 'package:governess/services/network.dart';
 import 'package:governess/ui/supplier/home_supplier_page.dart';
@@ -459,7 +458,6 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
   }
 
   List<Widget> _children(Product data, BuildContext context) {
-    p(data.weightPack.toString());
     return <Widget>[
       Ink(
         decoration: BoxDecoration(
@@ -663,9 +661,7 @@ class _SendProductShowDialogContentWidget extends StatelessWidget {
                   value:
                       context.watch<ToBuyProductPageProvider>().isCashOnPayment,
                   onChanged: (bool v) {
-                    p(
-                      v.toString(),
-                    );
+                  
                     Provider.of<ToBuyProductPageProvider>(context,
                             listen: false)
                         .changeIsCashOnPayment(v);

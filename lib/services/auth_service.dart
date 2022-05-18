@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:governess/consts/print_my.dart';
 import 'package:governess/local_storage/boxes.dart';
 import 'package:governess/local_storage/user_storage.dart';
 import 'package:governess/models/other/post_res_model.dart';
@@ -9,8 +10,9 @@ class AuthService {
   static Options option = Options(headers: {
     "Authorization": Boxes.getUser().values.first.token,
   });
-  static String localhost = "http://185.217.131.117:7788";
-  // static String localhost = "http://192.168.68.133:7788";
+
+  // static String localhost = "http://185.217.131.117:7788";
+  static String localhost = "http://192.168.141.54:7788";
 
   Future<bool> getUser(String login, String password) async {
     User decodedUser;
@@ -38,8 +40,9 @@ class AuthService {
       } else {
         return false;
       }
-    } catch (e) {
-      return false;
+    } on DioError catch (e) {
+      p(e.response.toString());
+      throw Exception("GEt User: " + e.response.toString());
     }
   }
 

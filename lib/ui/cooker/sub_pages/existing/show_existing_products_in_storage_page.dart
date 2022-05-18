@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/consts/strings.dart';
 import 'package:governess/models/cooker/product_cooker_product.dart';
-import 'package:governess/models/cooker/waste_product_model.dart';
 import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/providers/cooker/waste_product_cooker_page_provider.dart';
 import 'package:governess/services/cooker_service.dart';
@@ -12,6 +11,7 @@ import 'package:governess/ui/widgets/send_button_widger.dart.dart';
 import 'package:governess/ui/widgets/show_in_out_list_product_widget.dart';
 import 'package:governess/ui/widgets/text_in_row_widget.dart';
 import 'package:provider/provider.dart';
+import 'package:governess/models/cooker/waste_product_model.dart';
 
 class CookerShowExistingProductPage extends StatelessWidget {
   const CookerShowExistingProductPage({Key? key}) : super(key: key);
@@ -21,20 +21,22 @@ class CookerShowExistingProductPage extends StatelessWidget {
     SizeConfig().init(context);
     return WillPopScope(
       onWillPop: () {
-Provider.of<WasteProductCookerPageProvider>(context,listen: false).changeCurrent(-1);
-        
-        return Future.value(true);
+        Provider.of<WasteProductCookerPageProvider>(context, listen: false)
+            .changeCurrent(-1);
 
+        return Future.value(true);
       },
       child: Scaffold(
         appBar: AppBar(
           centerTitle: true,
           backgroundColor: mainColor,
           elevation: 0,
-          title: Text(DTFM.maker(DateTime.now().millisecondsSinceEpoch)),
+          title: Text(
+            DTFM.maker(DateTime.now().millisecondsSinceEpoch),
+          ),
         ),
         body: FutureBuilder(
-          future: CookerService().getExistingProduct(),
+          future: future(),
           builder: (context, AsyncSnapshot<List<CookerInOutListProduct>> snap) {
             if (snap.connectionState == ConnectionState.done &&
                 snap.data!.isNotEmpty) {
@@ -52,6 +54,17 @@ Provider.of<WasteProductCookerPageProvider>(context,listen: false).changeCurrent
     );
   }
 
+  Future<List<CookerInOutListProduct>> future() async {
+    DateTime keyOf = DateTime(DateTime.now().year, DateTime.now().month,
+        DateTime.now().day, DateTime.now().hour, DateTime.now().minute);
+    Map<String, List<CookerInOutListProduct>> _cache = {};
+    if (_cache.containsKey(keyOf.millisecondsSinceEpoch.toString())) {
+      return Future.value(_cache[keyOf.millisecondsSinceEpoch.toString()]);
+    } else {
+      return await CookerService().getExistingProduct();
+    }
+  }
+
   ListView _body(BuildContext context, List<CookerInOutListProduct> data) {
     return ListView.separated(
       shrinkWrap: true,
@@ -62,10 +75,12 @@ Provider.of<WasteProductCookerPageProvider>(context,listen: false).changeCurrent
           key: Key("$__ StarageProducts"),
           onChanged: (bool v) {
             if (v) {
-              Provider.of<WasteProductCookerPageProvider>(context, listen: false)
+              Provider.of<WasteProductCookerPageProvider>(context,
+                      listen: false)
                   .changeCurrent(__);
             } else {
-              Provider.of<WasteProductCookerPageProvider>(context, listen: false)
+              Provider.of<WasteProductCookerPageProvider>(context,
+                      listen: false)
                   .changeCurrent(-1);
             }
           },
@@ -116,9 +131,9 @@ Provider.of<WasteProductCookerPageProvider>(context,listen: false).changeCurrent
                 onPressed: () {
                   // p(data[__].productId.toString());
                   // p(data[__].inOutList![index].id!.toString());
-                  // Provider.of<WasteProductCookerPageProvider>(context,
-                  //         listen: false)
-                  //     .clear();
+                  Provider.of<WasteProductCookerPageProvider>(context,
+                          listen: false)
+                      .clear();
                   _showWasteDialog(context, data, __, index);
                 },
                 titleOfButton: "Chiqarish",
@@ -129,15 +144,15 @@ Provider.of<WasteProductCookerPageProvider>(context,listen: false).changeCurrent
               SendButtonWidget(
                 width: gW(130.0),
                 onPressed: () {
-                  CookerService()
-                      .deleteGarbage(data[0].productId!)
-                      .then((value) {
-                    if (value) {
-                      showToast("Muvaffaqiyat", true, false);
-                    } else {
-                      showToast("Chiqarilmadi", false, false);
-                    }
-                  });
+                  CookerService().deleteGarbage(data[0].productId!).then(
+                    (value) {
+                      if (value) {
+                        showToast("Muvaffaqiyat", true, false);
+                      } else {
+                        showToast("Chiqarilmadi", false, false);
+                      }
+                    },
+                  );
                 },
                 titleOfButton: "Bekor qilish",
               ),

@@ -18,7 +18,7 @@ class CheckingPinCodePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SizeConfig().init(context);
+     SizeConfig().init(context);
     return Scaffold(
       appBar: governessAppBar,
       body: _checkPinCodeBody(context),
@@ -44,7 +44,7 @@ class CheckingPinCodePage extends StatelessWidget {
               controller: controller,
               onComplete: (String v) {
                 if (box.values.toList().cast<PinHive>()[0].pinUser == v) {
-                  showToast("Muvaffaqiyat !!!", true,false);
+                  showToast("Muvaffaqiyat !!!", true, false);
 
                   Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
                     builder: (context) {

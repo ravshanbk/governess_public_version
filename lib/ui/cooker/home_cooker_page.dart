@@ -4,7 +4,7 @@ import 'package:governess/consts/strings.dart';
 import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/services/network.dart';
 import 'package:governess/ui/cooker/sub_pages/products_page.dart';
-import 'package:governess/ui/cooker/sub_pages/show_daily_menu_page.dart';
+import 'package:governess/ui/cooker/sub_pages/menu/show_daily_menu_page.dart';
 import 'package:governess/ui/cooker/sub_pages/show_number_of_children_page.dart';
 import 'package:governess/ui/widgets/big_elevate_button_home_page.dart';
 import 'package:governess/ui/widgets/drawer_widget_my.dart';

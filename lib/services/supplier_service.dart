@@ -7,6 +7,7 @@ import 'package:governess/models/supplier/product_model.dart';
 import 'package:governess/services/auth_service.dart';
 
 class SupplierService {
+  
   Future<ProductWithAvailableCompnayNames> getToBuyProducts() async {
     List<Product> data;
     try {
@@ -52,7 +53,7 @@ class SupplierService {
         options: AuthService.option,
       );
       return ResModel.fromJson(res.data);
-    }  on DioError catch (e) {
+    } on DioError catch (e) {
       return ResModel.fromJson(e.response!.data);
     }
   }

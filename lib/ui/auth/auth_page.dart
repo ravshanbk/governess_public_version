@@ -7,16 +7,25 @@ import 'package:governess/services/auth_service.dart';
 import 'package:governess/services/network.dart';
 import 'package:governess/ui/auth/pin_code_page.dart';
 import 'package:governess/ui/widgets/governess_app_bar.dart';
-// ignore: must_be_immutable
-class AuthPage extends StatelessWidget {
-  AuthPage({Key? key}) : super(key: key);
 
+// ignore: must_be_immutable
+class AuthPage extends StatefulWidget {
+  const AuthPage({Key? key}) : super(key: key);
+
+  @override
+  State<AuthPage> createState() => _AuthPageState();
+}
+
+class _AuthPageState extends State<AuthPage> {
   bool isInProgress = false;
+
   final GlobalKey<FormState> formKey = GlobalKey();
+
   final TextEditingController loginController = TextEditingController();
+
   final TextEditingController passwordController = TextEditingController();
-  // final TextEditingController retwritePasswordController =
-  //     TextEditingController();
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -64,11 +73,15 @@ class AuthPage extends StatelessWidget {
       onPressed: isInProgress
           ? null
           : () async {
+            
               bool isInternet = await checkConnectivity();
               if (isInternet) {
+                 setState(() {
+                   isInProgress = true;
+                 });
                 if (loginController.text.isNotEmpty &&
                     passwordController.text.isNotEmpty) {
-                  isInProgress = true;
+                 
 
                   AuthService()
                       .getUser(loginController.text, passwordController.text)
@@ -77,8 +90,8 @@ class AuthPage extends StatelessWidget {
                       if (value) {
                         showToast("Muvaffaqiyat !!!", true, false);
 
-                        isInProgress = false;
-
+                       
+ isInProgress = false;
                         Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(
@@ -86,7 +99,11 @@ class AuthPage extends StatelessWidget {
                             ),
                             (route) => false);
                       } else {
+                         isInProgress = false;
                         showToast("Nimadir hato bo'ldi", false, false);
+                        setState(() {
+                          
+                        });
                       }
                     },
                   );
@@ -108,7 +125,7 @@ class AuthPage extends StatelessWidget {
         }
       },
       validator: (v) {
-        if(v!.isEmpty) return "Parolni kiriting !!!";
+        if (v!.isEmpty) return "Parolni kiriting !!!";
         return null;
       },
       controller: passwordController,

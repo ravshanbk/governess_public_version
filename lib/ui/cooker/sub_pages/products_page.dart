@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/consts/strings.dart';
 import 'package:governess/services/network.dart';
-import 'package:governess/ui/cooker/sub_pages/cooker_show_products_in_storage_page.dart.dart';
-import 'package:governess/ui/cooker/sub_pages/show_products_in_storage_page.dart';
-import 'package:governess/ui/cooker/sub_pages/tab_accept_product_page.dart';
-import 'package:governess/ui/cooker/sub_pages/waste_product_page.dart';
+import 'package:governess/ui/cooker/sub_pages/in_storage/show_products_in_storage_page.dart.dart';
+import 'package:governess/ui/cooker/sub_pages/existing/show_existing_products_in_storage_page.dart';
+import 'package:governess/ui/cooker/sub_pages/accept/tab_accept_product_page.dart';
+import 'package:governess/ui/cooker/sub_pages/waste/waste_product_page.dart';
 
 class CookerProductsPage extends StatelessWidget {
   const CookerProductsPage({Key? key}) : super(key: key);

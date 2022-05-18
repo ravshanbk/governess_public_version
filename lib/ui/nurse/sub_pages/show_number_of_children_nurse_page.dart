@@ -1,6 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-import 'package:governess/consts/print_my.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/consts/strings.dart';
 import 'package:governess/models/nurse_models/number_of_children_model.dart';
@@ -15,6 +16,7 @@ import 'package:governess/ui/widgets/future_builder_of_no_data_widget.dart';
 import 'package:governess/ui/widgets/indicator_widget.dart';
 import 'package:governess/ui/widgets/number_of_children_widget.dart';
 import 'package:governess/services/nurse_service.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 class NurseShowNumberOfChildrenPage extends StatefulWidget {
@@ -27,14 +29,42 @@ class NurseShowNumberOfChildrenPage extends StatefulWidget {
 
 class _NurseShowNumberOfChildrenPageState
     extends State<NurseShowNumberOfChildrenPage> {
+  dynamic _pickImageError;
+ 
+  File? file;
+  final ImagePicker _picker = ImagePicker();
+  File? _file;
+  
+
+  void _setImageFileListFromFile(XFile? value) {
+     file = File(value!.path);
+    _file = File(value.path);
+  }
+
+  Future<void> _onImageButtonPressed({BuildContext? context}) async {
+    await _displayPickImageDialog(context!, (ImageSource source) async {
+      try {
+        final XFile? pickedFile = await _picker.pickImage(
+          source: source,
+        );
+        setState(() {
+          _setImageFileListFromFile(pickedFile);
+        });
+      } catch (e) {
+        setState(() {
+          _pickImageError = e;
+        });
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<NumberOfChildren>(
       future: NurseService().getDailyChildrenNumber(
           Provider.of<NurseEnterChildrenNumberPageProvider>(context,
-                      listen: false)
-                  .when ??
-              DateTime.now()),
+                  listen: false)
+              .when),
       builder: (context, AsyncSnapshot<NumberOfChildren> snap) {
         if (snap.connectionState == ConnectionState.done && snap.hasData) {
           return _body(snap.data!, context);
@@ -50,8 +80,8 @@ class _NurseShowNumberOfChildrenPageState
   }
 
   _body(NumberOfChildren data, BuildContext context) {
-    bool idf = data.perDayList![0].id == null;
-    bool isSubmitted = data.perDayList![0].status.toString() == 'TASDIQLANDI';
+    bool isSubmitted = data.perDayList![0].status.toString() == 'TASDIQLANDI' ||
+        data.perDayList![0].id == null;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -68,16 +98,63 @@ class _NurseShowNumberOfChildrenPageState
           top: gH(20.0),
         ),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             NumberOfChildrenWidget(data: data),
             SizedBox(height: gH(20.0)),
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                _changeDailyChildrenButton(
-                  data: data,
-                  idf: idf,
-                  isSubmitted: isSubmitted,
+                ElevatedButton(
+                  child: _buttonChild("O'zgartirish"),
+                  style: _buttonStyle(),
+                  onPressed: isSubmitted || _file == null
+                      ? null
+                      : () async {
+                          bool isEnabledInternet = await checkConnectivity();
+
+                          await Future.delayed(
+                              const Duration(microseconds: 200), () {
+                            return List.generate(
+                                data.perDayList![0].numberOfChildrenDtoList!
+                                    .length,
+                                (index) => data
+                                            .perDayList![0]
+                                            .numberOfChildrenDtoList![index]
+                                            .number
+                                            .toString() ==
+                                        "null"
+                                    ? ""
+                                    : data.perDayList![0]
+                                        .numberOfChildrenDtoList![index].number
+                                        .toString());
+                          }).then(
+                            (value) => Provider.of<
+                                        NurseChangeChildrenNumberPageProvider>(
+                                    context,
+                                    listen: false)
+                                .initControllersAndNodes(value),
+                          );
+                          if (isEnabledInternet) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    NurseEditDailyChildrenPage(
+                                  data,
+                                ),
+                              ),
+                            ).then((value) {
+                              setState(() {});
+                            });
+                          } else {
+                            showToast(
+                              "Qurilma Internet Tarmog'iga Ulanmagan",
+                              false,
+                              true,
+                            );
+                          }
+                        },
                 ),
               ],
             ),
@@ -85,145 +162,112 @@ class _NurseShowNumberOfChildrenPageState
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                _enterDailyChildrenButton(
-                    callBack: () async {
-                      bool isEnabledInternet = await checkConnectivity();
-                      if (isEnabledInternet) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => NurseEnterDailyChildrenPage(
-                              kGId: data.perDayList![0].kindergartenId!,
-                              id: data.perDayList![0].id,
+                ElevatedButton(
+                  child: _buttonChild("Kiritish"),
+                  style: _buttonStyle(),
+                  onPressed: !isSubmitted || _file == null
+                      ? null
+                      : () async {
+                          bool isEnabledInternet = await checkConnectivity();
+                          if (isEnabledInternet) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    NurseEnterDailyChildrenPage(
+                                  kGId: data.perDayList![0].kindergartenId!,
+                                  id: data.perDayList![0].id,
+                                  image: _file!,
+                                ),
+                              ),
+                            ).then((value) {
+                              setState(() {});
+                            });
+                          } else {
+                            showNoNetToast(false);
+                          }
+                        },
+                ),
+              ],
+            ),
+            SizedBox(
+              height: gH(20),
+            ),
+            _file == null && _pickImageError == null
+                ? const SizedBox()
+                : (_pickImageError != null
+                    ? Center(
+                        child: Text(_pickImageError.toString()),
+                      )
+                    : Ink(
+                        height: gH(350),
+                        width: gW(240.0),
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: FileImage(
+                              _file!,
+                            ),
+                            fit: BoxFit.cover,
+                            
+                          ),
+                          borderRadius: BorderRadius.circular(gW(5.0)),
+                          border: Border.all(
+                            color: mainColor,
+                            width: gW(
+                              2.0,
                             ),
                           ),
-                        ).then((value) {
-                          setState(() {});
-                        });
-                      } else {
-                        showNoNetToast(false);
-                      }
-                    },
-                    title: "Kiritish",
-                    idf: !idf),
-              ],
-            )
+                        ),
+                      )),
           ],
         ),
       ),
-    );
-  }
-
-  _changeDailyChildrenButton({
-    required NumberOfChildren data,
-    required bool idf,
-    required bool isSubmitted,
-  }) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(
-            gW(10.0),
-          ),
-        ),
-        primary: mainColor,
-        elevation: 0,
-        fixedSize: Size(
-          gW(180.0),
-          gH(52.0),
-        ),
-      ),
-      onPressed: isSubmitted || idf
-          ? null
-          : () async {
-              bool isEnabledInternet = await checkConnectivity();
-
-              await Future.delayed(const Duration(microseconds: 200), () {
-                return List.generate(
-                    data.perDayList![0].numberOfChildrenDtoList!.length,
-                    (index) => data.perDayList![0]
-                                .numberOfChildrenDtoList![index].number
-                                .toString() ==
-                            "null"
-                        ? ""
-                        : data.perDayList![0].numberOfChildrenDtoList![index]
-                            .number
-                            .toString());
-              }).then(
-                (value) => Provider.of<NurseChangeChildrenNumberPageProvider>(
-                        context,
-                        listen: false)
-                    .initControllersAndNodes(value),
-              );
-              if (isEnabledInternet) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => NurseEditDailyChildrenPage(
-                      data,
-                    ),
-                  ),
-                ).then((value) {
-                  setState(() {});
-                });
-              } else {
-                showToast(
-                  "Qurilma Internet Tarmog'iga Ulanmagan",
-                  false,
-                  true,
-                );
-              }
-            },
-      child: Text(
-        "O'zgartirish",
-        style: TextStyle(
-          letterSpacing: gW(2.0),
-          fontSize: gW(20.0),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: mainColor,
+        onPressed: () {
+          _onImageButtonPressed(context: context);
+        },
+        // onPressed: () => getImage(ImageSource.camera),
+        child: Icon(
+          Icons.camera_alt_outlined,
+          size: gW(30.0),
         ),
       ),
     );
   }
 
-  ElevatedButton _enterDailyChildrenButton(
-      {required VoidCallback callBack,
-      required String title,
-      required bool idf}) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(
-            gW(10.0),
-          ),
-        ),
-        primary: mainColor,
-        elevation: 0,
-        fixedSize: Size(
-          gW(180.0),
-          gH(52.0),
+  Text _buttonChild(String title) {
+    return Text(
+      title,
+      style: TextStyle(
+        letterSpacing: gW(2.0),
+        fontSize: gW(20.0),
+      ),
+    );
+  }
+
+  _buttonStyle() {
+    return ElevatedButton.styleFrom(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(
+          gW(10.0),
         ),
       ),
-      onPressed: idf ? null : callBack,
-      child: Text(
-        title,
-        style: TextStyle(
-          letterSpacing: gW(2.0),
-          fontSize: gW(20.0),
-        ),
+      primary: mainColor,
+      elevation: 0,
+      fixedSize: Size(
+        gW(180.0),
+        gH(52.0),
       ),
     );
   }
 
   DateTimeShowButton _dateTimeShowButton(BuildContext context) {
     return DateTimeShowButton(
-      Provider.of<NurseEnterChildrenNumberPageProvider>(context, listen: false)
-                  .when !=
-              null
-          ? DTFM.maker(Provider.of<NurseEnterChildrenNumberPageProvider>(
-                  context,
-                  listen: false)
-              .when!
-              .millisecondsSinceEpoch)
-          : DTFM.maker(DateTime.now().millisecondsSinceEpoch),
+      DTFM.maker(Provider.of<NurseEnterChildrenNumberPageProvider>(context,
+              listen: false)
+          .when
+          .millisecondsSinceEpoch),
       () {
         showDataPicker(
           context,
@@ -256,7 +300,6 @@ class _NurseShowNumberOfChildrenPageState
         ),
       ),
       onConfirm: (date) {
-        p("Children Page: " + DTFM.maker(date.millisecondsSinceEpoch));
         Provider.of<NurseEnterChildrenNumberPageProvider>(context,
                 listen: false)
             .changeWhen(date);
@@ -265,4 +308,107 @@ class _NurseShowNumberOfChildrenPageState
       locale: LocaleType.en,
     );
   }
+
+  Future<void> _displayPickImageDialog(
+      BuildContext context, OnPickImageCallback onPick) async {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          // clipBehavior: Clip.hardEdge,
+          title: const Text('Add optional parameters'),
+          content: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              ElevatedButton(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Icon(
+                      Icons.camera_alt_outlined,
+                      color: Colors.grey,
+                      size: 30,
+                    ),
+                    SizedBox(
+                      width: 20,
+                    ),
+                    Text(
+                      'Kamera',
+                      style: TextStyle(
+                        fontSize: 22.0,
+                        color: Color.fromRGBO(66, 66, 66, 1),
+                      ),
+                    ),
+                  ],
+                ),
+                onPressed: () {
+                  onPick(ImageSource.camera);
+                  Navigator.of(context).pop();
+                },
+                style: ElevatedButton.styleFrom(
+                  fixedSize: const Size(250.0, 62),
+                  primary: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    side: const BorderSide(color: Colors.green),
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 20.0,
+              ),
+              ElevatedButton(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Icon(
+                      Icons.image_outlined,
+                      color: Colors.grey,
+                      size: 30,
+                    ),
+                    SizedBox(
+                      width: 20,
+                    ),
+                    Text(
+                      'Galereya',
+                      style: TextStyle(
+                        fontSize: 22.0,
+                        color: Color.fromRGBO(66, 66, 66, 1),
+                      ),
+                    ),
+                  ],
+                ),
+                onPressed: () {
+                  onPick(ImageSource.gallery);
+                  Navigator.of(context).pop();
+                },
+                style: ElevatedButton.styleFrom(
+                  fixedSize: const Size(250.0, 62),
+                  primary: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    side: const BorderSide(color: Colors.green),
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            ElevatedButton(
+              child: const Text('BEKOR QILISH'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
+
+typedef OnPickImageCallback = void Function(ImageSource source);

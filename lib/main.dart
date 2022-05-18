@@ -121,7 +121,7 @@ class _MyAppState extends State<MyApp> {
 
   _body() {
     return Boxes.getUser().values.isEmpty || Boxes.getPinUser().values.isEmpty
-        ? AuthPage()
+        ? const AuthPage()
         : CheckingPinCodePage();
   }
 

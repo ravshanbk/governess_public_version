@@ -11,6 +11,7 @@ import 'package:governess/services/auth_service.dart';
 class CookerService {
   Future<ResModel> acceptProduct(
       {required ReceiveProductModel data, required String id}) async {
+    p(AuthService.option);
     try {
       Response res = await Dio(BaseOptions()).put(
         "${AuthService.localhost}/out/api/cook/receive/$id",
@@ -32,6 +33,26 @@ class CookerService {
     required DateTime startt,
     required DateTime endd,
   }) async {
+    List<CookerProduct> hardDate = List.generate(
+      12,
+      (index) => CookerProduct(
+        comment: "",
+        enterDate: 1651920125853,
+        id: "5ece38bf-526a-4c7a-ac17-6586e3612819",
+        measurementType: "gramm",
+        numberPack: 1.0,
+        pack: 1.0,
+        price: 1.0,
+        productId: 1,
+        productName: "name $index",
+        senderName: "",
+        status: "",
+        usersId: null,
+        usersName: "",
+        weight: 1.0,
+        weightPack: 1.0,
+      ),
+    );
     DateTime start = DateTime(startt.year, startt.month, startt.day);
     DateTime end = DateTime(endd.year, endd.month, endd.day);
     p(start.toIso8601String());
@@ -48,7 +69,8 @@ class CookerService {
           data.add(CookerProduct.fromJson(res.data[i]));
         }
       }
-      return data;
+      // return data;
+      return hardDate;
     } catch (e) {
       throw Exception(
           "CookerService / getSentProductFromWarehouse: " + e.toString());
@@ -67,7 +89,7 @@ class CookerService {
         pack: 1.0,
         price: 1.0,
         productId: 1,
-        productName: "name $index",
+        productName: index % 2 == 0 ? "buzz" : "biss",
         senderName: "",
         status: "",
         usersId: null,
@@ -103,7 +125,7 @@ class CookerService {
         options: AuthService.option,
       );
 
-      p(res.data);
+      p("Target: " + res.data.toString());
       return (res.data as List)
           .map((e) => CookerInOutListProduct.fromJson(e))
           .toList();
@@ -115,6 +137,26 @@ class CookerService {
   }
 
   Future<List<CookerInOutListProduct>> getExistingProduct() async {
+    // List<CookerInOutListProduct> _hardDate = List.generate(
+    //   12,
+    //   (index) => CookerInOutListProduct(
+    //     inOutList: [
+    //       InOutList(
+    //         enterDate: 1651920125853,
+    //         id: "5ece38bf-526a-4c7a-ac17-6586e3612819",
+    //         measurementType: "gramm",
+    //         numberPack: 1,
+    //         pack: 1,
+    //         price: 1,
+    //         status: "",
+    //         weightPack: 1,
+    //       )
+    //     ],
+    //     productId: 1,
+    //     productName: "name $index",
+    //     weight: 212.0,
+    //   ),
+    // );
     try {
       Response res = await Dio().get(
         // ZAHIRADAGI
@@ -124,6 +166,7 @@ class CookerService {
       return (res.data as List)
           .map((e) => CookerInOutListProduct.fromJson(e))
           .toList();
+      // return _hardDate;
     } catch (e) {
       throw Exception(
           "InOutListProductService / getAvailableProductsInStorage: " +

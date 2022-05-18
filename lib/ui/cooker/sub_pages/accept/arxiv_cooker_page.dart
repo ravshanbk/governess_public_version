@@ -8,20 +8,21 @@ import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/providers/cooker/accept_product_provider.dart';
 import 'package:governess/services/cooker_service.dart';
 import 'package:governess/services/network.dart';
+import 'package:governess/ui/cooker/sub_pages/accept/accept_product_arxiv_body_widget.dart';
 import 'package:governess/ui/widgets/cooker_show_product_expansion_tile_widget.dart';
 import 'package:governess/ui/widgets/date_time_show_button_widget.dart';
 import 'package:provider/provider.dart';
 
-class CookerAcceptProductByDatePage extends StatefulWidget {
-  const CookerAcceptProductByDatePage({Key? key}) : super(key: key);
+class CookerAcceptProductArxivPage extends StatefulWidget {
+  const CookerAcceptProductArxivPage({Key? key}) : super(key: key);
 
   @override
-  State<CookerAcceptProductByDatePage> createState() =>
-      _CookerAcceptProductByDatePageState();
+  State<CookerAcceptProductArxivPage> createState() =>
+      _CookerAcceptProductArxivPageState();
 }
 
-class _CookerAcceptProductByDatePageState
-    extends State<CookerAcceptProductByDatePage> {
+class _CookerAcceptProductArxivPageState
+    extends State<CookerAcceptProductArxivPage> {
   DateTime start = DateTime.now();
   DateTime end = DateTime.now();
 
@@ -62,6 +63,7 @@ class _CookerAcceptProductByDatePageState
   Widget build(BuildContext context) {
     return Scaffold(
       body: CustomScrollView(
+        shrinkWrap: true,
         physics: const BouncingScrollPhysics(),
         slivers: [
           _sliverAppBAr(context),
@@ -101,10 +103,13 @@ class _CookerAcceptProductByDatePageState
                       ),
                     );
                   } else {
-                    return _body(
-                      snap,
-                      context,
-                    );
+                    return
+                        //  _body(snap, context);
+                        SizedBox(
+                            height: 590,
+                            width: 335,
+                            child: AcceptProductArxivBodyWidget(
+                                key: const Key("Arxiv"), data: snap.data!));
                   }
                 } else {
                   return Center(
@@ -131,10 +136,9 @@ class _CookerAcceptProductByDatePageState
 
   SliverAppBar _sliverAppBAr(BuildContext context) {
     return SliverAppBar(
-      floating: true,
-      pinned: false,
+      pinned: true,
       automaticallyImplyLeading: false,
-      backgroundColor: Colors.transparent,
+      backgroundColor: Colors.white,
       elevation: 0,
       shadowColor: whiteColor,
       leadingWidth: 0.0,
@@ -276,7 +280,4 @@ class _CookerAcceptProductByDatePageState
       ),
     );
   }
-
- 
 }
-

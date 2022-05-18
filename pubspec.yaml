@@ -25,6 +25,7 @@ dependencies:
   google_fonts: ^2.3.0
   pin_code_fields: ^7.4.0
   material_floating_search_bar: ^0.3.7
+  image_picker: ^0.8.5+3
 
 
  

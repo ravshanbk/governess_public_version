@@ -8,16 +8,15 @@ import 'package:governess/models/nurse_models/daily_menu_model.dart';
 // ignore: must_be_immutable
 class MealWidget extends StatelessWidget {
   MealAgeStandardResponseSaveDtoList? data;
- MealWidget({
+  MealWidget({
     Key? key,
-   required this.data,
+    required this.data,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-  
     return ListTile(
-      tileColor:whiteColor,
+      tileColor: whiteColor,
       minVerticalPadding: 0.0,
       contentPadding: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
@@ -46,7 +45,6 @@ class MealWidget extends StatelessWidget {
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (_, __) {
-              
               return _rowData(
                   data!.ageStandardResponseSaveDtoList![__].ageGroupName
                       .toString(),
@@ -67,7 +65,6 @@ class MealWidget extends StatelessWidget {
         ],
       ),
     );
-    
   }
 
   Text _text18grey(String text) {
@@ -81,14 +78,16 @@ class MealWidget extends StatelessWidget {
     return Ink(
       height: gH(280.0),
       decoration: BoxDecoration(
-        border:data.image != null?null: Border.fromBorderSide(BorderSide(color: mainColor)),
+        border: data._file != null
+            ? null
+            : Border.fromBorderSide(BorderSide(color: mainColor)),
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(gW(10.0)),
         ),
-        image: data.image != null
+        image: data._file != null
             ? DecorationImage(
                 image: MemoryImage(
-                  base64.decode(data.image!),
+                  base64.decode(data._file!),
                 ),
                 fit: BoxFit.cover,
               )

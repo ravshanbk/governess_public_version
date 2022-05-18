@@ -269,14 +269,9 @@ class _ShowDialogDateContent extends StatelessWidget {
                       await UserHive().logOutUser();
                       Navigator.pushAndRemoveUntil(
                           context,
-                          MaterialPageRoute(builder: (context) => AuthPage()),
+                          MaterialPageRoute(
+                              builder: (context) => const AuthPage()),
                           (route) => false);
-
-                      // Navigator.pushAndRemoveUntil(
-                      //     context,
-                      //     MaterialPageRoute(
-                      //         builder: (context) => const AuthPage()),
-                      //     (route) => false);
                     },
                   ),
                 ),

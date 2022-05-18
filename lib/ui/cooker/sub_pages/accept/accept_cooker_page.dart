@@ -45,7 +45,7 @@ class _CookerAcceptProductDefaultPageState
                 ),
               );
             } else {
-              return AcceptProductBodyWidget(data: snap.data!);
+              return AcceptProductBodyWidget(key:const  Key("Accept"),data: snap.data!);
             }
           } else {
             return Center(

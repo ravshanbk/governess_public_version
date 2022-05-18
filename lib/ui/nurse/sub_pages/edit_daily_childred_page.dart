@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:governess/consts/decorations.dart';
 import 'package:governess/consts/size_config.dart';
@@ -11,8 +14,13 @@ import 'package:provider/provider.dart';
 
 class NurseEditDailyChildrenPage extends StatelessWidget {
   final NumberOfChildren data;
+  File? image;
 
-  const NurseEditDailyChildrenPage(this.data, {Key? key}) : super(key: key);
+  NurseEditDailyChildrenPage(
+    this.data, {
+    Key? key,
+    this.image,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +82,10 @@ class NurseEditDailyChildrenPage extends StatelessWidget {
         return Future.value(true);
       },
       child: Scaffold(
-      appBar: AppBar(backgroundColor:mainColor,elevation: 0,),
+        appBar: AppBar(
+          backgroundColor: mainColor,
+          elevation: 0,
+        ),
         resizeToAvoidBottomInset: false,
         body: Form(
           key: context.read<NurseChangeChildrenNumberPageProvider>().formKey,
@@ -116,8 +127,8 @@ class NurseEditDailyChildrenPage extends StatelessWidget {
     );
   }
 
-   _addButton(BuildContext context) {
-   return  ElevatedButton(
+  _addButton(BuildContext context) {
+    return ElevatedButton(
       style: ElevatedButton.styleFrom(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(
@@ -131,28 +142,48 @@ class NurseEditDailyChildrenPage extends StatelessWidget {
           gH(62.0),
         ),
       ),
-      onPressed:() async {
+      onPressed: () async {
         if (Provider.of<NurseChangeChildrenNumberPageProvider>(context,
                 listen: false)
             .formKey
             .currentState!
             .validate()) {
-          List<AgeGroupIdAndNumber> v = List.generate(
+          List<Map<String, dynamic>> v = List.generate(
             data.perDayList![0].numberOfChildrenDtoList!.length,
             (index) {
               return AgeGroupIdAndNumber(
                 ageGroupId: data
                     .perDayList![0].numberOfChildrenDtoList![index].ageGroupId,
                 number: int.parse(
-                    Provider.of<NurseChangeChildrenNumberPageProvider>(context,
-                            listen: false)
-                        .controllers[index]
-                        .text),
-              );
+                  Provider.of<NurseChangeChildrenNumberPageProvider>(context,
+                              listen: false)
+                          .controllers[index]
+                          .text
+                          .isEmpty
+                      ? '0'
+                      : Provider.of<NurseChangeChildrenNumberPageProvider>(
+                              context,
+                              listen: false)
+                          .controllers[index]
+                          .text,
+                ),
+              ).toJson();
+            },
+          );
+          String fileName = image!.path.split('/').last;
+          FormData form = FormData.fromMap(
+            {
+              'jsonString': {
+                "numberOfChildrenDTOList": v,
+              }.toString(),
+              'files': await MultipartFile.fromFile(
+                image!.path,
+                filename: fileName,
+              ),
             },
           );
           NurseService()
-              .changeDailyChildrenNumber(v, data.perDayList![0].id!)
+              .changeDailyChildrenNumber(form, data.perDayList![0].id!)
               .then(
             (value) {
               if (value.success!) {
@@ -176,6 +207,5 @@ class NurseEditDailyChildrenPage extends StatelessWidget {
         ),
       ),
     );
-   
   }
 }

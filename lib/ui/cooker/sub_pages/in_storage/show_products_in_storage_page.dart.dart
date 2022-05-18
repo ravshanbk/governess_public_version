@@ -1,24 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:governess/consts/print_my.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/models/cooker/product_cooker_product.dart';
 import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/providers/cooker/show_in_out_list_product_provider.dart';
+import 'package:governess/services/auth_service.dart';
 import 'package:governess/services/cooker_service.dart';
 import 'package:governess/ui/widgets/indicator_widget.dart';
 import 'package:governess/ui/widgets/show_in_out_list_product_widget.dart';
 import 'package:governess/ui/widgets/text_in_row_widget.dart';
 import 'package:provider/provider.dart';
 
-class CookerShowProductsInStoragePage extends StatefulWidget {
+class CookerShowProductsInStoragePage extends StatelessWidget {
   const CookerShowProductsInStoragePage({Key? key}) : super(key: key);
-
-  @override
-  State<CookerShowProductsInStoragePage> createState() => _CookerShowProductsInStoragePageState();
-}
-
-class _CookerShowProductsInStoragePageState extends State<CookerShowProductsInStoragePage> {
   @override
   Widget build(BuildContext context) {
+     p(AuthService.option);
     SizeConfig().init(context);
     return WillPopScope(
       onWillPop: () {
@@ -40,21 +37,10 @@ class _CookerShowProductsInStoragePageState extends State<CookerShowProductsInSt
             if (snap.connectionState == ConnectionState.done) {
               // ignore: prefer_is_empty
               if (snap.data!.length < 1) {
-                return Center(
-                  child: Column(children: [
-                    IconButton(
-                      onPressed: () {
-                        setState(() {
-                          
-                        });
-                        
-                      },
-                      icon:const  Icon(Icons.refresh),
-                    ),
-                  ]),
-                );
+                return const Center(child: Text("Mahsulotlar mavjud emas"));
               }
-              return _body(context, snap.data!);
+              return _body(context: context, data: snap.data!);
+              //  CookerInStorageSearchPage(data: snap.data!);
             } else {
               return IndicatorWidget(snap);
             }
@@ -64,11 +50,13 @@ class _CookerShowProductsInStoragePageState extends State<CookerShowProductsInSt
     );
   }
 
-  ListView _body(BuildContext context, List<CookerInOutListProduct> data) {
+  ListView _body(
+      {required BuildContext context,
+      required List<CookerInOutListProduct> data}) {
     return ListView.separated(
       shrinkWrap: true,
       physics: const BouncingScrollPhysics(),
-      padding: EdgeInsets.symmetric(horizontal: gW(10.0), vertical: gH(20.0)),
+      padding: EdgeInsets.only(top: gH(20.0), left: gW(20.0), right: gW(20.0)),
       itemBuilder: (_, __) {
         return ShowInOutListProductWidget(
           onChanged: (bool v) {
@@ -87,6 +75,7 @@ class _CookerShowProductsInStoragePageState extends State<CookerShowProductsInSt
             data[__].inOutList!.length,
             (index) => Card(
               child: ExpansionTile(
+                key: Key("key $index"),
                 collapsedIconColor: Colors.transparent,
                 iconColor: Colors.transparent,
                 textColor: Colors.black,
