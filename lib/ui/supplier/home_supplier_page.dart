@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/consts/strings.dart';
@@ -13,6 +12,7 @@ class SupplierHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     SizeConfig().init(context);
     List<String> doings = [
       "Harid Qilinadigan Mahsulotlar",

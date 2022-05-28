@@ -19,6 +19,7 @@ class CookerHomePage extends StatelessWidget {
   ];
   @override
   Widget build(BuildContext context) {
+   
     SizeConfig().init(context);
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -35,7 +36,7 @@ class CookerHomePage extends StatelessWidget {
         actions: [
           Builder(
             builder: (context) => IconButton(
-              icon: const Icon(Icons.more_vert),
+              icon: const Icon(Icons.info_outline),
               onPressed: () async {
                 final isNet = await checkConnectivity();
                 if (isNet) {

@@ -17,7 +17,8 @@ class AcceptProductArxivBodyWidget extends StatefulWidget {
       _AcceptProductArxivBodyWidgetState();
 }
 
-class _AcceptProductArxivBodyWidgetState extends State<AcceptProductArxivBodyWidget> {
+class _AcceptProductArxivBodyWidgetState
+    extends State<AcceptProductArxivBodyWidget> {
   static const historyLength = 5;
   List<String> _searchHistory = [];
   List<CookerProduct> filteredSearchResult = [];
@@ -44,7 +45,7 @@ class _AcceptProductArxivBodyWidgetState extends State<AcceptProductArxivBodyWid
     }
     _searchHistory.add(term);
     if (_searchHistory.length > historyLength) {
-      _searchHistory.removeRange(0, _searchHistory.length - historyLength);
+      // _searchHistory.removeRange(0, _searchHistory.length - historyLength);
     }
 
     filteredSearchHistory = filterSearchTerms(filter: null);
@@ -100,7 +101,6 @@ class _AcceptProductArxivBodyWidgetState extends State<AcceptProductArxivBodyWid
   @override
   Widget build(BuildContext context) {
     return FloatingSearchBar(
-    
       controller: controller,
       body: FloatingSearchBarScrollNotifier(
         child: _body(
@@ -134,7 +134,6 @@ class _AcceptProductArxivBodyWidgetState extends State<AcceptProductArxivBodyWid
         controller!.close();
       },
       builder: (context, transition) {
-
         return ClipRRect(
           borderRadius: BorderRadius.circular(
             gW(8.0),
@@ -218,6 +217,9 @@ class _AcceptProductArxivBodyWidgetState extends State<AcceptProductArxivBodyWid
   }
 
   _body({required BuildContext context, required List<CookerProduct> dataa}) {
+     dataa.sort(
+      (a, b) => a.productName!.compareTo(b.productName!),
+    );
     if (dataa.isNotEmpty) {
       return ListView.separated(
         shrinkWrap: true,
@@ -271,7 +273,6 @@ class _AcceptProductArxivBodyWidgetState extends State<AcceptProductArxivBodyWid
       Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-         
           SizedBox(height: gH(10.0)),
           _textInRow("Korxona nomi", data.senderName.toString()),
           _divider(),
@@ -319,12 +320,9 @@ class _AcceptProductArxivBodyWidgetState extends State<AcceptProductArxivBodyWid
     );
   }
 
- 
-
   Divider _divider() => Divider(
         color: mainColor,
         indent: gW(15.0),
         endIndent: gW(15.0),
       );
 }
-

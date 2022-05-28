@@ -58,9 +58,9 @@ class DrawerWidgetMy extends StatelessWidget {
             _richText("Lavozimi:  ", data.role.substring(5)),
             _divider(),
             SizedBox(height: gH(20.0)),
-            _exitButton(
+            _button(
               color: Colors.red,
-              title: "Tizimdan Chiqish",
+              title: "Tizimdan\nChiqish",
               context: context,
               icon: Icons.logout_outlined,
               onPressed: () {
@@ -72,9 +72,9 @@ class DrawerWidgetMy extends StatelessWidget {
               },
             ),
             SizedBox(height: gH(20.0)),
-            _exitButton(
+            _button(
                 color: Colors.orange,
-                title: "Pinkodni O'zgartirish",
+                title: "Pinkodni\nO'zgartirish",
                 context: context,
                 icon: Icons.replay_outlined,
                 onPressed: () {
@@ -85,9 +85,9 @@ class DrawerWidgetMy extends StatelessWidget {
                       });
                 }),
             SizedBox(height: gH(20.0)),
-            _exitButton(
+            _button(
               color: mainColor,
-              title: "Parolni O'zgartirish",
+              title: "Parolni\nO'zgartirish",
               context: context,
               icon: Icons.change_circle_outlined,
               onPressed: () {
@@ -119,7 +119,7 @@ class DrawerWidgetMy extends StatelessWidget {
     );
   }
 
-  ElevatedButton _exitButton(
+  ElevatedButton _button(
       {required Color color,
       required String title,
       required BuildContext context,
@@ -128,11 +128,12 @@ class DrawerWidgetMy extends StatelessWidget {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
+        fixedSize: Size(gW(200), gH(90)),
         shape: RoundedRectangleBorder(
           side: BorderSide(color: color),
           borderRadius: BorderRadius.circular(
             gW(
-              25.0,
+              35.0,
             ),
           ),
         ),
@@ -140,18 +141,21 @@ class DrawerWidgetMy extends StatelessWidget {
         elevation: 0,
         shadowColor: whiteColor,
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            title,
-            style: TextStyle(color: color),
-          ),
-          Icon(
-            icon,
-            color: color,
-          )
-        ],
+      child: Padding(
+        padding: const EdgeInsets.all(5.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Text(
+              title,
+              style: TextStyle(color: color),
+            ),
+            Icon(
+              icon,
+              color: color,size: gW(40.0),
+            )
+          ],
+        ),
       ),
     );
   }

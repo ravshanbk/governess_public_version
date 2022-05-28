@@ -78,16 +78,16 @@ class MealWidget extends StatelessWidget {
     return Ink(
       height: gH(280.0),
       decoration: BoxDecoration(
-        border: data._file != null
+        border: data.image != null
             ? null
             : Border.fromBorderSide(BorderSide(color: mainColor)),
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(gW(10.0)),
         ),
-        image: data._file != null
+        image: data.image != null
             ? DecorationImage(
                 image: MemoryImage(
-                  base64.decode(data._file!),
+                  base64.decode(data.image!),
                 ),
                 fit: BoxFit.cover,
               )

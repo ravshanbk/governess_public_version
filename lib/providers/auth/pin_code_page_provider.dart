@@ -1,6 +1,20 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:governess/local_storage/boxes.dart';
 
 class PinCodePageProvider extends ChangeNotifier {
+  static Options? option;
+
+  // static String localhost = "http://185.217.131.117:7788";
+  static String localhost = "http://192.168.43.54:7788";
+
+  initAuthorization() {
+    option = Options(headers: {
+      "Authorization": Boxes.getUser().values.first.token,
+    });
+    notifyListeners();
+  }
+
   bool idf = false;
   changeIdf(bool v) {
     idf = v;
@@ -25,3 +39,6 @@ class PinCodePageProvider extends ChangeNotifier {
     super.dispose();
   }
 }
+
+
+

@@ -1,11 +1,15 @@
 import 'package:dio/dio.dart';
+
+import 'package:governess/local_storage/boxes.dart';
 import 'package:governess/models/mtt_info_model.dart';
+
 import 'package:governess/services/auth_service.dart';
 
 class MttInfoService {
-   static  late final Map<String, MttInfo>? _cache = {};
+  static late final Map<String, MttInfo>? _cache = {};
 
   Future<MttInfo> getInfo() async {
+   
     DateTime date = DateTime(
       DateTime.now().year,
       DateTime.now().month,
@@ -18,7 +22,9 @@ class MttInfoService {
       try {
         Response res = await Dio().get(
           "${AuthService.localhost}/out/api/kindergarten/getOne",
-          options: AuthService.option,
+          options: Options(headers: {
+      "Authorization":  Boxes.getUser().values.first.token,
+    }),
         );
         MttInfo info = MttInfo.fromJson(res.data);
 

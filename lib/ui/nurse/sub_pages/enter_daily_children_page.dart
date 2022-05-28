@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:governess/consts/print_my.dart';
 
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/consts/strings.dart';
@@ -92,7 +91,7 @@ class NurseEnterDailyChildrenPage extends StatelessWidget {
                 _enterButton(
                   context: context,
                   onPressed: () async {
-                    p(image!.path);
+                  
                     List<Map<String, dynamic>> v = List.generate(
                       data.length,
                       (index) => AgeGroupIdAndNumber(

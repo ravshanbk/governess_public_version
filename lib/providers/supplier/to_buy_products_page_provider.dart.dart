@@ -32,6 +32,9 @@ class ToBuyProductPageProvider extends ChangeNotifier {
     numberController.clear();
     commentController.clear();
     priceController.clear();
+    statusOfPayment = false;
+    isCashOnPayment = false;
+    
     notifyListeners();
   }
 }

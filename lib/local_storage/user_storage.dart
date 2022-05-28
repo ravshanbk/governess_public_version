@@ -12,7 +12,7 @@ class UserHive {
     String? surname,
     String? name,
     String? fatherName,
-  }) async{
+  }) async {
     final user = UserH()
       ..id = id!
       ..role = role!
@@ -23,31 +23,31 @@ class UserHive {
       ..name = name!
       ..fatherName = fatherName ?? "null";
 
-    final box =  Boxes.getUser();
+    final box = Boxes.getUser();
 
     if (box.isEmpty) {
-     await box.add(user);
+      await box.add(user);
     } else {
-    await  box.putAt(0, user);
+      await box.putAt(0, user);
     }
   }
 
-  logOutUser()async {
+  logOutUser() async {
     final pinBox = Boxes.getPinUser();
-   await pinBox.clear();
+    await pinBox.clear();
     final box = Boxes.getUser();
-   await box.clear();
+    await box.clear();
   }
 
-  pinSave(String pin) async{
+  pinSave(String pin) async {
     final pinUser = PinHive()..pinUser = pin;
 
     final box = Boxes.getPinUser();
 
     if (box.isEmpty) {
-   await   box.add(pinUser);
+      await box.add(pinUser);
     } else {
-   await   box.putAt(0, pinUser);
+      await box.putAt(0, pinUser);
     }
   }
 }

@@ -1,3 +1,5 @@
+/////////////////////////
+///
 // To parse this JSON data, do
 //
 //     final product = productFromJson(jsonString);
@@ -13,93 +15,77 @@ String productToJson(List<Product> data) =>
 class Product {
   Product({
     this.id,
-    this.createDate,
-    this.updateDate,
-    this.sendDate,
-    this.orderNumber,
-    this.price,
-    this.pack,
-    this.numberPack,
-    this.weightPack,
-    this.status,
-    this.measurementType,
-    this.companyName,
-    this.companyId,
-    this.productId,
+    this.supplierName,
     this.productName,
-    this.comment,
-    this.paymentStatus,
-    this.typeOfPayment,
+    this.productId,
+    this.companyId,
+    this.companyName,
+    this.orderId,
+    this.orderNumber,
+    this.weight,
+    this.successWeight,
+    this.numberPack,
+    this.successNumberPack,
+    this.requestDate,
+    this.status,
+    this.pack,
+    this.measurementType,
   });
 
   String? id;
-  int? createDate;
-  int? updateDate;
-
-  int? sendDate;
-  String? orderNumber;
-  dynamic price;
-
-  double? pack;
-  double? numberPack;
-  double? weightPack;
-
-  String? status;
-  String? measurementType;
-  String? companyName;
-
-  int? companyId;
-  int? productId;
+  String? supplierName;
   String? productName;
+  String? productId;
+  String? companyId;
+  String? companyName;
+  String? orderId;
+  String? orderNumber;
+  String? weight;
+  String? successWeight;
+  String? numberPack;
+  String? successNumberPack;
+  String? requestDate;
+  String? status;
+  String? pack;
+  String? measurementType;
 
-  dynamic comment;
-  dynamic paymentStatus;
-  dynamic typeOfPayment;
+  factory Product.fromJson(Map<String, dynamic> json) {
 
-  factory Product.fromJson(Map<String, dynamic> json) => Product(
-        id: json["id"],
-        createDate: json["createDate"],
-        updateDate: json["updateDate"],
-        sendDate: json["sendDate"],
-        orderNumber: json["orderNumber"],
-        price: json["price"],
-        pack: json["pack"],
-        numberPack: json["numberPack"],
-        weightPack: json["weightPack"],
-        status: json["status"],
-        measurementType: json["measurementType"],
-        companyName: json["companyName"],
-        companyId: json["companyId"],
-        productId: json["productId"],
-        productName: json["productName"],
-        comment: json["comment"],
-        paymentStatus: json["paymentStatus"],
-        typeOfPayment: json["typeOfPayment"],
-      );
-
+    return Product(
+      id: json["id"].toString(),
+      supplierName: json["supplierName"].toString(),
+      productName: json["productName"].toString(),
+      productId: json["productId"].toString(),
+      companyId: json["companyId"].toString(),
+      companyName: json["companyName"].toString(),
+      orderId: json["orderId"].toString(),
+      orderNumber: json["orderNumber"].toString(),
+      weight: json["weight"].toString(),
+      successWeight: json["successWeight"].toString(),
+      numberPack: json["numberPack"].toString(),
+      successNumberPack: json["successNumberPack"].toString(),
+      requestDate: json["requestDate"].toString(),
+      status: json["status"].toString(),
+      pack: json["pack"].toString(),
+      measurementType: json["measurementType"].toString(),
+    );
+  }
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "createDate": createDate,
-        "updateDate": updateDate,
-
-        "sendDate": sendDate,
-        "orderNumber": orderNumber,
-        "price": price,
-
-        "pack": pack,
-        "numberPack": numberPack,
-        "weightPack": weightPack,
-
-        "status": status,
-        "measurementType": measurementType,
-        "companyName": companyName,
-
-        "companyId": companyId,
-        "productId": productId,
-        "productName": productName,
-        
-        "comment": comment,
-        "paymentStatus": paymentStatus,
-        "typeOfPayment": typeOfPayment,
+        "id": id ?? null,
+        "supplierName": supplierName ?? null,
+        "productName": productName ?? null,
+        "productId": productId ?? null,
+        "companyId": companyId ?? null,
+        "companyName": companyName ?? null,
+        "orderId": orderId ?? null,
+        "orderNumber": orderNumber ?? null,
+        "weight": weight ?? null,
+        "successWeight": successWeight ?? null,
+        "numberPack": numberPack ?? null,
+        "successNumberPack": successNumberPack ?? null,
+        "requestDate": requestDate ?? null,
+        "status": status ?? null,
+        "pack": pack ?? null,
+        "measurementType": measurementType ?? null,
       };
 }

@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:governess/consts/print_my.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/models/cooker/product_cooker_product.dart';
 import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/providers/cooker/show_in_out_list_product_provider.dart';
-import 'package:governess/services/auth_service.dart';
 import 'package:governess/services/cooker_service.dart';
 import 'package:governess/ui/widgets/indicator_widget.dart';
 import 'package:governess/ui/widgets/show_in_out_list_product_widget.dart';
@@ -15,7 +13,7 @@ class CookerShowProductsInStoragePage extends StatelessWidget {
   const CookerShowProductsInStoragePage({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-     p(AuthService.option);
+    
     SizeConfig().init(context);
     return WillPopScope(
       onWillPop: () {
@@ -53,6 +51,10 @@ class CookerShowProductsInStoragePage extends StatelessWidget {
   ListView _body(
       {required BuildContext context,
       required List<CookerInOutListProduct> data}) {
+         data.sort(
+      (a, b) => a.productName!.compareTo(b.productName!),
+    );
+
     return ListView.separated(
       shrinkWrap: true,
       physics: const BouncingScrollPhysics(),
@@ -89,14 +91,11 @@ class CookerShowProductsInStoragePage extends StatelessWidget {
                 children: [
                   _divider(),
                   TextInRowWidget(
-                      "O'lchov birligi", data[__].inOutList!.length.toString()),
+                      "O'lchov birligi", data[__].inOutList![0].measurementType!),
                   _divider(),
                   TextInRowWidget("EnterDate",
                       DTFM.maker(data[__].inOutList![index].enterDate!)),
-                  _divider(),
-                  TextInRowWidget(
-                      "Mahsulot Id", data[__].inOutList![index].id.toString()),
-                  _divider(),
+                 _divider(),
                   TextInRowWidget("Nechta",
                       data[__].inOutList![index].numberPack.toString()),
                   _divider(),

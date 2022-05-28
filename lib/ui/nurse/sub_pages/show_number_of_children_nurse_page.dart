@@ -30,15 +30,12 @@ class NurseShowNumberOfChildrenPage extends StatefulWidget {
 class _NurseShowNumberOfChildrenPageState
     extends State<NurseShowNumberOfChildrenPage> {
   dynamic _pickImageError;
- 
-  File? file;
+
   final ImagePicker _picker = ImagePicker();
   File? _file;
-  
 
   void _setImageFileListFromFile(XFile? value) {
-     file = File(value!.path);
-    _file = File(value.path);
+    _file = File(value!.path);
   }
 
   Future<void> _onImageButtonPressed({BuildContext? context}) async {
@@ -60,22 +57,45 @@ class _NurseShowNumberOfChildrenPageState
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<NumberOfChildren>(
-      future: NurseService().getDailyChildrenNumber(
-          Provider.of<NurseEnterChildrenNumberPageProvider>(context,
-                  listen: false)
-              .when),
-      builder: (context, AsyncSnapshot<NumberOfChildren> snap) {
-        if (snap.connectionState == ConnectionState.done && snap.hasData) {
-          return _body(snap.data!, context);
-        } else if (snap.connectionState == ConnectionState.done &&
-            !snap.hasData) {
-          return const NoDataWidgetForFutureBuilder(
-              "Bu Kunga Hali Bolalar Soni Kiritilmagan!");
-        } else {
-          return IndicatorWidget(snap);
-        }
-      },
+    SizeConfig().init(context);
+    return Scaffold(
+      body: FutureBuilder<NumberOfChildren>(
+        future: NurseService().getDailyChildrenNumber(
+            Provider.of<NurseEnterChildrenNumberPageProvider>(context,
+                    listen: false)
+                .when),
+        builder: (context, AsyncSnapshot<NumberOfChildren> snap) {
+          if (snap.connectionState == ConnectionState.done && snap.hasData) {
+            return _body(snap.data!, context);
+          } else if (snap.connectionState == ConnectionState.done &&
+              !snap.hasData) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                    onPressed: () {
+                      setState(() {});
+                    },
+                    icon: const Icon(
+                      Icons.refresh,
+                    )),
+            
+                      Text(
+               "Bu Kunga Hali Bolalar Soni Kiritilmagan!",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: mainColor,
+                    fontSize: gW(20.0),
+                  ),
+                ),
+              
+              ],
+            );
+          } else {
+            return IndicatorWidget(snap);
+          }
+        },
+      ),
     );
   }
 
@@ -88,7 +108,7 @@ class _NurseShowNumberOfChildrenPageState
         elevation: 0,
         backgroundColor: mainColor,
         actions: [
-          _dateTimeShowButton(context),
+          // _dateTimeShowButton(context),
         ],
       ),
       body: Padding(
@@ -142,6 +162,7 @@ class _NurseShowNumberOfChildrenPageState
                                 builder: (context) =>
                                     NurseEditDailyChildrenPage(
                                   data,
+                                  image: _file,
                                 ),
                               ),
                             ).then((value) {
@@ -201,14 +222,13 @@ class _NurseShowNumberOfChildrenPageState
                       )
                     : Ink(
                         height: gH(350),
-                        width: gW(240.0),
+                        width: gW(220.0),
                         decoration: BoxDecoration(
                           image: DecorationImage(
                             image: FileImage(
                               _file!,
                             ),
                             fit: BoxFit.cover,
-                            
                           ),
                           borderRadius: BorderRadius.circular(gW(5.0)),
                           border: Border.all(

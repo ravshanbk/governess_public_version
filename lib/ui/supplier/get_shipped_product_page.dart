@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:governess/consts/size_config.dart';
+import 'package:governess/consts/strings.dart';
 import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
-import 'package:governess/models/supplier/product_model.dart';
+import 'package:governess/models/supplier/shipped_product_model.dart';
 import 'package:governess/providers/supplier/get_shipped_products_provider.dart';
+import 'package:governess/services/network.dart';
 import 'package:governess/services/supplier_service.dart';
-import 'package:governess/ui/widgets/expansion_tile_to_show_product_widget.dart';
 import 'package:governess/ui/widgets/future_builder_of_no_data_widget.dart';
 import 'package:governess/ui/widgets/indicator_widget.dart';
+import 'package:governess/ui/widgets/send_button_widger.dart.dart';
+import 'package:governess/ui/widgets/shipped_product_expansion_tile_widget.dart';
 import 'package:governess/ui/widgets/text_in_row_widget.dart';
 import 'package:provider/provider.dart';
 
@@ -29,15 +32,15 @@ class _GetShippedProductPageState extends State<GetShippedProductPage> {
       },
       child: Scaffold(
         appBar: _appBar(),
-        body: FutureBuilder<List<Product>>(
+        body: FutureBuilder<List<ShippedProduct>>(
           future: SupplierService().getShippedProduct(),
-          builder: (context, AsyncSnapshot<List<Product>> snap) {
-            if (snap.connectionState == ConnectionState.done && snap.hasData) {
+          builder: (context, AsyncSnapshot<List<ShippedProduct>> snap) {
+            if (snap.connectionState == ConnectionState.done) {
+              if (!snap.hasData) {
+                return const NoDataWidgetForFutureBuilder(
+                    "Hozircha Yetkazilgan Mahsulotlar Mavjud Emas!");
+              } else {}
               return _body(context, snap.data!);
-            } else if (snap.connectionState == ConnectionState.done &&
-                !snap.hasData) {
-              return const NoDataWidgetForFutureBuilder(
-                  "Hozircha Yetkazilgan Mahsulotlar Mavjud Emas!");
             } else {
               return IndicatorWidget(snap);
             }
@@ -47,8 +50,11 @@ class _GetShippedProductPageState extends State<GetShippedProductPage> {
     );
   }
 
-  _body(BuildContext context, List<Product> data) {
-    return ListView.separated(
+  _body(BuildContext context, List<ShippedProduct> data) {
+    data.sort(
+      (a, b) => a.productName!.compareTo(b.productName!),
+    );
+    return data.isEmpty ?_noDataBody(context):ListView.separated(
       padding: EdgeInsets.only(left: gW(20.0), right: gW(20.0), top: gW(20.0)),
       shrinkWrap: true,
       physics: const BouncingScrollPhysics(),
@@ -56,7 +62,7 @@ class _GetShippedProductPageState extends State<GetShippedProductPage> {
         int current = context.watch<GetShippedProductsProvider>().current;
         return Column(
           children: [
-            ExpansionTileToShowProductWidget(
+            ShippedProductExpansionTile(
                 isExpanded: current == __,
                 children: _children(data[__], context),
                 onChanged: (bool newState) {
@@ -100,7 +106,7 @@ class _GetShippedProductPageState extends State<GetShippedProductPage> {
     );
   }
 
-  List<Widget> _children(Product data, BuildContext context) {
+  List<Widget> _children(ShippedProduct data, BuildContext context) {
     return <Widget>[
       Ink(
         decoration: BoxDecoration(
@@ -108,34 +114,54 @@ class _GetShippedProductPageState extends State<GetShippedProductPage> {
             gW(10.0),
           ),
         ),
-        child: Column(children: [
-          TextInRowWidget("Korxona nomi", data.companyName.toString()),
-          _divider(),
-          TextInRowWidget("Zayavka nomi", data.orderNumber.toString()),
-          _divider(),
-          TextInRowWidget(
-              "Yuborilgan Sana", DTFM.maker(data.sendDate!).toString()),
-          _divider(),
-          TextInRowWidget("O'lchov birligi", data.measurementType.toString()),
-          _divider(),
-          TextInRowWidget("Holati", data.status.toString()),
-          _divider(),
-          TextInRowWidget("Yaxlitlash miqdori", data.pack.toString()),
-          _divider(),
-          TextInRowWidget("Qadoqlar soni", data.numberPack.toString()),
-          _divider(),
-          TextInRowWidget("Jami", data.weightPack.toString()),
-          _divider(),
-          TextInRowWidget(
-              "To'langanligi", data.paymentStatus ? "To'langan" : "To'lanmagan"),
-          _divider(),
-          TextInRowWidget(
-              "To'lov turi", data.typeOfPayment ? "Naqd" : "Naqdsiz"),
-          _divider(),
-          SizedBox(
-            height: gH(10.0),
-          ),
-        ]),
+        child: Column(
+          children: [
+            TextInRowWidget("Korxona nomi", data.companyName.toString()),
+            _divider(),
+            TextInRowWidget("Zayavka raqami", data.orderNumber.toString()),
+            _divider(),
+            TextInRowWidget("Ta'minotchi", data.supplier.toString()),
+            _divider(),
+            TextInRowWidget("O'lchov birligi", data.measurementType.toString()),
+            _divider(),
+            TextInRowWidget("Qadoq miqdori", data.pack.toString()),
+            _divider(),
+            TextInRowWidget(
+                "Yuborilgan miqdor", data.sendNumberPack.toString()),
+            _divider(),
+            TextInRowWidget(
+                "Yuborilgan qadoqlar soni", data.sendWeight.toString()),
+            _divider(),
+            TextInRowWidget(
+                "Qabul qilingan miqdor", data.successWeight.toString()),
+            _divider(),
+            TextInRowWidget("Qabul qilingan qadoqlar soni",
+                data.successNumberPack.toString()),
+            _divider(),
+            TextInRowWidget("Narxi", data.price.toString()),
+            _divider(),
+            TextInRowWidget(
+                "Yuborilgan vaqti",
+                data.timeOfShipment != null
+                    ? DTFM.makerFromStr(data.timeOfShipment!)
+                    : "--,--,----"),
+            _divider(),
+            TextInRowWidget(
+                "Qabul qilingan sana", DTFM.makerFromStr(data.timeTaken)),
+            _divider(),
+            TextInRowWidget("Yuboruvchi", data.theSender.toString()),
+            _divider(),
+            TextInRowWidget("Qabul qiluvchi", data.receiver.toString()),
+            _divider(),
+            TextInRowWidget("To'lov holati", data.paymentStatus.toString()),
+            _divider(),
+            TextInRowWidget("To'lov turi", data.typeOfPayment.toString()),
+            _divider(),
+            SizedBox(
+              height: gH(10.0),
+            ),
+          ],
+        ),
       )
     ];
   }
@@ -145,4 +171,36 @@ class _GetShippedProductPageState extends State<GetShippedProductPage> {
         indent: gW(15.0),
         endIndent: gW(15.0),
       );
+
+  _noDataBody(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            "Hozirda mahsulotlar mavjud emas",
+            style: TextStyle(color: mainColor, fontSize: gW(18.0)),
+          ),
+          SizedBox(height: gH(30.0)),
+          SendButtonWidget(
+            width: gW(335),
+            onPressed: () async {
+              bool isThereInternet = await checkConnectivity();
+              if (isThereInternet) {
+                setState(() {});
+              } else {
+                showNoNetToast(false);
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const GetShippedProductPage()),
+                    (route) => false);
+              }
+            },
+            titleOfButton: "Qayta yuklash",
+          ),
+        ],
+      ),
+    );
+  }
 }

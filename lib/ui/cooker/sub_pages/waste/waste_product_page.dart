@@ -110,6 +110,9 @@ class _CookerWastProductPageState extends State<CookerWastProductPage> {
   }
 
   _body(BuildContext context, List<CookerInOutListProduct> data) {
+     data.sort(
+      (a, b) => a.productName!.compareTo(b.productName!),
+    );
     return ListView.separated(
       key: Key(DateTime.now().toString()),
       shrinkWrap: true,

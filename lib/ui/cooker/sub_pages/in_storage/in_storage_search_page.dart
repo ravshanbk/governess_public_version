@@ -104,7 +104,10 @@ class _CookerInStorageSearchPageState extends State<CookerInStorageSearchPage> {
       body: FloatingSearchBar(
         controller: controller1,
         body: FloatingSearchBarScrollNotifier(
-          child:Container(color: Colors.red,child: const Text("Column"),),
+          child: Container(
+            color: Colors.red,
+            child: const Text("Column"),
+          ),
           //  _body(
           //   context: context,
           //   data: filteredSearchResult,
@@ -225,6 +228,9 @@ class _CookerInStorageSearchPageState extends State<CookerInStorageSearchPage> {
   ListView _body(
       {required BuildContext context,
       required List<CookerInOutListProduct> data}) {
+    data.sort(
+      (a, b) => a.productName!.compareTo(b.productName!),
+    );
     return ListView.separated(
       shrinkWrap: true,
       physics: const BouncingScrollPhysics(),
@@ -265,9 +271,6 @@ class _CookerInStorageSearchPageState extends State<CookerInStorageSearchPage> {
                   _divider(),
                   TextInRowWidget("EnterDate",
                       DTFM.maker(data[__].inOutList![index].enterDate!)),
-                  _divider(),
-                  TextInRowWidget(
-                      "Mahsulot Id", data[__].inOutList![index].id.toString()),
                   _divider(),
                   TextInRowWidget("Nechta",
                       data[__].inOutList![index].numberPack.toString()),

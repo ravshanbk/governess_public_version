@@ -165,7 +165,7 @@ class CookerMealInfoPage extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: const [
                               Expanded(flex: 1, child: Text("Mahsulot nomi")),
-                              Expanded(flex: 1, child: Text("Mahsulot miqdori"))
+                              Expanded(flex: 1, child: Text("Miqdori  (kg)"))
                             ],
                           ),
                         )
@@ -253,7 +253,7 @@ class CookerMealInfoPage extends StatelessWidget {
       backgroundColor: mainColor,
       toolbarHeight: gH(50.0),
       collapsedHeight: gH(50.0),
-      expandedHeight: gH(240.0),
+      expandedHeight: gH(80.0),
       flexibleSpace: FlexibleSpaceBar(
 
         stretchModes: const [StretchMode.blurBackground],
@@ -269,9 +269,9 @@ class CookerMealInfoPage extends StatelessWidget {
             fontStyle: FontStyle.italic,
           ),
         ),
-        background: _mealImage(
-          data.attachment!.bytes!,
-        ),
+        // background: _mealImage(
+        //   data.attachmentId.,
+        // ),
       ),
     );
   }

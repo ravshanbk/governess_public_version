@@ -14,7 +14,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 // ignore: must_be_immutable
 class CheckingPinCodePage extends StatelessWidget {
   CheckingPinCodePage({Key? key}) : super(key: key);
-  TextEditingController controller = TextEditingController();
+  TextEditingController controller = TextEditingController(text:  '111');
 
   @override
   Widget build(BuildContext context) {

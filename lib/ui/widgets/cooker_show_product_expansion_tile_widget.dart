@@ -7,6 +7,7 @@ class CookerShowProductExpansionTileWidget extends StatelessWidget {
   final List<Widget> children;
   final Function(bool) onChanged;
   final CookerProduct data;
+
   const CookerShowProductExpansionTileWidget({
     Key? key,
     required this.isExpanded,
@@ -33,13 +34,14 @@ class CookerShowProductExpansionTileWidget extends StatelessWidget {
     );
   }
 
-  Text _title() {
+  _title() {
     return Text(
-      data.productName.toString().length > 40
-          ? data.productName.toString().substring(0, 39)
+      data.productName.toString().length > 35
+          ? data.productName.toString().substring(0, 34)
           : data.productName.toString(),
       textAlign: TextAlign.center,
       style: TextStyle(
+        fontStyle: FontStyle.italic,
         letterSpacing: gW(2.0),
         decoration: TextDecoration.underline,
         fontSize: 18.0,

@@ -108,8 +108,7 @@ class _CookerAcceptProductArxivPageState
                         SizedBox(
                             height: 590,
                             width: 335,
-                            child: AcceptProductArxivBodyWidget(
-                                key: const Key("Arxiv"), data: snap.data!));
+                            child: _body(snap, context));
                   }
                 } else {
                   return Center(
@@ -187,6 +186,8 @@ class _CookerAcceptProductArxivPageState
 
   ListView _body(
       AsyncSnapshot<List<CookerProduct>> snap, BuildContext context) {
+    List<CookerProduct> data = snap.data!;
+    data.sort((a, b) => a.productName!.compareTo(b.productName!),);
     return ListView.separated(
       shrinkWrap: true,
       physics: const BouncingScrollPhysics(),
@@ -196,7 +197,7 @@ class _CookerAcceptProductArxivPageState
           key: Key("$__ CookerAcceptProductPage"),
           isExpanded:
               context.watch<CookerAcceptProductProvider>().current == __,
-          children: _children(snap.data![__], context),
+          children: _children(data[__], context),
           onChanged: (bool v) {
             if (v) {
               Provider.of<CookerAcceptProductProvider>(context, listen: false)
@@ -206,7 +207,7 @@ class _CookerAcceptProductArxivPageState
                   .changeCurrent(-1);
             }
           },
-          data: snap.data![__],
+          data:data[__],
         );
       },
       separatorBuilder: (context, index) {
@@ -214,7 +215,7 @@ class _CookerAcceptProductArxivPageState
           height: gH(20.0),
         );
       },
-      itemCount: snap.data!.length,
+      itemCount:data.length,
     );
   }
 

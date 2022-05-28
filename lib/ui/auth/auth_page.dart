@@ -3,10 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:governess/consts/decorations.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/consts/strings.dart';
+import 'package:governess/local_storage/user_storage.dart';
+import 'package:governess/providers/auth/pin_code_page_provider.dart';
 import 'package:governess/services/auth_service.dart';
 import 'package:governess/services/network.dart';
 import 'package:governess/ui/auth/pin_code_page.dart';
 import 'package:governess/ui/widgets/governess_app_bar.dart';
+import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
 class AuthPage extends StatefulWidget {
@@ -25,10 +28,14 @@ class _AuthPageState extends State<AuthPage> {
 
   final TextEditingController passwordController = TextEditingController();
 
-  
-
   @override
   Widget build(BuildContext context) {
+
+//  var number = (double.parse(
+//                     "932") *
+//                 0.060);
+//             p(number);
+
     SizeConfig().init(context);
     return Scaffold(
       appBar: governessAppBar,
@@ -45,14 +52,26 @@ class _AuthPageState extends State<AuthPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SizedBox(
-                      height: gH(50.0),
-                      child: isInProgress
-                          ? CupertinoActivityIndicator(
-                              radius: gW(20.0),
-                            )
-                          : const Text(""),
-                    ),
+                  SizedBox(
+                          height: gH(50.0),
+                          child: isInProgress
+                              ?   Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        CupertinoActivityIndicator(
+                                  radius: gW(20.0),
+                                ),
+                              
+                       
+                     ElevatedButton(
+                       style: ElevatedButton.styleFrom(primary: mainColor,side: BorderSide(color: mainColor)),
+                       onPressed:  () {
+                          isInProgress = false;
+                        setState(() {
+                          
+                        },);}, child:  Text("Bekor qilish",style: TextStyle(color: whiteColor),))
+                      ],
+                    ):const SizedBox(),),
                     _loginInput(context),
                     SizedBox(height: gH(20.0)),
                     _passwordInput(context),
@@ -73,25 +92,34 @@ class _AuthPageState extends State<AuthPage> {
       onPressed: isInProgress
           ? null
           : () async {
-            
               bool isInternet = await checkConnectivity();
               if (isInternet) {
-                 setState(() {
-                   isInProgress = true;
-                 });
+                setState(() {
+                  isInProgress = true;
+                });
                 if (loginController.text.isNotEmpty &&
                     passwordController.text.isNotEmpty) {
-                 
-
                   AuthService()
                       .getUser(loginController.text, passwordController.text)
                       .then(
-                    (value) {
-                      if (value) {
+                    (value) async {
+                      if (value.success) {
+                        await UserHive().addUser(
+                          id: value.user.id,
+                          fatherName: value.user.fatherName,
+                          name: value.user.name,
+                          role: value.user.role,
+                          success: value.user.success,
+                          surname: value.user.surname,
+                          token: value.user.token,
+                          username: value.user.username,
+                        );
+
+                        Provider.of<PinCodePageProvider>(context, listen: false)
+                            .initAuthorization();
                         showToast("Muvaffaqiyat !!!", true, false);
 
-                       
- isInProgress = false;
+                        isInProgress = false;
                         Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(
@@ -99,11 +127,9 @@ class _AuthPageState extends State<AuthPage> {
                             ),
                             (route) => false);
                       } else {
-                         isInProgress = false;
-                        showToast("Nimadir hato bo'ldi", false, false);
-                        setState(() {
-                          
-                        });
+                        isInProgress = false;
+                        showToast(value.text!, false, false);
+                        setState(() {});
                       }
                     },
                   );

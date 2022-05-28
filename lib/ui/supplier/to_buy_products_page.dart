@@ -19,7 +19,6 @@ import 'package:governess/services/supplier_service.dart';
 import 'package:governess/ui/widgets/expansion_tile_to_show_product_widget.dart';
 import 'package:governess/ui/widgets/send_button_widger.dart.dart';
 
-//  ignore: must_be_immutable
 class ToBuyProductsPage extends StatefulWidget {
   ToBuyProductsPage({Key? key}) : super(key: key);
 
@@ -46,12 +45,13 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
           future: SupplierService().getToBuyProducts(),
           builder:
               (context, AsyncSnapshot<ProductWithAvailableCompnayNames> snap) {
-            if (snap.connectionState == ConnectionState.done && snap.hasData) {
-              return _body(snap.data!, context);
-            } else if (snap.connectionState == ConnectionState.done &&
-                !snap.hasData) {
-              return const NoDataWidgetForFutureBuilder(
-                  "Hozircha Harid Qilinadigan Mahsulotlar Mavjud Emas!");
+            if (snap.connectionState == ConnectionState.done) {
+              if (snap.data!.product.isNotEmpty) {
+                return _body(snap.data!, context);
+              } else {
+                return const NoDataWidgetForFutureBuilder(
+                    "Hozirda Mahsulotlar Mavjud Emas");
+              }
             } else {
               return IndicatorWidget(snap);
             }
@@ -239,7 +239,7 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
                     (route) => false);
               }
             },
-            titleOfButton: "Qayta yuklash",
+            titleOfButton: "Hammasi",
           ),
         ],
       ),
@@ -466,40 +466,43 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
             gW(10.0),
           ),
         ),
-        child: Column(children: [
-          SizedBox(height: gH(10.0)),
-          _textInRow("Korxona nomi", data.companyName.toString()),
-          _divider(),
-          _textInRow("Zayavka nomi", data.orderNumber.toString()),
-          _divider(),
-          _textInRow("Yuborilgan Sana", DTFM.maker(data.sendDate!).toString()),
-          _divider(),
-          _textInRow("O'lchov birligi", data.measurementType.toString()),
-          _divider(),
-          _textInRow("Holati", data.status.toString()),
-          _divider(),
-          _textInRow("Yaxlitlash miqdori", data.pack.toString()),
-          _divider(),
-          _textInRow("Qadoqlar soni", data.numberPack.toString()),
-          _divider(),
-          _textInRow("Jami:", data.weightPack.toString()),
-          _divider(),
-          SendButtonWidget(
-            width: gW(200.0),
-            onPressed: (data.status! == "TO'LIQ TUGALLANGAN")
-                ? null
-                : () {
-                    Provider.of<ToBuyProductPageProvider>(context,
-                            listen: false)
-                        .clear();
-                    _showDialogSend(data, context);
-                  },
-            titleOfButton: "YUBORISH",
-          ),
-          SizedBox(
-            height: gH(10.0),
-          ),
-        ]),
+        child: Column(
+          children: [
+            SizedBox(height: gH(10.0)),
+            _textInRow("Korxona nomi", data.companyName.toString()),
+            _divider(),
+            _textInRow("Zayavka raqami", data.orderNumber.toString()),
+            _divider(),
+            _textInRow("O'lchov birligi", data.measurementType.toString()),
+            _divider(),
+            _textInRow("Holati", data.status.toString()),
+            _divider(),
+            _textInRow("Miqdori", data.weight.toString()),
+            _divider(),
+            _textInRow("Qadoqlar soni", data.numberPack.toString()),
+            _divider(),
+            _textInRow("Yuborilgan miqdor", data.successWeight.toString()),
+            _divider(),
+            _textInRow(
+                "Yuborilgan qadoqlar soni:", data.successNumberPack.toString()),
+            _divider(),
+            SendButtonWidget(
+              width: gW(200.0),
+              onPressed: (data.status! == "TO'LIQ TUGALLANGAN")
+                  ? null
+                  : () {
+                      Provider.of<ToBuyProductPageProvider>(context,
+                              listen: false)
+                          .clear();
+                      _showDialogSend(data, context);
+                    },
+              titleOfButton: "YUBORISH",
+            ),
+            SizedBox(
+              height: gH(10.0),
+            ),
+          ],
+        ),
       )
     ];
   }
@@ -509,7 +512,12 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
       useSafeArea: true,
       context: context,
       builder: (BuildContext alertContext) {
-        return _SendProductShowDialogContentWidget(data);
+        return _SendProductShowDialogContentWidget(
+          data,
+          callback: () {
+            setState(() {});
+          },
+        );
       },
     );
   }
@@ -559,7 +567,9 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
 // ignore: unused_element
 class _SendProductShowDialogContentWidget extends StatelessWidget {
   final Product data;
-  const _SendProductShowDialogContentWidget(this.data, {Key? key})
+  final VoidCallback callback;
+  const _SendProductShowDialogContentWidget(this.data,
+      {required this.callback, Key? key})
       : super(key: key);
 
   @override
@@ -587,7 +597,7 @@ class _SendProductShowDialogContentWidget extends StatelessWidget {
             _richTextInRow(["Nomi:  ", data.productName!.toString()]),
             _richTextInRow(["Yaxlitlash miqdaori:  ", data.pack.toString()]),
             _richTextInRow(["Nechta:  ", data.numberPack.toString()]),
-            _richTextInRow(["Umumiy:  ", data.weightPack.toString()]),
+            _richTextInRow(["Umumiy:  ", data.weight.toString()]),
             const Spacer(),
             _numberInputField(context, data),
             const Spacer(),
@@ -661,7 +671,6 @@ class _SendProductShowDialogContentWidget extends StatelessWidget {
                   value:
                       context.watch<ToBuyProductPageProvider>().isCashOnPayment,
                   onChanged: (bool v) {
-                  
                     Provider.of<ToBuyProductPageProvider>(context,
                             listen: false)
                         .changeIsCashOnPayment(v);
@@ -701,55 +710,62 @@ class _SendProductShowDialogContentWidget extends StatelessWidget {
                   .numberController
                   .text
                   .isNotEmpty) &&
-              (int.parse(
+              (double.parse(
                       Provider.of<ToBuyProductPageProvider>(con, listen: false)
                           .numberController
                           .text) >
                   0)) {
-            double number = (int.parse(
+            double number = (double.parse(
                     Provider.of<ToBuyProductPageProvider>(con, listen: false)
                         .numberController
                         .text) *
-                (data.pack! > 0 ? data.pack! : 1));
+                (double.parse(data.pack!) > 0 ? double.parse(data.pack!) : 1));
             await SupplierService()
                 .sendProduct(
               v: SendProduct(
-                comment:
+                  paymentStatus:
+                      Provider.of<ToBuyProductPageProvider>(con, listen: false)
+                          .statusOfPayment,
+                  typeOfPayment:
+                      Provider.of<ToBuyProductPageProvider>(con, listen: false)
+                          .statusOfPayment,
+                  comment:
+                      Provider.of<ToBuyProductPageProvider>(con, listen: false)
+                          .commentController
+                          .text,
+                  numberPack: double.parse(
                     Provider.of<ToBuyProductPageProvider>(con, listen: false)
-                        .commentController
+                        .numberController
                         .text,
-                companyId: data.companyId,
-                measurementType: data.measurementType,
-                orderNumber: data.orderNumber,
-                price: 500,
-                productId: data.productId,
-                weightPack: number,
-                pack: 400,
-                numberPack: int.parse(
-                  Provider.of<ToBuyProductPageProvider>(con, listen: false)
-                      .numberController
-                      .text,
-                ),
-              ),
+                  ),
+                  weight: number,
+                  price: double.parse(
+                      Provider.of<ToBuyProductPageProvider>(con, listen: false)
+                          .priceController
+                          .text)),
               id: data.id!,
             )
                 .then((value) {
               if (value.success!) {
-                showToast(value.text!.toString(), value.success!, false);
+                showToast(value.text!, value.success!, false);
 
                 Provider.of<ToBuyProductPageProvider>(con, listen: false)
                     .clear();
                 Provider.of<ToBuyProductPageProvider>(con, listen: false)
                     .changeCurrent(-1);
+                callback();
                 Navigator.pop(con);
               } else {
-                showToast(value.text!.toString(), value.success!, false);
+                showToast(value.text!, value.success!, false);
+                callback();
+                Navigator.pop(con);
               }
             });
           } else {
             showToast("Miqdorni kiriting, nol bolmasin", false, false);
           }
         } else {
+          callback();
           showNoNetToast(false);
         }
       },
@@ -760,7 +776,7 @@ class _SendProductShowDialogContentWidget extends StatelessWidget {
   _numberInputField(BuildContext context, Product data) {
     return TextFormField(
       onChanged: (v) {
-        if (double.parse(v) > data.numberPack!) {
+        if (double.parse(v) > double.parse(data.numberPack!)) {
           showToast(
               "Kiritilgan miqdor keraklisidan oshmasligi kerak", false, false);
           Provider.of<ToBuyProductPageProvider>(context, listen: false)
@@ -916,11 +932,11 @@ class _ShowDialogDateContent extends StatelessWidget {
     List<Product> list = [];
     int m = 0;
     for (int i = 0; i < data.length; i++) {
-      if (data[i].sendDate! <=
+      if (int.parse(data[i].requestDate!) <=
               Provider.of<FilterToBuyPageProvider>(context, listen: false)
                   .to!
                   .millisecondsSinceEpoch &&
-          data[i].sendDate! >=
+          int.parse(data[i].requestDate!) >=
               Provider.of<FilterToBuyPageProvider>(context, listen: false)
                   .from!
                   .millisecondsSinceEpoch) {

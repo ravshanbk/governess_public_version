@@ -226,6 +226,7 @@ class _CookerExistingProductSearchPageState
   }
 
   ListView _body(BuildContext context, List<CookerInOutListProduct> data) {
+    data.sort((a, b) => a.productName!.compareTo(b.productName!),);
     return ListView.separated(
       shrinkWrap: true,
       physics: const BouncingScrollPhysics(),

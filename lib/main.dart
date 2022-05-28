@@ -18,10 +18,13 @@ import 'package:governess/providers/supplier/to_buy_products_page_provider.dart.
 import 'package:governess/providers/cooker/waste_product_cooker_page_provider.dart';
 import 'package:governess/ui/auth/auth_page.dart';
 import 'package:governess/ui/auth/check_pincode_page.dart';
+import 'package:governess/ui/nurse/sub_pages/show_number_of_children_nurse_page.dart';
+import 'package:governess/ui/tajriba.dart';
 import 'package:governess/ui/widgets/governess_app_bar.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
@@ -41,7 +44,7 @@ void main() async {
         ChangeNotifierProvider(
           create: (context) => NurseChangeChildrenNumberPageProvider(),
         ),
-          ChangeNotifierProvider(
+        ChangeNotifierProvider(
           create: (context) => NurseEnterChildrenNumberPageProvider(),
         ),
         ChangeNotifierProvider(
@@ -76,6 +79,7 @@ void main() async {
     ),
   );
 }
+
 @immutable
 // ignore: must_be_immutable
 class MyApp extends StatefulWidget {
@@ -116,11 +120,12 @@ class _MyAppState extends State<MyApp> {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: widget.hasInternet ? _body() : const NoInternetConnectionPage());
+        home: widget.hasInternet ? _body(): const NoInternetConnectionPage());
   }
 
   _body() {
-    return Boxes.getUser().values.isEmpty || Boxes.getPinUser().values.isEmpty
+    // return NurseShowNumberOfChildrenPage();
+  return  Boxes.getUser().values.isEmpty || Boxes.getPinUser().values.isEmpty
         ? const AuthPage()
         : CheckingPinCodePage();
   }

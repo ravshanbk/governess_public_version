@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:governess/consts/print_my.dart';
+import 'package:governess/local_storage/boxes.dart';
 import 'package:governess/models/cooker/meal_info_model.dart';
 import 'package:governess/models/cooker/product_cooker_product.dart';
 import 'package:governess/models/cooker/receive_product_model.dart';
@@ -11,16 +11,16 @@ import 'package:governess/services/auth_service.dart';
 class CookerService {
   Future<ResModel> acceptProduct(
       {required ReceiveProductModel data, required String id}) async {
-    p(AuthService.option);
     try {
       Response res = await Dio(BaseOptions()).put(
         "${AuthService.localhost}/out/api/cook/receive/$id",
-        options: AuthService.option,
+        options: Options(headers: {
+          "Authorization": Boxes.getUser().values.first.token,
+        }),
         data: data,
       );
       return ResModel.fromJson(res.data);
     } on DioError catch (e) {
-      p("Dio Errror: " + e.response!.data.toString());
       return ResModel(
         success: false,
         text: "Nimadir hato bo'ldi",
@@ -55,13 +55,14 @@ class CookerService {
     );
     DateTime start = DateTime(startt.year, startt.month, startt.day);
     DateTime end = DateTime(endd.year, endd.month, endd.day);
-    p(start.toIso8601String());
-    p(end.toIso8601String());
     List<CookerProduct> data = [];
     try {
+      
       Response<dynamic> res = await Dio().get(
         "${AuthService.localhost}/out/api/cook/getInOut?end=${end.millisecondsSinceEpoch}&start=${start.millisecondsSinceEpoch}",
-        options: AuthService.option,
+        options: Options(headers: {
+          "Authorization": Boxes.getUser().values.first.token,
+        }),
       );
 
       for (int i = 0; i < (res.data as List).length; i++) {
@@ -69,8 +70,8 @@ class CookerService {
           data.add(CookerProduct.fromJson(res.data[i]));
         }
       }
-      // return data;
-      return hardDate;
+      return data;
+      // return hardDate;
     } catch (e) {
       throw Exception(
           "CookerService / getSentProductFromWarehouse: " + e.toString());
@@ -78,6 +79,7 @@ class CookerService {
   }
 
   Future<List<CookerProduct>> getInOutDefault() async {
+    List<String> names = ['a','b','e','s','t','q','b','a','e','s','q','a','g'];
     List<CookerProduct> hardDate = List.generate(
       12,
       (index) => CookerProduct(
@@ -89,7 +91,7 @@ class CookerService {
         pack: 1.0,
         price: 1.0,
         productId: 1,
-        productName: index % 2 == 0 ? "buzz" : "biss",
+        productName: names[index],
         senderName: "",
         status: "",
         usersId: null,
@@ -102,7 +104,9 @@ class CookerService {
     try {
       Response<dynamic> res = await Dio().get(
         "${AuthService.localhost}/out/api/cook/getInOut",
-        options: AuthService.option,
+        options: Options(headers: {
+          "Authorization": Boxes.getUser().values.first.token,
+        }),
       );
 
       for (int i = 0; i < (res.data as List).length; i++) {
@@ -110,8 +114,8 @@ class CookerService {
           data.add(CookerProduct.fromJson(res.data[i]));
         }
       }
-      // return data;
-      return hardDate;
+      return data;
+      // return hardDate;
     } catch (e) {
       throw Exception("CookerService / getInOutDefault: " + e.toString());
     }
@@ -122,10 +126,11 @@ class CookerService {
       Response res = await Dio().get(
         //OMBOR
         "${AuthService.localhost}/out/api/cook/getProductBalancer",
-        options: AuthService.option,
+        options: Options(headers: {
+          "Authorization": Boxes.getUser().values.first.token,
+        }),
       );
 
-      p("Target: " + res.data.toString());
       return (res.data as List)
           .map((e) => CookerInOutListProduct.fromJson(e))
           .toList();
@@ -161,7 +166,9 @@ class CookerService {
       Response res = await Dio().get(
         // ZAHIRADAGI
         "${AuthService.localhost}/out/api/cook/getExistingProduct",
-        options: AuthService.option,
+        options: Options(headers: {
+          "Authorization": Boxes.getUser().values.first.token,
+        }),
       );
       return (res.data as List)
           .map((e) => CookerInOutListProduct.fromJson(e))
@@ -178,9 +185,17 @@ class CookerService {
     try {
       Response res = await Dio().get(
         "${AuthService.localhost}/out/api/meal/getMeal?mealAgeStandardId=$mealAgeStandartId&menuId=$menuId",
-        options: AuthService.option,
+        options: Options(headers: {
+          "Authorization": Boxes.getUser().values.first.token,
+        }),
       );
-      MealInfo d = MealInfo.fromJson(res.data);
+       MealInfo? d;
+      try {
+        d = MealInfo.fromJson(res.data);
+      } catch (e) {
+        throw Exception(e);
+      }
+
       return d;
     } catch (e) {
       throw Exception("CookerService / getMealInfo" + e.toString());
@@ -191,7 +206,9 @@ class CookerService {
     try {
       Response res = await Dio().post(
         "${AuthService.localhost}/out/api/storage/garbageAdd/$id",
-        options: AuthService.option,
+        options: Options(headers: {
+          "Authorization": Boxes.getUser().values.first.token,
+        }),
         data: data,
       );
       return res.statusCode == 200;
@@ -205,7 +222,9 @@ class CookerService {
     try {
       Response res = await Dio().get(
         "${AuthService.localhost}/out/api/storage/garbageGet?end=${end.millisecondsSinceEpoch}&start=${start.millisecondsSinceEpoch}",
-        options: AuthService.option,
+        options: Options(headers: {
+          "Authorization": Boxes.getUser().values.first.token,
+        }),
       );
       return (res.data as List)
           .map((e) => CookerInOutListProduct.fromJson(e))
@@ -219,7 +238,9 @@ class CookerService {
     try {
       Response res = await Dio().delete(
         "${AuthService.localhost}/out/api/storage/garbageDelete/$id",
-        options: AuthService.option,
+        options: Options(headers: {
+          "Authorization": Boxes.getUser().values.first.token,
+        }),
       );
       return res.statusCode == 200;
     } catch (e) {

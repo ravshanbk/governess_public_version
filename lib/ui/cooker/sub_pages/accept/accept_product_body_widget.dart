@@ -42,6 +42,10 @@ class _AcceptProductBodyWidgetState extends State<AcceptProductBodyWidget> {
     }
   }
 
+  removeFromList(int index) {
+    filteredSearchResult.removeAt(index);
+  }
+
   void addSearchTerm(String term) {
     if (_searchHistory.contains(term)) {
       putSearchTermFirst(term);
@@ -139,7 +143,6 @@ class _AcceptProductBodyWidgetState extends State<AcceptProductBodyWidget> {
         controller!.close();
       },
       builder: (context, transition) {
-
         return ClipRRect(
           borderRadius: BorderRadius.circular(
             gW(8.0),
@@ -227,17 +230,24 @@ class _AcceptProductBodyWidgetState extends State<AcceptProductBodyWidget> {
   }
 
   _body({required BuildContext context, required List<CookerProduct> dataa}) {
+     dataa.sort(
+      (a, b) => a.productName!.compareTo(b.productName!),
+    );
     if (dataa.isNotEmpty) {
       return ListView.separated(
         shrinkWrap: true,
         physics: const BouncingScrollPhysics(),
-        padding: EdgeInsets.only(top: gH(70.0)),
+        padding: EdgeInsets.all(gW(20.0)),
         itemBuilder: (_, __) {
           return CookerShowProductExpansionTileWidget(
             key: Key("$__ CookerAcceptProductPage"),
             isExpanded:
                 context.watch<CookerAcceptProductProvider>().current == __,
-            children: _children(dataa[__], context),
+            children: _children(
+              context: context,
+              data: dataa[__],
+              index: __,
+            ),
             onChanged: (bool v) {
               if (v) {
                 Provider.of<CookerAcceptProductProvider>(context, listen: false)
@@ -253,6 +263,7 @@ class _AcceptProductBodyWidgetState extends State<AcceptProductBodyWidget> {
         separatorBuilder: (context, index) {
           return SizedBox(
             height: gH(20.0),
+            child: Text(index.toString()),
           );
         },
         itemCount: dataa.length,
@@ -263,9 +274,7 @@ class _AcceptProductBodyWidgetState extends State<AcceptProductBodyWidget> {
         children: [
           IconButton(
             onPressed: () {
-              setState(() {
-                filteredSearchResult = widget.data;
-              });
+              setState(() {});
             },
             icon: const Icon(Icons.refresh),
           ),
@@ -275,7 +284,10 @@ class _AcceptProductBodyWidgetState extends State<AcceptProductBodyWidget> {
     );
   }
 
-  List<Widget> _children(CookerProduct data, BuildContext context) {
+  List<Widget> _children(
+      {required CookerProduct data,
+      required BuildContext context,
+      required int index}) {
     return <Widget>[
       Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -297,7 +309,7 @@ class _AcceptProductBodyWidgetState extends State<AcceptProductBodyWidget> {
                   Provider.of<CookerAcceptProductProvider>(context,
                           listen: false)
                       .initNumberController(data.numberPack!.toString());
-                  _shownputDialog(context, data);
+                  _shownputDialog(context, product: data, index: index);
                 } else {
                   showNoNetToast(false);
                 }
@@ -306,7 +318,7 @@ class _AcceptProductBodyWidgetState extends State<AcceptProductBodyWidget> {
             ),
           ),
           SizedBox(height: gH(10.0)),
-          _textInRow("Korxona nomi", data.senderName.toString()),
+          _textInRow("Korxona nomi", data.senderName.toString().length > 13?data.senderName.toString().substring(0,12).replaceRange(12, 12, '..'):data.senderName.toString()),
           _divider(),
           _textInRow("Yuborilgan Sana",
               data.enterDate == null ? "null" : DTFM.maker(data.enterDate!)),
@@ -352,7 +364,8 @@ class _AcceptProductBodyWidgetState extends State<AcceptProductBodyWidget> {
     );
   }
 
-  _shownputDialog(BuildContext context, CookerProduct product) {
+  _shownputDialog(BuildContext context,
+      {required CookerProduct product, required int index}) {
     return showDialog(
       context: context,
       builder: (context) {
@@ -453,7 +466,8 @@ class _AcceptProductDialogContentWidget extends StatelessWidget {
                     Provider.of<CookerAcceptProductProvider>(con, listen: false)
                         .numberController
                         .text) *
-                (data.pack! > 0 ? data.pack! : 1));
+                (data.pack! > 0 ? data.pack! : 1)).toDouble();
+           
             CookerService()
                 .acceptProduct(
               id: data.id!,
