@@ -1,35 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/models/cooker/product_cooker_product.dart';
+import 'package:governess/ui/widgets/text_in_row_widget.dart';
 
 class ShowInOutListProductWidget extends StatelessWidget {
   final bool isExpanded;
-  final List<Widget> children;
+
   final Function(bool) onChanged;
-  final CookerInOutListProduct data;
+  final String title;
+  final Balancer data;
   const ShowInOutListProductWidget({
     Key? key,
-    required this.isExpanded,
-    required this.children,
-    required this.onChanged,
     required this.data,
+    required this.isExpanded,
+    required this.onChanged,
+    required this.title,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Card(
-    //  color: mainColor,
-     
+      //  color: mainColor,
+
       child: ExpansionTile(
         collapsedBackgroundColor: mainColor_02,
         iconColor: Colors.grey,
-        textColor:mainColor,
+        textColor: mainColor,
         collapsedTextColor: Colors.black,
         key: Key(DateTime.now().toString()),
         initiallyExpanded: isExpanded,
         title: _title(),
-        subtitle: _subtitle(),
-        children: children,
+        children: [
+          _divider(),
+          TextInRowWidget("Qadoq miqdori", data.pack!.toString()),
+          _divider(),
+          TextInRowWidget("Qadoqlar soni", data.numberPack!.toString()),
+          _divider(),
+          TextInRowWidget("Miqdori", data.weight!.toString()),
+          _divider(),
+        ],
         onExpansionChanged: onChanged,
       ),
     );
@@ -37,9 +46,7 @@ class ShowInOutListProductWidget extends StatelessWidget {
 
   Text _title() {
     return Text(
-      data.productName.toString().length > 40
-          ? data.productName.toString().substring(0, 39)
-          : data.productName.toString(),
+      title,
       textAlign: TextAlign.center,
       style: TextStyle(
         letterSpacing: gW(2.0),
@@ -50,25 +57,9 @@ class ShowInOutListProductWidget extends StatelessWidget {
     );
   }
 
-  Row _subtitle() {
-    return Row(
-      children: [
-        Text(
-          "Miqdor:",
-          style: TextStyle(color: greyColor, fontSize: gW(14.0)),
-        ),
-        SizedBox(
-          width: gW(5.0),
-        ),
-        Text(
-          data.weight.toString(),
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: gW(14.0),
-            color: Colors.red,
-          ),
-        ),
-      ],
-    );
-  }
+  Divider _divider() => Divider(
+        color: mainColor,
+        indent: gW(15.0),
+        endIndent: gW(15.0),
+      );
 }

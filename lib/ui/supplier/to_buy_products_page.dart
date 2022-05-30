@@ -37,12 +37,20 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
       onWillPop: () {
         Provider.of<ToBuyProductPageProvider>(context, listen: false)
             .changeCurrent(-1);
+        Provider.of<FilterToBuyPageProvider>(context, listen: false)
+            .changeCurrentFilterIndex(0);
+        Provider.of<FilterToBuyPageProvider>(context, listen: false)
+            .clearFromTo();
         return Future.value(true);
       },
       child: Scaffold(
+        resizeToAvoidBottomInset: true,
         appBar: _appBar(context),
         body: FutureBuilder<ProductWithAvailableCompnayNames>(
-          future: SupplierService().getToBuyProducts(),
+          future: SupplierService().getToBuyProducts(
+            start: context.watch<FilterToBuyPageProvider>().from,
+            end: context.watch<FilterToBuyPageProvider>().to,
+          ),
           builder:
               (context, AsyncSnapshot<ProductWithAvailableCompnayNames> snap) {
             if (snap.connectionState == ConnectionState.done) {
@@ -88,6 +96,7 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
         );
       },
     );
+
     List<Widget> widgetsByCompanyName = List.generate(
       Provider.of<FilterToBuyPageProvider>(context, listen: false)
           .dataByCompanyName
@@ -438,10 +447,25 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
       centerTitle: true,
       backgroundColor: mainColor,
       elevation: 0,
-      title: Text(
-        context.watch<FilterToBuyPageProvider>().filters[
-            context.watch<FilterToBuyPageProvider>().currentFilterIndex],
-      ),
+      title: context.watch<FilterToBuyPageProvider>().currentFilterIndex == 1
+          ? Text(
+              """${DTFM.maker(
+                context
+                    .watch<FilterToBuyPageProvider>()
+                    .from
+                    ?.millisecondsSinceEpoch,
+              )} - ${DTFM.maker(
+                context
+                    .watch<FilterToBuyPageProvider>()
+                    .from
+                    ?.millisecondsSinceEpoch,
+              )}""",
+              style: TextStyle(fontSize: gW(18.0)),
+            )
+          : Text(
+              context.watch<FilterToBuyPageProvider>().filters[
+                  context.watch<FilterToBuyPageProvider>().currentFilterIndex],
+            ),
       actions: [
         IconButton(
           onPressed: () {
@@ -477,9 +501,11 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
             _divider(),
             _textInRow("Holati", data.status.toString()),
             _divider(),
-            _textInRow("Miqdori", data.weight.toString()),
+            _textInRow("Qadoq miqdori", data.pack.toString()),
             _divider(),
             _textInRow("Qadoqlar soni", data.numberPack.toString()),
+            _divider(),
+            _textInRow("Miqdori", data.weight.toString()),
             _divider(),
             _textInRow("Yuborilgan miqdor", data.successWeight.toString()),
             _divider(),
@@ -527,7 +553,10 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
       useSafeArea: true,
       context: context,
       builder: (BuildContext alertContext) {
-        return _ShowDialogDateContent(widget.dataw);
+        return _ShowDialogDateContent(
+          widget.dataw,
+          toSetState: () => setState(() {}),
+        );
       },
     );
   }
@@ -728,7 +757,7 @@ class _SendProductShowDialogContentWidget extends StatelessWidget {
                           .statusOfPayment,
                   typeOfPayment:
                       Provider.of<ToBuyProductPageProvider>(con, listen: false)
-                          .statusOfPayment,
+                          .isCashOnPayment,
                   comment:
                       Provider.of<ToBuyProductPageProvider>(con, listen: false)
                           .commentController
@@ -818,12 +847,23 @@ class _SendProductShowDialogContentWidget extends StatelessWidget {
 }
 
 // ignore: must_be_immutable
-class _ShowDialogDateContent extends StatelessWidget {
+class _ShowDialogDateContent extends StatefulWidget {
+  VoidCallback toSetState;
   List<Product>? dataw;
   _ShowDialogDateContent(
     this.dataw, {
+    required this.toSetState,
     Key? key,
   }) : super(key: key);
+
+  @override
+  State<_ShowDialogDateContent> createState() => _ShowDialogDateContentState();
+}
+
+class _ShowDialogDateContentState extends State<_ShowDialogDateContent> {
+  DateTime? start;
+  DateTime? end;
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -848,38 +888,50 @@ class _ShowDialogDateContent extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             ElevatedButton(
-                onPressed: () {
-                  Provider.of<FilterToBuyPageProvider>(context, listen: false)
-                      .changeCurrentFilterIndex(1);
+              onPressed: () {
+                if (end == null || start == null) {
                   Navigator.pop(context);
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: mainColor_02,
-                  elevation: 0,
-                  shadowColor: Colors.transparent,
-                  shape: RoundedRectangleBorder(
-                    side: BorderSide(color: mainColor),
-                    borderRadius: BorderRadius.circular(
-                      gW(7.0),
-                    ),
+                  return;
+                }
+                Provider.of<FilterToBuyPageProvider>(context, listen: false)
+                    .initFrom(start!);
+                Provider.of<FilterToBuyPageProvider>(context, listen: false)
+                    .initTo(end!);
+                Provider.of<FilterToBuyPageProvider>(context, listen: false)
+                    .changeCurrentFilterIndex(1);
+                _getDataByDateTime(widget.dataw!, context);
+                widget.toSetState();
+
+                Navigator.pop(context);
+              },
+              style: ElevatedButton.styleFrom(
+                primary: mainColor_02,
+                elevation: 0,
+                shadowColor: Colors.transparent,
+                shape: RoundedRectangleBorder(
+                  side: BorderSide(color: mainColor),
+                  borderRadius: BorderRadius.circular(
+                    gW(7.0),
                   ),
                 ),
-                child: Text(
-                  "Ko'rish",
-                  style: TextStyle(color: mainColor),
-                )),
+              ),
+              child: Text(
+                "Ko'rish",
+                style: TextStyle(color: mainColor),
+              ),
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 Text(
-                  context.watch<FilterToBuyPageProvider>().fromStr,
+                  DTFM.maker(start?.millisecondsSinceEpoch),
                   style: TextStyle(
                     fontSize: gW(20.0),
                     letterSpacing: gW(1.0),
                   ),
                 ),
                 Text(
-                  context.watch<FilterToBuyPageProvider>().toStr,
+                  DTFM.maker(end?.millisecondsSinceEpoch),
                   style: TextStyle(
                     fontSize: gW(20.0),
                     letterSpacing: gW(1.0),
@@ -973,15 +1025,12 @@ class _ShowDialogDateContent extends StatelessWidget {
       ),
       onConfirm: (date) {
         if (isFrom) {
-          Provider.of<FilterToBuyPageProvider>(context, listen: false)
-              .initFrom(date);
-          Provider.of<FilterToBuyPageProvider>(context, listen: false)
-              .initTo(date);
-          _getDataByDateTime(dataw!, context);
+          start = date;
+          end = date;
+          setState(() {});
         } else {
-          Provider.of<FilterToBuyPageProvider>(context, listen: false)
-              .initTo(date);
-          _getDataByDateTime(dataw!, context);
+          end = date;
+          setState(() {});
         }
       },
       locale: LocaleType.en,

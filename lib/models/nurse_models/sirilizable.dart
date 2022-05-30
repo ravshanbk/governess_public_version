@@ -4,12 +4,12 @@
 
 import 'dart:convert';
 
-MenuInfo menuInfoFromJson(String str) => MenuInfo.fromJson(json.decode(str));
+Sirileze menuInfoFromJson(String str) => Sirileze.fromJson(json.decode(str));
 
-String menuInfoToJson(MenuInfo data) => json.encode(data.toJson());
+String menuInfoToJson(Sirileze data) => json.encode(data.toJson());
 
-class MenuInfo {
-  MenuInfo({
+class Sirileze {
+  Sirileze({
     this.id,
     this.name,
     this.createDate,
@@ -32,11 +32,10 @@ class MenuInfo {
   String? status;
   bool? confirmation;
   PerDayDto? perDayDto;
-  List<MealTimeStandardResponseSaveDtoList>?
-      mealTimeStandardResponseSaveDtoList;
+  List<MealTimeStandardResponseSaveDtoList>? mealTimeStandardResponseSaveDtoList;
   dynamic numberToGuess;
 
-  factory MenuInfo.fromJson(Map<String, dynamic> json) => MenuInfo(
+  factory Sirileze.fromJson(Map<String, dynamic> json) => Sirileze(
         id: json["id"],
         name: json["name"],
         createDate: json["createDate"],
@@ -141,7 +140,7 @@ class AgeStandardResponseSaveDtoList {
   });
 
   int? id;
-  double? weight;
+ double? weight;
   String? ageGroupName;
 
   factory AgeStandardResponseSaveDtoList.fromJson(Map<String, dynamic> json) =>

@@ -1,13 +1,18 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:governess/local_storage/boxes.dart';
+import 'package:governess/models/cooker/meal_info_model.dart';
 import 'package:governess/models/nurse_models/age_group_model.dart';
 import 'package:governess/models/nurse_models/daily_menu_model.dart';
 import 'package:governess/models/nurse_models/number_of_children_model.dart';
+import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/models/other/post_res_model.dart';
 import 'package:governess/services/auth_service.dart';
 
 class NurseService {
-  Future<DailyMenu> getDailyMenu(DateTime date) async {
+  Future<MenuInfo> getDailyMenu(DateTime date) async {
+    // print(DTFM.maker(date.millisecondsSinceEpoch));
     try {
       Response res = await Dio().get(
         "${AuthService.localhost}/out/api/multiMenu/getMenuKin?date=${date.millisecondsSinceEpoch}",
@@ -15,19 +20,44 @@ class NurseService {
           "Authorization": Boxes.getUser().values.first.token,
         }),
       );
-      Future.delayed(const Duration(seconds: 2), () {});
-      DailyMenu d = DailyMenu.fromJson(res.data);
+      // print(res.data.toString());
+      // print(
+      //   "${AuthService.localhost}/out/api/multiMenu/getMenuKin?date=${date.millisecondsSinceEpoch}",
+      // );
+      // print(Boxes.getUser().values.first.token);
+      print(res.data.toString());
+      MenuInfo d = MenuInfo.fromJson(res.data);
       return d;
     } catch (e) {
       throw Exception("Daily Menu Service: " + e.toString());
     }
   }
-
+Future<MenuInfo> tajribaDailyMenu(DateTime date) async {
+    print(DTFM.maker(date.millisecondsSinceEpoch));
+    try {
+      Response res = await Dio().get(
+        "${AuthService.localhost}/out/api/multiMenu/getMenuKin?date=${date.millisecondsSinceEpoch}",
+        options: Options(headers: {
+          "Authorization": Boxes.getUser().values.first.token,
+        }),
+      );
+      print(res.data.toString());
+      print(
+        "${AuthService.localhost}/out/api/multiMenu/getMenuKin?date=${date.millisecondsSinceEpoch}",
+      );
+      print(Boxes.getUser().values.first.token);
+      print(res.data.toString());
+      MenuInfo d = MenuInfo.fromJson(res.data);
+      return d;
+    } catch (e) {
+      throw Exception("Daily Menu Service: " + e.toString());
+    }
+  }
   Future<ResModel> enterDailyChildrenNumber({
     required FormData formData,
     required DateTime date,
   }) async {
-     try {
+    try {
       Response res = await Dio().post(
         "${AuthService.localhost}/out/api/perDay?date=${date.millisecondsSinceEpoch}",
         options: Options(headers: {
@@ -45,7 +75,8 @@ class NurseService {
   Future<NumberOfChildren> getDailyChildrenNumber(DateTime date) async {
     DateTime thisDay = DateTime(date.year, date.month, date.day);
     int mixedDate = thisDay.millisecondsSinceEpoch + 18000001;
-     try {
+
+    try {
       Response res = await Dio().get(
         "${AuthService.localhost}/out/api/perDay?date=$mixedDate",
         options: Options(headers: {

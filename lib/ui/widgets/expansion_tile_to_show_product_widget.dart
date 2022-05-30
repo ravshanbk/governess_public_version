@@ -9,7 +9,6 @@ class ExpansionTileToShowProductWidget extends StatelessWidget {
   final Product data;
   const ExpansionTileToShowProductWidget({
     Key? key,
-
     required this.isExpanded,
     required this.children,
     required this.onChanged,
@@ -19,7 +18,6 @@ class ExpansionTileToShowProductWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-     
       child: ExpansionTile(
         collapsedBackgroundColor: mainColor_02,
         tilePadding: EdgeInsets.symmetric(horizontal: gW(10.0)),
@@ -37,7 +35,7 @@ class ExpansionTileToShowProductWidget extends StatelessWidget {
 
   Text _title() {
     return Text(
-     data.productName.toString().length > 40
+      data.productName.toString().length > 40
           ? data.productName.toString().substring(0, 39)
           : data.productName.toString(),
       textAlign: TextAlign.center,
@@ -50,30 +48,53 @@ class ExpansionTileToShowProductWidget extends StatelessWidget {
     );
   }
 
-  Row _subtitle() {
-    return Row(
+  _subtitle() {
+    return Column(
       children: [
-        Text(
-          "Holati:",
-          style: TextStyle(color: greyColor, fontSize: gW(14.0)),
+        Row(
+          children: [
+            Text(
+              "Miqdori:",
+              style: TextStyle(color: greyColor, fontSize: gW(14.0)),
+            ),
+            SizedBox(
+              width: gW(5.0),
+            ),
+            Text(
+              data.numberPack!,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: gW(14.0),
+                color: mainColor,
+              ),
+            ),
+          ],
         ),
-        SizedBox(
-          width: gW(5.0),
+        Row(
+          children: [
+            Text(
+              "Holati:",
+              style: TextStyle(color: greyColor, fontSize: gW(14.0)),
+            ),
+            SizedBox(
+              width: gW(5.0),
+            ),
+            Text(
+              data.status!.length > 21
+                  ? data.status!.substring(0, 20).replaceRange(19, 20, "..")
+                  : data.status!,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: gW(14.0),
+                color: data.status == "YANGI"
+                    ? Colors.green
+                    : (data.status == "QISMAN TUGALLANDI"
+                        ? Colors.orange
+                        : Colors.black),
+              ),
+            ),
+          ],
         ),
-        Text(
-          data.status!.length >21?data.status!.substring(0,20).replaceRange(19, 20, ".."):data.status!,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: gW(14.0),
-            color: data.status == "YANGI"
-                ? Colors.green
-                : (data.status == "QISMAN TUGALLANDI"
-                    ? Colors.orange
-                    : Colors.black),
-          ),
-        ),
-   
-      
       ],
     );
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/consts/strings.dart';
+import 'package:governess/models/cooker/meal_info_model.dart';
 import 'package:governess/models/nurse_models/daily_menu_model.dart';
 import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/services/network.dart';
@@ -26,9 +27,9 @@ class _NurseShowDailyMenuPageState extends State<NurseShowDailyMenuPage> {
     SizeConfig().init(context);
     return Scaffold(
       appBar: _appBar(context),
-      body: FutureBuilder<DailyMenu>(
+      body: FutureBuilder<MenuInfo>(
         future: NurseService().getDailyMenu(when),
-        builder: (BuildContext context, AsyncSnapshot<DailyMenu> snap) {
+        builder: (BuildContext context, AsyncSnapshot<MenuInfo> snap) {
           if (snap.connectionState == ConnectionState.done && snap.hasData) {
             return Padding(
               padding: EdgeInsets.only(top: gH(20.0)),

@@ -8,7 +8,6 @@ import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/providers/cooker/accept_product_provider.dart';
 import 'package:governess/services/cooker_service.dart';
 import 'package:governess/services/network.dart';
-import 'package:governess/ui/cooker/sub_pages/accept/accept_product_arxiv_body_widget.dart';
 import 'package:governess/ui/widgets/cooker_show_product_expansion_tile_widget.dart';
 import 'package:governess/ui/widgets/date_time_show_button_widget.dart';
 import 'package:provider/provider.dart';
@@ -75,11 +74,9 @@ class _CookerAcceptProductArxivPageState
               ),
               builder: (context, AsyncSnapshot<List<CookerProduct>> snap) {
                 if (snap.connectionState == ConnectionState.done) {
-                  // ignore: prefer_is_empty
-                  if (snap.data!.length < 1) {
+                  if (snap.data!.isEmpty) {
                     return Center(
                       child: Column(
-                        // mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           SizedBox(
                             height: gH(200.0),
@@ -103,12 +100,8 @@ class _CookerAcceptProductArxivPageState
                       ),
                     );
                   } else {
-                    return
-                        //  _body(snap, context);
-                        SizedBox(
-                            height: 590,
-                            width: 335,
-                            child: _body(snap, context));
+                    return SizedBox(
+                        height: 590, width: 335, child: _body(snap, context));
                   }
                 } else {
                   return Center(
@@ -187,11 +180,13 @@ class _CookerAcceptProductArxivPageState
   ListView _body(
       AsyncSnapshot<List<CookerProduct>> snap, BuildContext context) {
     List<CookerProduct> data = snap.data!;
-    data.sort((a, b) => a.productName!.compareTo(b.productName!),);
+    data.sort(
+      (a, b) => a.productName!.compareTo(b.productName!),
+    );
     return ListView.separated(
       shrinkWrap: true,
       physics: const BouncingScrollPhysics(),
-      padding: EdgeInsets.all(gW(20.0)),
+    
       itemBuilder: (_, __) {
         return CookerShowProductExpansionTileWidget(
           key: Key("$__ CookerAcceptProductPage"),
@@ -207,7 +202,7 @@ class _CookerAcceptProductArxivPageState
                   .changeCurrent(-1);
             }
           },
-          data:data[__],
+          data: data[__],
         );
       },
       separatorBuilder: (context, index) {
@@ -215,7 +210,7 @@ class _CookerAcceptProductArxivPageState
           height: gH(20.0),
         );
       },
-      itemCount:data.length,
+      itemCount: data.length,
     );
   }
 
@@ -228,21 +223,27 @@ class _CookerAcceptProductArxivPageState
           _divider(),
           _textInRow(
               "Jo'natuvchi",
-              data.senderName!.length > 16
-                  ? data.senderName!.toString().substring(0, 15)
-                  : data.senderName!.toString()),
+              data.theSender!.length > 16
+                  ? data.theSender!.toString().substring(0, 15)
+                  : data.theSender!.toString()),
           _divider(),
-          _textInRow("Yuborilgan Sana",
-              data.enterDate == null ? "null" : DTFM.maker(data.enterDate!)),
+          _textInRow("Buyurtma raqami", data.orderNumber!),
           _divider(),
-          _textInRow("O'lchov birligi", data.measurementType.toString()),
+          _textInRow("So'rov sanasi", data.timeOfShipment!),
           _divider(),
-          _textInRow("Yaxlitlash miqdori", data.pack.toString()),
+          _textInRow("O'lchov birligi", data.measurementType!),
           _divider(),
-          _textInRow("Qadoqlar soni", data.numberPack.toString()),
+          _textInRow("Qadoq miqdori", data.pack!),
           _divider(),
-          _textInRow("Qadoqlangandan so'ng (miq)", data.weightPack.toString()),
+          _textInRow("Qabul qilinadigan miqdori", data.sendWeight!),
           _divider(),
+          _textInRow("Qabul qilinadigan qadoqlar soni", data.sendNumberPack!),
+          _divider(),
+          _textInRow("Qabul qilingan miqdori", data.successWeight!),
+          _divider(),
+          _textInRow("Qabul qilingan qadoqlar soni", data.successNumberPack!),
+          _divider(),
+          _textInRow("Holati", data.status!),
           SizedBox(
             height: gH(10.0),
           ),

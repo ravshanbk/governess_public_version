@@ -10,13 +10,12 @@ class AuthService {
     "Authorization": Boxes.getUser().values.first.token,
   });
 
-  // static String localhost = "http://185.217.131.117:7788";
-  static String localhost = "http://192.168.250.54:7788";
+  static String localhost = "http://185.217.131.117:7788";
+  // static String localhost = "http://192.168.43.62:7788";
 
   Future<GetUserModel> getUser(String login, String password) async {
     User decodedUser;
-    print("${AuthService.localhost}/out/api/user/signIn");
-    print({"login": login, "password": password});
+
     try {
       Response user = await Dio().post(
         "${AuthService.localhost}/out/api/user/signIn",

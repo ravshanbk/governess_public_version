@@ -28,39 +28,40 @@ class _CookerShowDailyMenuPageState extends State<CookerShowDailyMenuPage> {
     SizeConfig().init(context);
     return Scaffold(
       appBar: _appBar(),
-      body: FutureBuilder<DailyMenu>(
+      body: FutureBuilder<MenuInfo>(
         future: NurseService().getDailyMenu(when),
-        builder: (BuildContext context, AsyncSnapshot<DailyMenu> snap) {
-          if (snap.connectionState == ConnectionState.done && snap.hasData) {
-            return DailyMenuWidget(
-              data: snap.data!,
-              con: context,
-              onTap: (int __, int n) async {
-                bool isNet = await checkConnectivity();
-                if (isNet) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CookerMealInfoPage(
-                        mealAgeStandartId: snap
-                            .data!
-                            .mealTimeStandardResponseSaveDtoList![__]
-                            .mealAgeStandardResponseSaveDtoList![n]
-                            .id,
-                        menuId: snap.data!.id,
-                        mealName: snap.data!.name!,
+        builder: (BuildContext context, AsyncSnapshot<MenuInfo> snap) {
+          if (snap.connectionState == ConnectionState.done) {
+            if (snap.hasData) {
+              return DailyMenuWidget(
+                data: snap.data!,
+                con: context,
+                onTap: (int __, int n) async {
+                  bool isNet = await checkConnectivity();
+                  if (isNet) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CookerMealInfoPage(
+                          mealAgeStandartId: snap
+                              .data!
+                              .mealTimeStandardResponseSaveDtoList![__]
+                              .mealAgeStandardResponseSaveDtoList![n]
+                              .id!,
+                          menuId: snap.data!.id,
+                          mealName: snap.data!.name,
+                        ),
                       ),
-                    ),
-                  );
-                } else {
-                  showNoNetToast(false);
-                }
-              },
-            );
-          } else if (snap.connectionState == ConnectionState.done &&
-              !snap.hasData) {
-            return const NoDataWidgetForFutureBuilder(
-                "Hozircha Menyu Mavjud Emas!");
+                    );
+                  } else {
+                    showNoNetToast(false);
+                  }
+                },
+              );
+            } else {
+              return NoDataWidgetForFutureBuilder(
+                  "${DTFM.maker(when.millisecondsSinceEpoch)}\n Menyu Mavjud Emas!");
+            }
           } else {
             return IndicatorWidget(snap);
           }
@@ -78,14 +79,13 @@ class _CookerShowDailyMenuPageState extends State<CookerShowDailyMenuPage> {
         DateTimeShowButton(
           DTFM.maker(when.millisecondsSinceEpoch),
           () {
-            showDataPicker(
-              context
-            );
+            showDataPicker(context);
           },
         ),
       ],
     );
   }
+
   showDataPicker(BuildContext context) {
     DatePicker.showPicker(
       context,
@@ -107,13 +107,11 @@ class _CookerShowDailyMenuPageState extends State<CookerShowDailyMenuPage> {
           decoration: TextDecoration.underline,
         ),
       ),
-      onConfirm:  (date) {
-              when = date;
-              setState(() {});
-            },
+      onConfirm: (date) {
+        when = date;
+        setState(() {});
+      },
       locale: LocaleType.en,
     );
   }
-
-
 }

@@ -9,10 +9,10 @@ import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/providers/nurse/editing_children_page_provider.dart';
 import 'package:governess/providers/nurse/enter_daily_children_page_provider.dart';
 import 'package:governess/services/network.dart';
+import 'package:governess/ui/nurse/sub_pages/camera_page.dart';
 import 'package:governess/ui/nurse/sub_pages/edit_daily_childred_page.dart';
 import 'package:governess/ui/nurse/sub_pages/enter_daily_children_page.dart';
 import 'package:governess/ui/widgets/date_time_show_button_widget.dart';
-import 'package:governess/ui/widgets/future_builder_of_no_data_widget.dart';
 import 'package:governess/ui/widgets/indicator_widget.dart';
 import 'package:governess/ui/widgets/number_of_children_widget.dart';
 import 'package:governess/services/nurse_service.dart';
@@ -20,7 +20,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 class NurseShowNumberOfChildrenPage extends StatefulWidget {
-  const NurseShowNumberOfChildrenPage({Key? key}) : super(key: key);
+  File? file;
+  NurseShowNumberOfChildrenPage({this.file, Key? key}) : super(key: key);
 
   @override
   State<NurseShowNumberOfChildrenPage> createState() =>
@@ -32,10 +33,10 @@ class _NurseShowNumberOfChildrenPageState
   dynamic _pickImageError;
 
   final ImagePicker _picker = ImagePicker();
-  File? _file;
+  
 
   void _setImageFileListFromFile(XFile? value) {
-    _file = File(value!.path);
+    widget.file = File(value!.path);
   }
 
   Future<void> _onImageButtonPressed({BuildContext? context}) async {
@@ -79,16 +80,14 @@ class _NurseShowNumberOfChildrenPageState
                     icon: const Icon(
                       Icons.refresh,
                     )),
-            
-                      Text(
-               "Bu Kunga Hali Bolalar Soni Kiritilmagan!",
+                Text(
+                  "Bu Kunga Hali Bolalar Soni Kiritilmagan!",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: mainColor,
                     fontSize: gW(20.0),
                   ),
                 ),
-              
               ],
             );
           } else {
@@ -108,7 +107,7 @@ class _NurseShowNumberOfChildrenPageState
         elevation: 0,
         backgroundColor: mainColor,
         actions: [
-          // _dateTimeShowButton(context),
+          _dateTimeShowButton(context),
         ],
       ),
       body: Padding(
@@ -128,7 +127,7 @@ class _NurseShowNumberOfChildrenPageState
                 ElevatedButton(
                   child: _buttonChild("O'zgartirish"),
                   style: _buttonStyle(),
-                  onPressed: isSubmitted || _file == null
+                  onPressed: isSubmitted || widget.file == null
                       ? null
                       : () async {
                           bool isEnabledInternet = await checkConnectivity();
@@ -162,7 +161,7 @@ class _NurseShowNumberOfChildrenPageState
                                 builder: (context) =>
                                     NurseEditDailyChildrenPage(
                                   data,
-                                  image: _file,
+                                  image: widget.file,
                                 ),
                               ),
                             ).then((value) {
@@ -186,7 +185,7 @@ class _NurseShowNumberOfChildrenPageState
                 ElevatedButton(
                   child: _buttonChild("Kiritish"),
                   style: _buttonStyle(),
-                  onPressed: !isSubmitted || _file == null
+                  onPressed: !isSubmitted || widget.file == null
                       ? null
                       : () async {
                           bool isEnabledInternet = await checkConnectivity();
@@ -198,7 +197,7 @@ class _NurseShowNumberOfChildrenPageState
                                     NurseEnterDailyChildrenPage(
                                   kGId: data.perDayList![0].kindergartenId!,
                                   id: data.perDayList![0].id,
-                                  image: _file!,
+                                  image: widget.file!,
                                 ),
                               ),
                             ).then((value) {
@@ -214,7 +213,7 @@ class _NurseShowNumberOfChildrenPageState
             SizedBox(
               height: gH(20),
             ),
-            _file == null && _pickImageError == null
+            widget.file == null && _pickImageError == null
                 ? const SizedBox()
                 : (_pickImageError != null
                     ? Center(
@@ -226,7 +225,7 @@ class _NurseShowNumberOfChildrenPageState
                         decoration: BoxDecoration(
                           image: DecorationImage(
                             image: FileImage(
-                              _file!,
+                              widget.file!,
                             ),
                             fit: BoxFit.cover,
                           ),
@@ -364,8 +363,12 @@ class _NurseShowNumberOfChildrenPageState
                   ],
                 ),
                 onPressed: () {
-                  onPick(ImageSource.camera);
-                  Navigator.of(context).pop();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const CameraPage(),
+                    ),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   fixedSize: const Size(250.0, 62),

@@ -50,7 +50,7 @@ class SupplierHomePage extends StatelessWidget {
                         case 0:
                           return ToBuyProductsPage();
                         case 1:
-                          return const GetShippedProductPage();
+                          return GetShippedProductPage();
 
                         default:
                           return const SupplierHomePage();

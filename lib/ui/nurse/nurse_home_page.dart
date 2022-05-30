@@ -44,7 +44,7 @@ class NurseHomePage extends StatelessWidget {
                       case 0:
                         return const NurseShowDailyMenuPage();
                       case 1:
-                        return const NurseShowNumberOfChildrenPage();
+                        return  NurseShowNumberOfChildrenPage();
 
                       default:
                         return const NurseHomePage();

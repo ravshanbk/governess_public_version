@@ -3,23 +3,23 @@ class ReceiveProductModel {
     ReceiveProductModel({
         this.comment,
         this.numberPack,
-        this.weightPack,
+        this.weight,
     
     });
 
     String? comment;
    double? numberPack;
-    double? weightPack;
+    double? weight;
 
     factory ReceiveProductModel.fromJson(Map<String, dynamic> json) => ReceiveProductModel(
         comment: json["comment"],
         numberPack: json["numberPack"],
-        weightPack: json["weightPack"],
+        weight: json["weightPack"],
     );
 
     Map<String, dynamic> toJson() => {
         "comment": comment,
         "numberPack": numberPack,
-        "weightPack": weightPack,
+        "weight": weight,
     };
 }

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/providers/cooker/accept_product_provider.dart';
-import 'package:governess/ui/cooker/sub_pages/accept/arxiv_cooker_page.dart';
-import 'package:governess/ui/cooker/sub_pages/accept/accept_cooker_page.dart';
+import 'package:governess/ui/cooker/sub_pages/accept/arxiv.dart';
+import 'package:governess/ui/cooker/sub_pages/accept/default.dart';
 import 'package:provider/provider.dart';
 
 class CookerAcceptProductPageTab extends StatefulWidget {

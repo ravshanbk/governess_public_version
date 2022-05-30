@@ -8,9 +8,11 @@ import 'package:governess/models/hive_models/pin_hive_model.dart';
 import 'package:governess/providers/auth/pin_code_page_provider.dart';
 import 'package:governess/providers/cooker/accept_product_provider.dart';
 import 'package:governess/providers/cooker/cooker_products_page_provider.dart';
+import 'package:governess/providers/cooker/garbage_provider.dart';
 import 'package:governess/providers/nurse/daily_menu_page_provider.dart';
 import 'package:governess/providers/nurse/editing_children_page_provider.dart';
 import 'package:governess/providers/nurse/enter_daily_children_page_provider.dart';
+import 'package:governess/providers/supplier/date_time_sepplier_provider.dart';
 import 'package:governess/providers/supplier/filter_to_buy_page_provider.dart';
 import 'package:governess/providers/supplier/get_shipped_products_provider.dart';
 import 'package:governess/providers/cooker/show_in_out_list_product_provider.dart';
@@ -41,6 +43,9 @@ void main() async {
         ChangeNotifierProvider(
           create: (context) => DailyMenuPageProvider(),
         ),
+         ChangeNotifierProvider(
+          create: (context) => GetShippedDateTimeProvider(),
+        ),
         ChangeNotifierProvider(
           create: (context) => NurseChangeChildrenNumberPageProvider(),
         ),
@@ -68,8 +73,12 @@ void main() async {
         ChangeNotifierProvider(
           create: (context) => WasteProductCookerPageProvider(),
         ),
-        ChangeNotifierProvider(
+         ChangeNotifierProvider(
           create: (context) => CookerAcceptProductProvider(),
+        ),
+       
+        ChangeNotifierProvider(
+          create: (context) => GarbageProvider(),
         ),
         ChangeNotifierProvider(
           create: (context) => PinCodePageProvider(),
@@ -124,7 +133,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   _body() {
-    // return NurseShowNumberOfChildrenPage();
+    // return TAjribaPage();
   return  Boxes.getUser().values.isEmpty || Boxes.getPinUser().values.isEmpty
         ? const AuthPage()
         : CheckingPinCodePage();

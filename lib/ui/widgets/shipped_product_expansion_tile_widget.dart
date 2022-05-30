@@ -23,7 +23,6 @@ class ShippedProductExpansionTile extends StatelessWidget {
         tilePadding: EdgeInsets.symmetric(horizontal: gW(10.0)),
         iconColor: Colors.grey,
         textColor: mainColor,
-        key: Key(DateTime.now().toString()),
         initiallyExpanded: isExpanded,
         title: _title(),
         subtitle: _subtitle(),
@@ -48,29 +47,52 @@ class ShippedProductExpansionTile extends StatelessWidget {
     );
   }
 
-  Row _subtitle() {
-    return Row(
+  _subtitle() {
+    return Column(
       children: [
-        Text(
-          "Holati:",
-          style: TextStyle(color: greyColor, fontSize: gW(14.0)),
+        Row(
+          children: [
+            Text(
+              "Miqdori:",
+              style: TextStyle(color: greyColor, fontSize: gW(14.0)),
+            ),
+            SizedBox(
+              width: gW(5.0),
+            ),
+            Text(
+              data.sendNumberPack!,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: gW(14.0),
+                color:mainColor
+              ),
+            ),
+          ],
         ),
-        SizedBox(
-          width: gW(5.0),
-        ),
-        Text(
-          data.status!.length > 21
-              ? data.status!.substring(0, 20).replaceRange(19, 20, "..")
-              : data.status!,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: gW(14.0),
-            color: data.status == "YANGI"
-                ? Colors.green
-                : (data.status == "QISMAN TUGALLANDI"
-                    ? Colors.orange
-                    : Colors.black),
-          ),
+        Row(
+          children: [
+            Text(
+              "Holati:",
+              style: TextStyle(color: greyColor, fontSize: gW(14.0)),
+            ),
+            SizedBox(
+              width: gW(5.0),
+            ),
+            Text(
+              data.status!.length > 21
+                  ? data.status!.substring(0, 20).replaceRange(19, 20, "..")
+                  : data.status!,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: gW(14.0),
+                color: data.status == "YANGI"
+                    ? Colors.green
+                    : (data.status == "QISMAN TUGALLANDI"
+                        ? Colors.orange
+                        : Colors.black),
+              ),
+            ),
+          ],
         ),
       ],
     );

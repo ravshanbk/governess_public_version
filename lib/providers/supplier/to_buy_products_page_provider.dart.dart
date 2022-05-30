@@ -28,13 +28,18 @@ class ToBuyProductPageProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  initNumber(String v) {
+    numberController.text = v;
+    notifyListeners();
+  }
+
   clear() {
     numberController.clear();
     commentController.clear();
     priceController.clear();
     statusOfPayment = false;
     isCashOnPayment = false;
-    
+
     notifyListeners();
   }
 }

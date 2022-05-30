@@ -6,17 +6,18 @@ import 'package:governess/ui/widgets/meal_widget.dart';
 import 'package:provider/provider.dart';
 
 class DailyMenuWidget extends StatelessWidget {
-  final DailyMenu data;
+  final MenuInfo data;
   final BuildContext con;
-  final Function(int,int) onTap;
-const DailyMenuWidget({required this.data, required this.con,required this.onTap, Key? key})
+  final Function(int, int) onTap;
+  const DailyMenuWidget(
+      {required this.data, required this.con, required this.onTap, Key? key})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Container(
-        margin: EdgeInsets.symmetric(horizontal: gW(10.0),vertical: gH(20.0)),
+        margin: EdgeInsets.symmetric(horizontal: gW(10.0), vertical: gH(20.0)),
         decoration: BoxDecoration(
           border: Border.all(color: Colors.black),
           borderRadius: BorderRadius.circular(
@@ -95,7 +96,7 @@ const DailyMenuWidget({required this.data, required this.con,required this.onTap
               separatorBuilder: (context, index) {
                 return SizedBox(height: gH(20.0));
               },
-              itemCount: data.mealTimeStandardResponseSaveDtoList!.length,
+              itemCount: 4,
             ),
           ],
         ),
@@ -103,7 +104,7 @@ const DailyMenuWidget({required this.data, required this.con,required this.onTap
     );
   }
 
-  _expansionTile(BuildContext context, int __, DailyMenu? data) {
+  _expansionTile(BuildContext context, int __, MenuInfo data) {
     return Ink(
       decoration: BoxDecoration(
         border: Border.all(color: mainColor),
@@ -136,22 +137,22 @@ const DailyMenuWidget({required this.data, required this.con,required this.onTap
               physics: const NeverScrollableScrollPhysics(),
               itemBuilder: (_, n) {
                 return InkWell(
-                  onTap:(){
-                    onTap(__,n);
+                  onTap: () {
+                    onTap(__, n);
                   },
                   child: MealWidget(
-                      data: data!.mealTimeStandardResponseSaveDtoList![__]
+                      data: data.mealTimeStandardResponseSaveDtoList![__]
                           .mealAgeStandardResponseSaveDtoList![n]),
                 );
               },
-              itemCount: data!.mealTimeStandardResponseSaveDtoList![__]
-                  .mealAgeStandardResponseSaveDtoList!.length),
+              itemCount: data.mealTimeStandardResponseSaveDtoList!.length
+                 ),
         ],
       ),
     );
   }
 
-  _expansionTileTitle(DailyMenu? data, int __) {
+  _expansionTileTitle(MenuInfo? data, int __) {
     return Text(
       data!.mealTimeStandardResponseSaveDtoList![__].mealTimeName!,
       textAlign: TextAlign.center,

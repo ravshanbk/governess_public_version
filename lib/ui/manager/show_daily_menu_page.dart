@@ -31,7 +31,7 @@ class _ManagerShowDailyMenuPageState extends State<ManagerShowDailyMenuPage> {
       appBar: _appBar(),
       body: FutureBuilder(
         future: NurseService().getDailyMenu(when),
-        builder: (BuildContext context, AsyncSnapshot<DailyMenu> snap) {
+        builder: (BuildContext context, AsyncSnapshot<MenuInfo> snap) {
           if (snap.connectionState == ConnectionState.done && snap.hasData) {
             return _body(snap.data!, context);
           } else if (snap.connectionState == ConnectionState.done &&
@@ -46,8 +46,8 @@ class _ManagerShowDailyMenuPageState extends State<ManagerShowDailyMenuPage> {
     );
   }
 
-  _body(DailyMenu? data, BuildContext context) {
-    idf = data!.confirmation!;
+  _body(MenuInfo? data, BuildContext context) {
+   
 
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
@@ -55,14 +55,14 @@ class _ManagerShowDailyMenuPageState extends State<ManagerShowDailyMenuPage> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           _submitUnsubmitButton(data),
-          _status(data),
+          _status(data!),
           DailyMenuWidget(data: data, con: context, onTap: (int __, int n) {}),
         ],
       ),
     );
   }
 
-  Padding _status(DailyMenu data) {
+  Padding _status(MenuInfo data) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: gW(20.0)),
       child: Row(
@@ -72,7 +72,7 @@ class _ManagerShowDailyMenuPageState extends State<ManagerShowDailyMenuPage> {
             style: TextStyle(color: Colors.grey, fontSize: gW(18.0)),
           ),
           Text(
-            data.status!.toString(),
+            data.status.toString(),
             style: TextStyle(
               fontSize: gW(20.0),
             ),
@@ -82,7 +82,7 @@ class _ManagerShowDailyMenuPageState extends State<ManagerShowDailyMenuPage> {
     );
   }
 
-  Padding _submitUnsubmitButton(DailyMenu? data) {
+  Padding _submitUnsubmitButton(MenuInfo? data) {
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: gW(20.0),

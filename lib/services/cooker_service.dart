@@ -1,10 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:governess/local_storage/boxes.dart';
+import 'package:governess/models/cooker/garbage_model.dart';
 import 'package:governess/models/cooker/meal_info_model.dart';
 import 'package:governess/models/cooker/product_cooker_product.dart';
 import 'package:governess/models/cooker/receive_product_model.dart';
 import 'package:governess/models/cooker/to_accept_product_model.dart';
 import 'package:governess/models/cooker/waste_product_model.dart';
+import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/models/other/post_res_model.dart';
 import 'package:governess/services/auth_service.dart';
 
@@ -12,7 +14,7 @@ class CookerService {
   Future<ResModel> acceptProduct(
       {required ReceiveProductModel data, required String id}) async {
     try {
-      Response res = await Dio(BaseOptions()).put(
+      Response res = await Dio().put(
         "${AuthService.localhost}/out/api/cook/receive/$id",
         options: Options(headers: {
           "Authorization": Boxes.getUser().values.first.token,
@@ -33,31 +35,10 @@ class CookerService {
     required DateTime startt,
     required DateTime endd,
   }) async {
-    List<CookerProduct> hardDate = List.generate(
-      12,
-      (index) => CookerProduct(
-        comment: "",
-        enterDate: 1651920125853,
-        id: "5ece38bf-526a-4c7a-ac17-6586e3612819",
-        measurementType: "gramm",
-        numberPack: 1.0,
-        pack: 1.0,
-        price: 1.0,
-        productId: 1,
-        productName: "name $index",
-        senderName: "",
-        status: "",
-        usersId: null,
-        usersName: "",
-        weight: 1.0,
-        weightPack: 1.0,
-      ),
-    );
     DateTime start = DateTime(startt.year, startt.month, startt.day);
     DateTime end = DateTime(endd.year, endd.month, endd.day);
     List<CookerProduct> data = [];
     try {
-      
       Response<dynamic> res = await Dio().get(
         "${AuthService.localhost}/out/api/cook/getInOut?end=${end.millisecondsSinceEpoch}&start=${start.millisecondsSinceEpoch}",
         options: Options(headers: {
@@ -79,27 +60,6 @@ class CookerService {
   }
 
   Future<List<CookerProduct>> getInOutDefault() async {
-    List<String> names = ['a','b','e','s','t','q','b','a','e','s','q','a','g'];
-    List<CookerProduct> hardDate = List.generate(
-      12,
-      (index) => CookerProduct(
-        comment: "",
-        enterDate: 1651920125853,
-        id: "5ece38bf-526a-4c7a-ac17-6586e3612819",
-        measurementType: "gramm",
-        numberPack: 1.0,
-        pack: 1.0,
-        price: 1.0,
-        productId: 1,
-        productName: names[index],
-        senderName: "",
-        status: "",
-        usersId: null,
-        usersName: "",
-        weight: 1.0,
-        weightPack: 1.0,
-      ),
-    );
     List<CookerProduct> data = [];
     try {
       Response<dynamic> res = await Dio().get(
@@ -121,7 +81,8 @@ class CookerService {
     }
   }
 
-  Future<List<CookerInOutListProduct>> getAvailbleProductsInStorage() async {
+  Future<List<Balancer>> getAvailbleProductsInStorage() async {
+    print(Boxes.getUser().values.first.token);
     try {
       Response res = await Dio().get(
         //OMBOR
@@ -131,9 +92,7 @@ class CookerService {
         }),
       );
 
-      return (res.data as List)
-          .map((e) => CookerInOutListProduct.fromJson(e))
-          .toList();
+      return (res.data as List).map((e) => Balancer.fromJson(e)).toList();
     } catch (e) {
       throw Exception(
           "InOutListProductService / getAvailableProductsInStorage: " +
@@ -141,7 +100,7 @@ class CookerService {
     }
   }
 
-  Future<List<CookerInOutListProduct>> getExistingProduct() async {
+  Future<List<Balancer>> getExistingProduct() async {
     // List<CookerInOutListProduct> _hardDate = List.generate(
     //   12,
     //   (index) => CookerInOutListProduct(
@@ -170,9 +129,7 @@ class CookerService {
           "Authorization": Boxes.getUser().values.first.token,
         }),
       );
-      return (res.data as List)
-          .map((e) => CookerInOutListProduct.fromJson(e))
-          .toList();
+      return (res.data as List).map((e) => Balancer.fromJson(e)).toList();
       // return _hardDate;
     } catch (e) {
       throw Exception(
@@ -189,7 +146,7 @@ class CookerService {
           "Authorization": Boxes.getUser().values.first.token,
         }),
       );
-       MealInfo? d;
+      MealInfo? d;
       try {
         d = MealInfo.fromJson(res.data);
       } catch (e) {
@@ -202,33 +159,44 @@ class CookerService {
     }
   }
 
-  postGarbage(WasteProduct data, String id) async {
+ Future<ResModel> postGarbage(
+    WasteProduct data,
+  ) async {
     try {
       Response res = await Dio().post(
-        "${AuthService.localhost}/out/api/storage/garbageAdd/$id",
+        "${AuthService.localhost}/out/api/cook/garbageAdd",
         options: Options(headers: {
           "Authorization": Boxes.getUser().values.first.token,
         }),
         data: data,
       );
-      return res.statusCode == 200;
+      return ResModel.fromJson(res.data);
     } catch (e) {
-      throw Exception("CookerService / getMealInfo" + e.toString());
+      return ResModel(object: {}, success: false, text: "Nimadir hato bo'ldi");
     }
   }
 
-  Future<List<CookerInOutListProduct>> getGarbage(
-      DateTime start, DateTime end) async {
+  Future<List<Garbage>> getGarbage(
+      {required DateTime start,
+      required DateTime end,
+      required bool isDefault}) async {
+    print(DTFM.maker(start.millisecondsSinceEpoch).toString());
+    print(DTFM.maker(end.millisecondsSinceEpoch).toString());
+    print(
+      "${AuthService.localhost}/out/api/storage/garbageGet?end=${end.millisecondsSinceEpoch}&start=${start.millisecondsSinceEpoch}",
+    );
+    print(Boxes.getUser().values.first.token);
     try {
       Response res = await Dio().get(
-        "${AuthService.localhost}/out/api/storage/garbageGet?end=${end.millisecondsSinceEpoch}&start=${start.millisecondsSinceEpoch}",
+        isDefault
+            ? "${AuthService.localhost}/out/api/cook/garbageGet"
+            : "${AuthService.localhost}/out/api/cook/garbageGet?end=${end.millisecondsSinceEpoch}&start=${start.millisecondsSinceEpoch}",
         options: Options(headers: {
           "Authorization": Boxes.getUser().values.first.token,
         }),
       );
-      return (res.data as List)
-          .map((e) => CookerInOutListProduct.fromJson(e))
-          .toList();
+      print(res.data);
+      return (res.data as List).map((e) => Garbage.fromJson(e)).toList();
     } catch (e) {
       throw Exception("CookerService / getGarbage: " + e.toString());
     }

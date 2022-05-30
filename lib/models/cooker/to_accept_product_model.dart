@@ -1,79 +1,96 @@
+// To parse this JSON data, do
+//
+//     final cookerProduct = cookerProductFromJson(jsonString);
+
+import 'dart:convert';
+
+List<CookerProduct> cookerProductFromJson(String str) =>
+    List<CookerProduct>.from(
+        json.decode(str).map((x) => CookerProduct.fromJson(x)));
+
+String cookerProductToJson(List<CookerProduct> data) =>
+    json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+
 class CookerProduct {
+  CookerProduct({
+    this.id,
+    this.productName,
+    this.productId,
+    this.companyName,
+    this.orderNumber,
+    this.kindergartenName,
+    this.kindergartenAddress,
+    this.sendWeight,
+    this.successWeight,
+    this.sendNumberPack,
+    this.successNumberPack,
+    this.timeOfShipment,
+    this.timeTaken,
+    this.theSender,
+    this.receiver,
+    this.status,
+    this.pack,
+    this.measurementType,
+  });
+
   String? id;
-  int? enterDate;
-  double? price;
-  double? weight;
-  String? status;
-  String? measurementType;
-  double? weightPack;
-  double? pack;
-  double? numberPack;
-  String? senderName;
-  dynamic usersId;
-  dynamic usersName;
-  int? productId;
   String? productName;
-  dynamic comment;
+  String? productId;
+  String? companyName;
+  String? orderNumber;
+  String? kindergartenName;
+  String? kindergartenAddress;
+  String? sendWeight;
+  String? successWeight;
+  String? sendNumberPack;
+  String? successNumberPack;
+  String? timeOfShipment;
+  String? timeTaken;
+  String? theSender;
+  String? receiver;
+  String? status;
+  String? pack;
+  String? measurementType;
 
-  CookerProduct(
-      {this.id,
-      this.enterDate,
-      this.price,
-      this.weight,
-      this.status,
-      this.measurementType,
-      this.weightPack,
-      this.pack,
-      this.numberPack,
-      this.senderName,
-      this.usersId,
-      this.usersName,
-      this.productId,
-      this.productName,
-      this.comment});
+  factory CookerProduct.fromJson(Map<String, dynamic> json) => CookerProduct(
+        id: json["id"].toString(),
+        productName: json["productName"].toString(),
+        productId: json["productId"].toString(),
+        companyName: json["companyName"].toString(),
+        orderNumber: json["orderNumber"].toString(),
+        kindergartenName: json["kindergartenName"].toString(),
+        kindergartenAddress: json["kindergartenAddress"].toString(),
+        sendWeight: json["sendWeight"].toString(),
+        successWeight: json["successWeight"].toString(),
+        sendNumberPack: json["sendNumberPack"].toString(),
+        successNumberPack: json["successNumberPack"].toString(),
+        timeOfShipment: json["timeOfShipment"].toString(),
+        timeTaken: json["timeTaken"].toString(),
+        theSender: json["theSender"].toString(),
+        receiver: json["receiver"].toString(),
+        status: json["status"].toString(),
+        pack: json["pack"].toString(),
+        measurementType: json["measurementType"].toString(),
+      );
 
-  CookerProduct.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    enterDate = json['enterDate'];
-    price = json['price'];
-    weight = json['weight'];
-    status = json['status'];
-    measurementType = json['measurementType'];
-    weightPack = json['weightPack'];
-    pack = json['pack'];
-
-    numberPack = json['numberPack'];
-
-    senderName = json['senderName'];
-
-    usersId = json['usersId'];
-
-    usersName = json['usersName'];
-
-    productId = json['productId'];
-
-    productName = json['productName'];
-
-    comment = json['comment'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
-    data['enterDate'] = enterDate;
-    data['price'] = price;
-    data['weight'] = weight;
-    data['status'] = status;
-    data['measurementType'] = measurementType;
-    data['weightPack'] = weightPack;
-    data['pack'] = pack;
-    data['numberPack'] = numberPack;
-    data['senderName'] = senderName;
-    data['usersId'] = usersId;
-    data['usersName'] = usersName;
-    data['productId'] = productId;
-    data['productName'] = productName;
-    data['comment'] = comment;
-    return data;
-  }
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "productName": productName,
+        "productId": productId,
+        "companyName": companyName,
+        "orderNumber": orderNumber,
+        "kindergartenName": kindergartenName,
+        "kindergartenAddress": kindergartenAddress,
+        "sendWeight": sendWeight,
+        "successWeight": successWeight,
+        "sendNumberPack": sendNumberPack,
+        "successNumberPack": successNumberPack,
+        "timeOfShipment": timeOfShipment,
+        "timeTaken": timeTaken,
+        "theSender": theSender,
+        "receiver": receiver,
+        "status": status,
+        "pack": pack,
+        "measurementType": measurementType,
+      };
 }

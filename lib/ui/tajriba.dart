@@ -1,81 +1,103 @@
-// import 'package:flutter/material.dart';
-// import 'package:governess/consts/size_config.dart';
-// import 'package:governess/models/tajriba_model.dart';
-// import 'package:governess/services/supplier_service.dart';
-// import 'package:governess/ui/widgets/future_builder_of_no_data_widget.dart';
-// import 'package:governess/ui/widgets/indicator_widget.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:governess/consts/size_config.dart';
+import 'package:governess/consts/strings.dart';
+import 'package:governess/models/nurse_models/daily_menu_model.dart';
+import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
+import 'package:governess/services/network.dart';
+import 'package:governess/services/nurse_service.dart';
+import 'package:governess/ui/widgets/daily_menu_widget.dart';
+import 'package:governess/ui/widgets/date_time_show_button_widget.dart';
+import 'package:governess/ui/widgets/future_builder_of_no_data_widget.dart';
+import 'package:governess/ui/widgets/indicator_widget.dart';
 
-// class TajribaPage extends StatefulWidget {
-//   const TajribaPage({Key? key}) : super(key: key);
+class TAjribaPage extends StatefulWidget {
+  const TAjribaPage({Key? key}) : super(key: key);
 
-//   @override
-//   State<TajribaPage> createState() => _TajribaPageState();
-// }
+  @override
+  State<TAjribaPage> createState() => _TAjribaPageState();
+}
 
-// class _TajribaPageState extends State<TajribaPage> {
-//   @override
-//   Widget build(BuildContext context) {
-//     Tajriba a = Tajriba.fromJson({
-//       "id": "68ad3f27-b496-4cf5-9992-5b2791bc5aa0",
-//       "supplierName": "Ta`minotchi",
-//       "productName": "Asal",
-//       "productId": 28,
-//       "companyId": 1,
-//       "companyName": "Governess Business",
-//       "orderId": 5,
-//       "orderNumber": "17-05-2022",
-//       "weight": 5.500000,
-//       "successWeight": 0,
-//       "numberPack": 5.500000,
-//       "successNumberPack": 0,
-//       "requestDate": 1653647485545,
-//       "status": "YANGI",
-//       "pack": 0.000000,
-//       "measurementType": "kg"
-//     });
-//     debugPrint(a.successWeight.toString() + " successWeight");
-//     debugPrint(a.companyId.toString() + " companyId");
-//     debugPrint(a.companyName.toString() + " companyName");
+class _TAjribaPageState extends State<TAjribaPage> {
+  DateTime when = DateTime.now();
 
-//     debugPrint(a.id.toString() + " id");
-//     debugPrint(a.measurementType.toString() + " measurementType");
-//     debugPrint(a.numberPack.toString() + " numberPack");
+  @override
+  Widget build(BuildContext context) {
+    SizeConfig().init(context);
+    return Scaffold(
+      appBar: _appBar(context),
+      body: FutureBuilder<MenuInfo>(
+        future: NurseService().tajribaDailyMenu(when),
+        builder:
+            (BuildContext context, AsyncSnapshot<MenuInfo> snap) {
+          if (snap.connectionState == ConnectionState.done && snap.hasData) {
+            return Padding(
+              padding: EdgeInsets.only(top: gH(20.0)),
+              child: Center(child: SingleChildScrollView(child: Container(color: Colors.orange,child: Text(snap.data.toString()),)))
+            );
+          } else if (snap.connectionState == ConnectionState.done &&
+              !snap.hasData) {
+            return const NoDataWidgetForFutureBuilder(
+                "Hozircha Menyu Mavjud Emas!");
+          } else {
+            return IndicatorWidget(snap);
+          }
+        },
+      ),
+    );
+  }
 
-//     debugPrint(a.orderId.toString() + " orderId");
-//     debugPrint(a.orderNumber.toString() + " orderNumber");
-//     debugPrint(a.pack.toString() + " pack");
+  AppBar _appBar(BuildContext context) {
+    return AppBar(
+      backgroundColor: mainColor,
+      elevation: 0,
+      centerTitle: true,
+      actions: [
+        DateTimeShowButton(
+          DTFM.maker(when.millisecondsSinceEpoch),
+          () async {
+            bool isTherInternet = await checkConnectivity();
+            if (isTherInternet) {
+              showDataPicker(
+                context,
+              );
+            } else {
+              showNoNetToast(false);
+            }
+          },
+        ),
+      ],
+    );
+  }
 
-//     debugPrint(a.productId.toString() + " productId");
-//     debugPrint(a.productName.toString() + " productName");
-//     debugPrint(a.requestDate.toString() + " requestDate");
-
-//     debugPrint(a.status.toString() + " status");
-//     debugPrint(a.successNumberPack.toString() + " successNumberPack");
-//     debugPrint(a.supplierName.toString() + " supplierName");
-
-//     debugPrint(a.weight.toString() + " weight");
-
-//     SizeConfig().init(context);
-//     return Scaffold(
-//       appBar: AppBar(title: Text("fasdfasdfasdfasd")),
-//       body: FutureBuilder<List<Tajriba>>(
-//         future: SupplierService().getToBuyProductsT(),
-//         builder: (context, AsyncSnapshot<List<Tajriba>> snap) {
-//           if (snap.connectionState == ConnectionState.done) {
-//             if (snap.hasData) {
-//               List<Tajriba> d = snap.data!;
-//               return Column(
-//                 children: [],
-//               );
-//             } else {
-//               return const NoDataWidgetForFutureBuilder(
-//                   "Hozircha Harid Qilinadigan Mahsulotlar Mavjud Emas");
-//             }
-//           } else {
-//             return IndicatorWidget(snap);
-//           }
-//         },
-//       ),
-//     );
-//   }
-// }
+  showDataPicker(
+    BuildContext context,
+  ) {
+    DatePicker.showPicker(
+      context,
+      showTitleActions: true,
+      theme: DatePickerTheme(
+        backgroundColor: lightGreyColor,
+        containerHeight: gH(200.0),
+        headerColor: mainColor,
+        itemStyle: const TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.bold,
+          fontSize: 18,
+        ),
+        doneStyle: TextStyle(
+          color: whiteColor,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          letterSpacing: gW(1.5),
+          decoration: TextDecoration.underline,
+        ),
+      ),
+      onConfirm: (DateTime date) {
+        when = date;
+        setState(() {});
+      },
+      locale: LocaleType.en,
+    );
+  }
+}

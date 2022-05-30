@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:governess/local_storage/boxes.dart';
+import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/models/other/post_res_model.dart';
 import 'package:governess/models/supplier/product_with_available_company_names_model.dart';
 import 'package:governess/models/supplier/send_product_model.dart';
@@ -11,7 +12,12 @@ import 'package:governess/services/auth_service.dart';
 
 class SupplierService {
   Dio client = Dio();
-  Future<ProductWithAvailableCompnayNames> getToBuyProducts() async {
+  ////////////////////////////////////////////////////////////////////
+  Future<ProductWithAvailableCompnayNames> getToBuyProducts({
+    DateTime? start,
+    DateTime? end,
+  }) async {
+   
     List<Map<String, dynamic>> hardData = [
       {
         "id": "68ad3f27-b496-4cf5-9992-5b2791bc5aa0",
@@ -1025,8 +1031,9 @@ class SupplierService {
 
     try {
       Response res = await Dio().get(
-        // "http://192.168.68.115:7788/out/api/supplier/getRequiredProduct",
-        "${AuthService.localhost}/out/api/supplier/getRequiredProduct",
+        (start == null || end == null)
+            ? "${AuthService.localhost}/out/api/supplier/getRequiredProduct"
+            : "${AuthService.localhost}/out/api/supplier/getRequiredProduct?start=${start.millisecondsSinceEpoch}&end=${end.millisecondsSinceEpoch}",
         options: Options(
           headers: {
             "Authorization": Boxes.getUser().values.first.token,
@@ -1046,12 +1053,9 @@ class SupplierService {
     } catch (e) {
       throw Exception("SupplierService / getToBuyProducts: " + e.toString());
     }
-    // return ProductWithAvailableCompnayNames(
-    //     availables: <String>[], product: <Product>[]);
-
-    
   }
 
+////////////////////////////////////////////////////////////////
   Future<List<Tajriba>> getToBuyProductsT() async {
     try {
       Response res = await client.get(
@@ -1089,6 +1093,7 @@ class SupplierService {
     }
   }
 
+///////////////////////////////////////////////////////////////////
   Future<ResModel> sendProduct(
       {required SendProduct v, required String id}) async {
     try {
@@ -1113,27 +1118,24 @@ class SupplierService {
     }
   }
 
-  Future<List<ShippedProduct>> getShippedProduct() async {
-    // p("Serveice ga kirdi: ");
+//////////////////////////////////////////////////////////////
+  Future<List<ShippedProduct>> getShippedProduct({
+    DateTime? start,
+    DateTime? end,
+  }) async {
     try {
       Response res = await Dio().get(
-        "${AuthService.localhost}/out/api/supplier/getShippedProduct",
+        // "${AuthService.localhost}/out/api/supplier/getShippedProduct?start=1653678000000&end=1653937200000",
+        (start == null || end == null)
+            ? "${AuthService.localhost}/out/api/supplier/getShippedProduct"
+            : "${AuthService.localhost}/out/api/supplier/getShippedProduct?start=${start.millisecondsSinceEpoch}&end=${end.millisecondsSinceEpoch}",
         options: Options(headers: {
           "Authorization": Boxes.getUser().values.first.token,
         }),
       );
-      // p(res.data);
-      return (res.data as List).map((e) => ShippedProduct.fromJson(e)).toList();
+         return (res.data as List).map((e) => ShippedProduct.fromJson(e)).toList();
     } catch (e) {
       throw Exception("SupplierService / getShippedProduct: " + e.toString());
     }
-  }
-}
-
-class Myy {
-  String? id;
-  Myy({this.id});
-  factory Myy.fromJson(Map<String, dynamic> n) {
-    return Myy(id: n['id']);
   }
 }

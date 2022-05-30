@@ -2,11 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/models/cooker/to_accept_product_model.dart';
+import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/services/cooker_service.dart';
 import 'package:governess/consts/decorations.dart';
 import 'package:governess/consts/strings.dart';
 import 'package:governess/models/cooker/receive_product_model.dart';
-import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/providers/cooker/accept_product_provider.dart';
 import 'package:governess/services/network.dart';
 import 'package:governess/ui/widgets/cooker_show_product_expansion_tile_widget.dart';
@@ -30,8 +30,7 @@ class _CookerAcceptProductDefaultPageState
         future: CookerService().getInOutDefault(),
         builder: (context, AsyncSnapshot<List<CookerProduct>> snap) {
           if (snap.connectionState == ConnectionState.done) {
-            // ignore: prefer_is_empty
-            if (snap.data!.length < 1) {
+            if (snap.data!.isEmpty) {
               return Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -53,7 +52,6 @@ class _CookerAcceptProductDefaultPageState
                 ),
               );
             } else {
-              // return AcceptProductArxivBodyWidget(data: snap.data!);
               return _body(context: context, dataa: snap.data!);
             }
           } else {
@@ -78,7 +76,7 @@ class _CookerAcceptProductDefaultPageState
     dataa.sort(
       (a, b) => a.productName!.compareTo(b.productName!),
     );
-   
+
     if (dataa.isNotEmpty) {
       return ListView.separated(
         shrinkWrap: true,
@@ -156,7 +154,7 @@ class _CookerAcceptProductDefaultPageState
                       .clear();
                   Provider.of<CookerAcceptProductProvider>(context,
                           listen: false)
-                      .initNumberController(data.numberPack!.toString());
+                      .initNumberController(data.sendNumberPack!);
                   _shownputDialog(context, product: data, index: index);
                 } else {
                   showNoNetToast(false);
@@ -166,26 +164,23 @@ class _CookerAcceptProductDefaultPageState
             ),
           ),
           SizedBox(height: gH(10.0)),
-          _textInRow(
-              "Korxona nomi",
-              data.senderName.toString().length > 13
-                  ? data.senderName
-                      .toString()
-                      .substring(0, 12)
-                      .replaceRange(12, 12, '..')
-                  : data.senderName.toString()),
+          _textInRow("Buyurtma raqami", data.orderNumber!),
           _divider(),
-          _textInRow("Yuborilgan Sana",
-              data.enterDate == null ? "null" : DTFM.maker(data.enterDate!)),
+          _textInRow("So'rov sanasi", DTFM.makerFromStr(data.timeOfShipment)),
           _divider(),
-          _textInRow("O'lchov birligi", data.measurementType.toString()),
+          _textInRow("O'lchov birligi", data.measurementType!),
           _divider(),
-          _textInRow("Yaxlitlash miqdori", data.pack.toString()),
+          _textInRow("Qadoq miqdori", data.pack!),
           _divider(),
-          _textInRow("Qadoqlar soni", data.numberPack.toString()),
+          _textInRow("Qabul qilinadigan miqdori", data.sendWeight!),
           _divider(),
-          _textInRow("Qadoqlangandan so'ng (miq)", data.weightPack.toString()),
+          _textInRow("Qabul qilinadigan qadoqlar soni", data.sendNumberPack!),
           _divider(),
+          _textInRow("Qabul qilingan miqdori", data.successWeight!),
+          _divider(),
+          _textInRow("Qabul qilingan qadoqlar soni", data.successNumberPack!),
+          _divider(),
+          _textInRow("Holati", data.status!),
           SizedBox(
             height: gH(10.0),
           ),
@@ -272,12 +267,10 @@ class _AcceptProductDialogContentWidget extends StatelessWidget {
           children: [
             _richTextInRow(["Nomi:  ", data.productName!.toString()]),
             _richTextInRow(["Yaxlitlash miqdaori:  ", data.pack.toString()]),
-            _richTextInRow(["Nechta:  ", data.numberPack.toString()]),
-            _richTextInRow(["Umumiy:  ", data.weightPack.toString()]),
+            _richTextInRow(["Nechta:  ", data.sendWeight.toString()]),
+            _richTextInRow(["Umumiy:  ", data.sendNumberPack.toString()]),
             const Spacer(),
             _numberInputField(context, data),
-            // const Spacer(),
-            // _priceInputField(context),
             const Spacer(),
             _commentInputField(context),
             const Spacer(),
@@ -322,7 +315,7 @@ class _AcceptProductDialogContentWidget extends StatelessWidget {
                                 listen: false)
                             .numberController
                             .text) *
-                    (data.pack! > 0 ? data.pack! : 1))
+                    (double.parse(data.pack!) > 0 ? double.parse(data.pack!) : 1))
                 .toDouble();
             CookerService()
                 .acceptProduct(
@@ -336,7 +329,7 @@ class _AcceptProductDialogContentWidget extends StatelessWidget {
                     Provider.of<CookerAcceptProductProvider>(con, listen: false)
                         .numberController
                         .text),
-                weightPack: number,
+                weight: number,
               ),
             )
                 .then((value) {
@@ -370,7 +363,7 @@ class _AcceptProductDialogContentWidget extends StatelessWidget {
   _numberInputField(BuildContext context, CookerProduct data) {
     return TextFormField(
       onChanged: (v) {
-        if (double.parse(v) > data.numberPack!) {
+        if (double.parse(v) > double.parse(data.sendNumberPack!)) {
           showToast(
               "Kiritilgan miqdor keraklisidan oshmasligi kerak", false, false);
           Provider.of<CookerAcceptProductProvider>(context, listen: false)
