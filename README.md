@@ -15,7 +15,8 @@ For help getting started with Flutter, view our
 [online documentation](https://flutter.dev/docs), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
 
-Supplier pages:
+
+- [Supplier pages:](https://github.com/ravshanbk/yengil_yechim_0_governess/tree/master/lib/ui/supplier))
 <tr>
 	<p align="space">
 <img class="padded"  width="230" src="https://user-images.githubusercontent.com/88109580/171384826-26b7810e-f5d4-4123-8bba-523317d8d865.jpg"  />1
