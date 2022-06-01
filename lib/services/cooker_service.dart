@@ -82,10 +82,8 @@ class CookerService {
   }
 
   Future<List<Balancer>> getAvailbleProductsInStorage() async {
-    print(Boxes.getUser().values.first.token);
     try {
       Response res = await Dio().get(
-        //OMBOR
         "${AuthService.localhost}/out/api/cook/getProductBalancer",
         options: Options(headers: {
           "Authorization": Boxes.getUser().values.first.token,
@@ -146,20 +144,17 @@ class CookerService {
           "Authorization": Boxes.getUser().values.first.token,
         }),
       );
-      MealInfo? d;
-      try {
-        d = MealInfo.fromJson(res.data);
-      } catch (e) {
-        throw Exception(e);
-      }
-
-      return d;
+      print(res.data);
+      print(
+          "MealInfo: ${AuthService.localhost}/out/api/meal/getMeal?mealAgeStandardId=$mealAgeStandartId&menuId=$menuId");
+      print("MealInfo" + Boxes.getUser().values.first.token);
+      return MealInfo.fromJson(res.data);
     } catch (e) {
       throw Exception("CookerService / getMealInfo" + e.toString());
     }
   }
 
- Future<ResModel> postGarbage(
+  Future<ResModel> postGarbage(
     WasteProduct data,
   ) async {
     try {
@@ -180,12 +175,6 @@ class CookerService {
       {required DateTime start,
       required DateTime end,
       required bool isDefault}) async {
-    print(DTFM.maker(start.millisecondsSinceEpoch).toString());
-    print(DTFM.maker(end.millisecondsSinceEpoch).toString());
-    print(
-      "${AuthService.localhost}/out/api/storage/garbageGet?end=${end.millisecondsSinceEpoch}&start=${start.millisecondsSinceEpoch}",
-    );
-    print(Boxes.getUser().values.first.token);
     try {
       Response res = await Dio().get(
         isDefault
@@ -195,7 +184,7 @@ class CookerService {
           "Authorization": Boxes.getUser().values.first.token,
         }),
       );
-      print(res.data);
+
       return (res.data as List).map((e) => Garbage.fromJson(e)).toList();
     } catch (e) {
       throw Exception("CookerService / getGarbage: " + e.toString());

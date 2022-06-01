@@ -1,6 +1,7 @@
 import 'dart:async';
 // flutter build apk --build-name=1.14 --build-number=14
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/local_storage/boxes.dart';
 import 'package:governess/models/hive_models/user_h_model.dart';
@@ -9,6 +10,7 @@ import 'package:governess/providers/auth/pin_code_page_provider.dart';
 import 'package:governess/providers/cooker/accept_product_provider.dart';
 import 'package:governess/providers/cooker/cooker_products_page_provider.dart';
 import 'package:governess/providers/cooker/garbage_provider.dart';
+import 'package:governess/providers/nurse/number_of_children_provider.dart';
 import 'package:governess/providers/nurse/daily_menu_page_provider.dart';
 import 'package:governess/providers/nurse/editing_children_page_provider.dart';
 import 'package:governess/providers/nurse/enter_daily_children_page_provider.dart';
@@ -20,8 +22,6 @@ import 'package:governess/providers/supplier/to_buy_products_page_provider.dart.
 import 'package:governess/providers/cooker/waste_product_cooker_page_provider.dart';
 import 'package:governess/ui/auth/auth_page.dart';
 import 'package:governess/ui/auth/check_pincode_page.dart';
-import 'package:governess/ui/nurse/sub_pages/show_number_of_children_nurse_page.dart';
-import 'package:governess/ui/tajriba.dart';
 import 'package:governess/ui/widgets/governess_app_bar.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
@@ -42,6 +42,9 @@ void main() async {
       providers: [
         ChangeNotifierProvider(
           create: (context) => DailyMenuPageProvider(),
+        ),
+         ChangeNotifierProvider(
+          create: (context) => NurseNumberOfChildrenProvider(),
         ),
          ChangeNotifierProvider(
           create: (context) => GetShippedDateTimeProvider(),
@@ -92,6 +95,7 @@ void main() async {
 @immutable
 // ignore: must_be_immutable
 class MyApp extends StatefulWidget {
+  
   bool hasInternet;
   MyApp(this.hasInternet, {Key? key}) : super(key: key);
 
@@ -104,6 +108,8 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light); // 1
+
     listener = InternetConnectionChecker().onStatusChange.listen(
       (InternetConnectionStatus status) {
         switch (status) {

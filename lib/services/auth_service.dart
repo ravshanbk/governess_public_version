@@ -11,7 +11,7 @@ class AuthService {
   });
 
   static String localhost = "http://185.217.131.117:7788";
-  // static String localhost = "http://192.168.43.62:7788";
+  // static String localhost = "http://192.168.250.248:7788";
 
   Future<GetUserModel> getUser(String login, String password) async {
     User decodedUser;
@@ -29,7 +29,7 @@ class AuthService {
         user: decodedUser,
       );
     } on DioError catch (e) {
-      return GetUserModel(success: false, user: User(), text: e.message);
+      return GetUserModel(success: false, user: User(), text: "Parol yoki login xato!");
     }
   }
 

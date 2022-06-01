@@ -142,40 +142,48 @@ class _AcceptProductDialogContentWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      type: MaterialType.transparency,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: gW(20.0), vertical: gH(15)),
-        margin: EdgeInsets.only(
-          top: gH(0.0),
-          left: gW(10.0),
-          right: gW(10.0),
-          bottom: gH(340.0),
-        ),
-        decoration: BoxDecoration(
-          color: whiteColor,
-          border: Border.all(color: greyColor),
-          borderRadius: BorderRadius.circular(
-            gW(10.0),
+    return WillPopScope(
+      onWillPop: () {
+        Provider.of<GarbageProvider>(context, listen: false)
+            .clearNumberController();
+        return Future.value(true);
+      },
+      child: Material(
+        type: MaterialType.transparency,
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: gW(20.0), vertical: gH(15)),
+          margin: EdgeInsets.only(
+            top: gH(0.0),
+            left: gW(10.0),
+            right: gW(10.0),
+            bottom: gH(340.0),
           ),
-        ),
-        child: Form(
-          key: context.read<GarbageProvider>().formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _richTextInRow(["Nomi:  ", data.productName!.toString()]),
-              _richTextInRow(["Yaxlitlash miqdaori:  ", data.pack.toString()]),
-              _richTextInRow(["Nechta:  ", data.numberPack.toString()]),
-              _richTextInRow(["Umumiy:  ", data.weight.toString()]),
-              const Spacer(),
-              _numberInputField(context, data),
-              const Spacer(),
-              _commentInputField(context),
-              const Spacer(),
-              _wasteButtonInShowDialog(context, data),
-              const Spacer(),
-            ],
+          decoration: BoxDecoration(
+            color: whiteColor,
+            border: Border.all(color: greyColor),
+            borderRadius: BorderRadius.circular(
+              gW(10.0),
+            ),
+          ),
+          child: Form(
+            key: context.read<GarbageProvider>().formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _richTextInRow(["Nomi:  ", data.productName!.toString()]),
+                _richTextInRow(
+                    ["Yaxlitlash miqdaori:  ", data.pack.toString()]),
+                _richTextInRow(["Nechta:  ", data.numberPack.toString()]),
+                _richTextInRow(["Umumiy:  ", data.weight.toString()]),
+                const Spacer(),
+                _numberInputField(context, data),
+                const Spacer(),
+                _commentInputField(context),
+                const Spacer(),
+                _wasteButtonInShowDialog(context, data),
+                const Spacer(),
+              ],
+            ),
           ),
         ),
       ),
@@ -206,10 +214,7 @@ class _AcceptProductDialogContentWidget extends StatelessWidget {
         bool isNet = await checkConnectivity();
         if (isNet) {
           if (Provider.of<GarbageProvider>(con, listen: false)
-                  .numberController
-                  .text
-                  .isNotEmpty &&
-              con.read<GarbageProvider>().commentController.text.isNotEmpty) {
+                  .formKey.currentState!.validate()) {
             CookerService()
                 .postGarbage(
               WasteProduct(
@@ -246,17 +251,10 @@ class _AcceptProductDialogContentWidget extends StatelessWidget {
               } else {
                 Provider.of<GarbageProvider>(con, listen: false)
                     .clearNumberController();
-                toSetState();
-
                 showToast(value.text!.toString(), value.success!, false);
-                toSetState();
-                Navigator.pop(con);
+                toSetState();  Navigator.pop(con);
               }
             });
-          } else {
-            toSetState();
-
-            showToast("Miqdorni kiriting, nol bolmasin", false, false);
           }
         } else {
           showNoNetToast(false);
@@ -283,7 +281,7 @@ class _AcceptProductDialogContentWidget extends StatelessWidget {
       keyboardType: TextInputType.number,
       controller: context.read<GarbageProvider>().numberController,
       decoration: DecorationMy.inputDecoration(
-        "Miqdor...",
+        "Miqdor..",
         null,
       ),
     );

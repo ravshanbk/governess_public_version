@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/consts/strings.dart';
-import 'package:governess/models/cooker/meal_info_model.dart';
 import 'package:governess/models/nurse_models/daily_menu_model.dart';
 import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/services/network.dart';
 import 'package:governess/services/nurse_service.dart';
+import 'package:governess/ui/nurse/nurse_home_page.dart';
 import 'package:governess/ui/widgets/daily_menu_widget.dart';
 import 'package:governess/ui/widgets/date_time_show_button_widget.dart';
 import 'package:governess/ui/widgets/future_builder_of_no_data_widget.dart';
@@ -25,28 +25,38 @@ class _NurseShowDailyMenuPageState extends State<NurseShowDailyMenuPage> {
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
-    return Scaffold(
-      appBar: _appBar(context),
-      body: FutureBuilder<MenuInfo>(
-        future: NurseService().getDailyMenu(when),
-        builder: (BuildContext context, AsyncSnapshot<MenuInfo> snap) {
-          if (snap.connectionState == ConnectionState.done && snap.hasData) {
-            return Padding(
-              padding: EdgeInsets.only(top: gH(20.0)),
-              child: DailyMenuWidget(
-                con: context,
-                data: snap.data!,
-                onTap: (int __, int n) {},
-              ),
-            );
-          } else if (snap.connectionState == ConnectionState.done &&
-              !snap.hasData) {
-            return const NoDataWidgetForFutureBuilder(
-                "Hozircha Menyu Mavjud Emas!");
-          } else {
-            return IndicatorWidget(snap);
-          }
-        },
+    return WillPopScope(
+      onWillPop: () {
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>const NurseHomePage()),
+            (route) => false);
+        return Future.value(true);
+      },
+      child: Scaffold(
+        appBar: _appBar(context),
+        body: FutureBuilder<MenuInfo>(
+          future: NurseService().getDailyMenu(when),
+          builder: (BuildContext context, AsyncSnapshot<MenuInfo> snap) {
+            if (snap.connectionState == ConnectionState.done && snap.hasData) {
+              return Padding(
+                padding: EdgeInsets.only(top: gH(20.0)),
+                child: DailyMenuWidget(
+                  con: context,
+                  data: snap.data!,
+                  onTap: (int __, int n) {},
+                ),
+              );
+            } else if (snap.connectionState == ConnectionState.done &&
+                !snap.hasData) {
+              return const NoDataWidgetForFutureBuilder(
+                  "Hozircha Menyu Mavjud Emas!");
+            } else {
+              return IndicatorWidget(snap);
+            }
+          },
+        ),
       ),
     );
   }
@@ -101,7 +111,7 @@ class _NurseShowDailyMenuPageState extends State<NurseShowDailyMenuPage> {
         when = date;
         setState(() {});
       },
-      locale: LocaleType.en,
+      locale: LocaleType.uz,
     );
   }
 }

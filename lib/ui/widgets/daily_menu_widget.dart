@@ -12,7 +12,6 @@ class DailyMenuWidget extends StatelessWidget {
   const DailyMenuWidget(
       {required this.data, required this.con, required this.onTap, Key? key})
       : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -145,7 +144,7 @@ class DailyMenuWidget extends StatelessWidget {
                           .mealAgeStandardResponseSaveDtoList![n]),
                 );
               },
-              itemCount: data.mealTimeStandardResponseSaveDtoList!.length
+              itemCount: data.mealTimeStandardResponseSaveDtoList![__].mealAgeStandardResponseSaveDtoList!.length
                  ),
         ],
       ),

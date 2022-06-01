@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/consts/strings.dart';
 import 'package:governess/services/network.dart';
+import 'package:governess/ui/cooker/sub_pages/garbage/waste_product_page.dart';
 import 'package:governess/ui/cooker/sub_pages/in_storage/show_products_in_storage_page.dart.dart';
 import 'package:governess/ui/cooker/sub_pages/existing/show_existing_products_in_storage_page.dart';
 import 'package:governess/ui/cooker/sub_pages/accept/tab_accept_product_page.dart';
-import 'package:governess/ui/cooker/sub_pages/waste/waste_product_page.dart';
-import 'package:governess/ui/tajriba.dart';
 
 class CookerProductsPage extends StatelessWidget {
   const CookerProductsPage({Key? key}) : super(key: key);
@@ -14,8 +13,8 @@ class CookerProductsPage extends StatelessWidget {
     "Mahsulotlarni Qabul Qilish",
     "Ombordagi Mahsulotlar",
     "Zahiradagi Mahsulotlar",
-    "Chiqindilar",
-    "",
+    "Chiqit",
+  
   ];
   @override
   Widget build(BuildContext context) {
@@ -48,8 +47,7 @@ class CookerProductsPage extends StatelessWidget {
                           return const CookerShowExistingProductPage();
                         case 3:
                           return const CookerWastProductPage();
-                        case 4:
-                          return const TAjribaPage();
+                      
 
                         default:
                           return const CookerProductsPage();

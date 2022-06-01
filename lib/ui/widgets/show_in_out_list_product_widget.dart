@@ -20,7 +20,7 @@ class ShowInOutListProductWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      //  color: mainColor,
+     
 
       child: ExpansionTile(
         collapsedBackgroundColor: mainColor_02,
@@ -30,6 +30,25 @@ class ShowInOutListProductWidget extends StatelessWidget {
         key: Key(DateTime.now().toString()),
         initiallyExpanded: isExpanded,
         title: _title(),
+        subtitle: Row(
+          children: [
+            Text(
+              "Miqdori:",
+              style: TextStyle(color: greyColor, fontSize: gW(14.0)),
+            ),
+            SizedBox(
+              width: gW(5.0),
+            ),
+            Text(
+              data.numberPack!.toString(),
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: gW(14.0),
+                color:mainColor,
+              ),
+            ),
+          ],
+        ),
         children: [
           _divider(),
           TextInRowWidget("Qadoq miqdori", data.pack!.toString()),

@@ -54,7 +54,7 @@ class _CookerAcceptProductArxivPageState
         }
         setState(() {});
       },
-      locale: LocaleType.en,
+      locale: LocaleType.uz,
     );
   }
 
@@ -104,13 +104,28 @@ class _CookerAcceptProductArxivPageState
                         height: 590, width: 335, child: _body(snap, context));
                   }
                 } else {
+                  String text;
+switch (snap.connectionState) {
+  
+  case ConnectionState.none:
+  
+  case ConnectionState.waiting:
+  
+  case ConnectionState.active:
+ text = "Kuting...";
+    break;
+  case ConnectionState.done:
+  text = "Bajarildi...";
+    break;
+}
+
                   return Center(
                     child: Column(
                       children: [
                         SizedBox(
                           height: gH(200.0),
                         ),
-                        Text(snap.connectionState.name),
+                        Text(text),
                         CupertinoActivityIndicator(
                           radius: gW(20.0),
                         ),
@@ -229,7 +244,7 @@ class _CookerAcceptProductArxivPageState
           _divider(),
           _textInRow("Buyurtma raqami", data.orderNumber!),
           _divider(),
-          _textInRow("So'rov sanasi", data.timeOfShipment!),
+          _textInRow("So'rov sanasi", DTFM.makerFromStr(data.timeOfShipment!)),
           _divider(),
           _textInRow("O'lchov birligi", data.measurementType!),
           _divider(),

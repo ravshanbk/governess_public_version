@@ -11,7 +11,7 @@ import 'package:governess/ui/auth/pin_code_page.dart';
 import 'package:governess/ui/widgets/governess_app_bar.dart';
 import 'package:provider/provider.dart';
 
-// ignore: must_be_immutable
+
 class AuthPage extends StatefulWidget {
   const AuthPage({Key? key}) : super(key: key);
 
@@ -31,10 +31,7 @@ class _AuthPageState extends State<AuthPage> {
   @override
   Widget build(BuildContext context) {
 
-//  var number = (double.parse(
-//                     "932") *
-//                 0.060);
-//             p(number);
+
 
     SizeConfig().init(context);
     return Scaffold(
@@ -100,7 +97,7 @@ class _AuthPageState extends State<AuthPage> {
                 if (loginController.text.isNotEmpty &&
                     passwordController.text.isNotEmpty) {
                   AuthService()
-                      .getUser(loginController.text, passwordController.text)
+                      .getUser(loginController.text.trim(), passwordController.text.trim())
                       .then(
                     (value) async {
                       if (value.success) {
@@ -115,8 +112,7 @@ class _AuthPageState extends State<AuthPage> {
                           username: value.user.username,
                         );
 
-                        Provider.of<PinCodePageProvider>(context, listen: false)
-                            .initAuthorization();
+                        
                         showToast("Muvaffaqiyat !!!", true, false);
 
                         isInProgress = false;

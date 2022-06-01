@@ -144,7 +144,7 @@ class _ManagerShowNumberOfChildrenPageState
         when = date;
         setState(() {});
       },
-      locale: LocaleType.en,
+      locale: LocaleType.uz,
     );
   }
 }

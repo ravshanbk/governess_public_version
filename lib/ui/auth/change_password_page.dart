@@ -6,17 +6,17 @@ import 'package:governess/local_storage/boxes.dart';
 import 'package:governess/local_storage/user_storage.dart';
 import 'package:governess/models/user/change_user_info.dart';
 import 'package:governess/services/auth_service.dart';
+import 'package:governess/ui/auth/auth_page.dart';
 import 'package:governess/ui/widgets/send_button_widger.dart.dart';
 
-// ignore: must_be_immutable
 class ChangePasswordPage extends StatelessWidget {
   ChangePasswordPage({Key? key}) : super(key: key);
 
-  GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  TextEditingController loginController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
-  TextEditingController retwritePasswordController = TextEditingController();
-
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final TextEditingController loginController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController retwritePasswordController =
+      TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -42,37 +42,25 @@ class ChangePasswordPage extends StatelessWidget {
                   AuthService()
                       .changeLoginPassword(
                     info: ChangUserInfo(
-                      newPassword:
-                       retwritePasswordController
-                              .text,
-                      oldPassword:
-                        passwordController
-                              .text,
-                      username:
-                        loginController
-                              .text,
+                      newPassword: retwritePasswordController.text,
+                      oldPassword: passwordController.text,
+                      username: loginController.text,
                     ),
                   )
                       .then(
                     (value) async {
                       if (value.success!) {
-                        var user = Boxes.getUser().values.first;
-
-                        await UserHive().addUser(
-                          fatherName: user.fatherName,
-                          id: user.id,
-                          name: user.name,
-                          role: user.role,
-                          success: user.success,
-                          surname: user.surname,
-                          token: user.token,
-                          username: loginController
-                              .text,
-                        );
+                        await UserHive().logOutUser();
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const AuthPage(),
+                            ),
+                            (route) => false);
 
                         showToast(value.text!, value.success!, false);
-                        Navigator.pop(context);
                       } else {
+                        Navigator.pop(context);
                         showToast(value.text!, value.success!, false);
                       }
                     },
@@ -82,7 +70,6 @@ class ChangePasswordPage extends StatelessWidget {
               ),
             ),
           )
-         
         ],
       ),
       body: Padding(
@@ -107,8 +94,7 @@ class ChangePasswordPage extends StatelessWidget {
                   if (v!.isEmpty) return "Login kiriting";
                   return null;
                 },
-                controller:
-                 loginController,
+                controller: loginController,
                 decoration: DecorationMy.inputDecoration("Login...", null),
               ),
               SizedBox(
@@ -129,8 +115,7 @@ class ChangePasswordPage extends StatelessWidget {
                   if (v!.isEmpty) return "Parol kiriting";
                   return null;
                 },
-                controller:
-                   passwordController,
+                controller: passwordController,
                 decoration:
                     DecorationMy.inputDecoration("Joriy Parolingiz", null),
               ),
@@ -152,8 +137,7 @@ class ChangePasswordPage extends StatelessWidget {
                   if (v!.isEmpty) return "Parol kiriting";
                   return null;
                 },
-                controller:
-               retwritePasswordController,
+                controller: retwritePasswordController,
                 decoration:
                     DecorationMy.inputDecoration("Yangi Parolingiz", null),
               ),

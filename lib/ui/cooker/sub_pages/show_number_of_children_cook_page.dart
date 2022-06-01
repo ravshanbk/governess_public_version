@@ -3,11 +3,13 @@ import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/models/nurse_models/number_of_children_model.dart';
 import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
+import 'package:governess/providers/nurse/enter_daily_children_page_provider.dart';
 import 'package:governess/services/nurse_service.dart';
 import 'package:governess/ui/widgets/date_time_show_button_widget.dart';
 import 'package:governess/ui/widgets/future_builder_of_no_data_widget.dart';
 import 'package:governess/ui/widgets/indicator_widget.dart';
 import 'package:governess/ui/widgets/number_of_children_widget.dart';
+import 'package:provider/provider.dart';
 
 class CookerShowNumberOfChildrenPage extends StatefulWidget {
   const CookerShowNumberOfChildrenPage({Key? key}) : super(key: key);
@@ -50,7 +52,9 @@ class _CookerShowNumberOfChildrenPageState
         DateTimeShowButton(
           DTFM.maker(when.millisecondsSinceEpoch),
           () {
-            showDataPicker(context, );
+            showDataPicker(
+              context,
+            );
           },
         ),
       ],
@@ -93,11 +97,14 @@ class _CookerShowNumberOfChildrenPageState
           decoration: TextDecoration.underline,
         ),
       ),
-      onConfirm:  (date) {
-              when = date;
-              setState(() {});
-            },
-      locale: LocaleType.en,
+      onConfirm: (date) {
+       
+    
+        when = date;
+       
+        setState(() {});
+      },
+      locale: LocaleType.uz,
     );
   }
 }

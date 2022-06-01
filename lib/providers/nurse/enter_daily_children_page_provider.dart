@@ -1,6 +1,19 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 class NurseEnterChildrenNumberPageProvider extends ChangeNotifier {
+  File? file;
+  intitFile(File? v) {
+    file = v;
+    notifyListeners();
+  }
+
+  clearFile() {
+    file = null;
+    notifyListeners();
+  }
+
   int? length;
   DateTime when = DateTime.now();
   changeWhen(DateTime date) {
@@ -17,7 +30,6 @@ class NurseEnterChildrenNumberPageProvider extends ChangeNotifier {
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   initControllersAndNodes(int v) {
-  
     length = v;
     idf = true;
     nodes = List.generate(v, (index) => FocusNode());

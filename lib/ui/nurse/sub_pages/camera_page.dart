@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:governess/providers/nurse/enter_daily_children_page_provider.dart';
 import 'package:governess/ui/nurse/sub_pages/show_number_of_children_nurse_page.dart';
+import 'package:provider/provider.dart';
 
 class CameraPage extends StatefulWidget {
   const CameraPage({Key? key}) : super(key: key);
@@ -80,31 +82,42 @@ class _CameraPageState extends State<CameraPage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Kamera'),
-      ),
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.black,
-                border: Border.all(
-                  color: Colors.grey,
-                  width: 3.0,
+    return WillPopScope(
+      onWillPop: () {
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (context) => NurseShowNumberOfChildrenPage(),
+            ),
+            (route) => false);
+        return Future.value(true);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Kamera'),
+        ),
+        body: Column(
+          children: <Widget>[
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  border: Border.all(
+                    color: Colors.grey,
+                    width: 3.0,
+                  ),
                 ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(1.0),
-                child: Center(
-                  child: _cameraPreviewWidget(),
+                child: Padding(
+                  padding: const EdgeInsets.all(1.0),
+                  child: Center(
+                    child: _cameraPreviewWidget(),
+                  ),
                 ),
               ),
             ),
-          ),
-          _captureControlRowWidget(),
-        ],
+            _captureControlRowWidget(),
+          ],
+        ),
       ),
     );
   }
@@ -274,6 +287,9 @@ class _CameraPageState extends State<CameraPage>
     takePicture().then(
       (XFile? file) {
         if (mounted) {
+          Provider.of<NurseEnterChildrenNumberPageProvider>(context,
+                  listen: false)
+              .intitFile(File(file!.path));
           setState(
             () {
               imageFile = file;
@@ -281,14 +297,11 @@ class _CameraPageState extends State<CameraPage>
           );
         }
 
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => NurseShowNumberOfChildrenPage(
-              file: File(imageFile!.path),
-            ),
-          ),
-        );
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+                builder: (context) => NurseShowNumberOfChildrenPage(),),
+            (route) => false);
       },
     );
   }
@@ -337,5 +350,4 @@ class _CameraPageState extends State<CameraPage>
   }
 }
 
- 
 T? _ambiguate<T>(T? value) => value;

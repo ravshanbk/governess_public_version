@@ -17,10 +17,10 @@ class PinCodePage extends StatefulWidget {
 }
 
 class _PinCodePageState extends State<PinCodePage> {
-  final TextEditingController savePinCodeController = TextEditingController(text: '1111');
+  final TextEditingController savePinCodeController = TextEditingController();
 
   final TextEditingController repeatePinCodeController =
-      TextEditingController(text: "111");
+      TextEditingController();
 
   @override
   Widget build(BuildContext context) {

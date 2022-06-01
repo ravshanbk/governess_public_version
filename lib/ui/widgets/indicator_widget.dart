@@ -8,11 +8,25 @@ class IndicatorWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+       String text;
+    switch (snap.connectionState) {
+      case ConnectionState.none:
+
+      case ConnectionState.waiting:
+
+      case ConnectionState.active:
+        text = "Kuting...";
+        break;
+      case ConnectionState.done:
+        text = "Bajarildi...";
+        break;
+    }
+
     return Scaffold(
     body: Center(
         child: Column(mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(snap.connectionState.name),
+            Text(text),
             CupertinoActivityIndicator(
               radius: gW(50.0),
             ),

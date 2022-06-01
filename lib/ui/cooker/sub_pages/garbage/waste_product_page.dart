@@ -1,23 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-import 'package:governess/consts/decorations.dart';
 import 'package:governess/consts/size_config.dart';
-import 'package:governess/consts/strings.dart';
 import 'package:governess/models/cooker/garbage_model.dart';
-import 'package:governess/models/cooker/receive_product_model.dart';
-import 'package:governess/models/cooker/to_accept_product_model.dart';
 import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
-import 'package:governess/models/supplier/product_model.dart';
-import 'package:governess/providers/cooker/accept_product_provider.dart';
 import 'package:governess/providers/cooker/garbage_provider.dart';
 import 'package:governess/providers/cooker/show_in_out_list_product_provider.dart';
-// import 'package:governess/providers/supplier/filter_to_buy_page_provider.dart';
 import 'package:governess/services/cooker_service.dart';
-import 'package:governess/services/network.dart';
-import 'package:governess/ui/cooker/sub_pages/waste/waste_page.dart';
+import 'package:governess/ui/cooker/sub_pages/garbage/waste_page.dart';
 import 'package:governess/ui/widgets/date_time_show_button_widget.dart';
-import 'package:governess/ui/widgets/send_button_widger.dart.dart';
 import 'package:governess/ui/widgets/text_in_row_widget.dart';
 import 'package:provider/provider.dart';
 
@@ -35,7 +26,6 @@ class _CookerWastProductPageState extends State<CookerWastProductPage> {
 
   @override
   Widget build(BuildContext context) {
-  
     SizeConfig().init(context);
     return WillPopScope(
       onWillPop: () {
@@ -111,11 +101,25 @@ class _CookerWastProductPageState extends State<CookerWastProductPage> {
                       return _body(context, snap.data!);
                     }
                   } else {
+                       String text;
+                    switch (snap.connectionState) {
+                      case ConnectionState.none:
+
+                      case ConnectionState.waiting:
+
+                      case ConnectionState.active:
+                        text = "Kuting...";
+                        break;
+                      case ConnectionState.done:
+                        text = "Bajarildi...";
+                        break;
+                    }
+
                     return Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(snap.connectionState.name),
+                          Text(text),
                           CupertinoActivityIndicator(
                             radius: gW(20.0),
                           ),
@@ -132,7 +136,11 @@ class _CookerWastProductPageState extends State<CookerWastProductPage> {
           backgroundColor: mainColor,
           onPressed: () {
             Navigator.push(
-                context, MaterialPageRoute(builder: (context) =>const  WastePage()));
+              context,
+              MaterialPageRoute(
+                builder: (context) => const WastePage(),
+              ),
+            );
           },
           child: Icon(
             Icons.add,
@@ -167,7 +175,8 @@ class _CookerWastProductPageState extends State<CookerWastProductPage> {
               _divider(),
               TextInRowWidget("Miqdori", data[__].weight.toString()),
               _divider(),
-              TextInRowWidget("Qabul qiluvchi", data[__].acceptByName.toString()),
+              TextInRowWidget(
+                  "Qabul qiluvchi", data[__].acceptByName.toString()),
               _divider(),
               TextInRowWidget(
                   "Tasdiqlangan san", DTFM.maker(data[__].acceptDate)),
@@ -189,7 +198,7 @@ class _CookerWastProductPageState extends State<CookerWastProductPage> {
               _divider(),
             ],
             onExpansionChanged: (v) {
-              if (context.watch<GarbageProvider>().current == __) {
+              if (Provider.of<GarbageProvider>(context,listen: false).current == __) {
                 Provider.of<GarbageProvider>(context, listen: false)
                     .changeCurrent(-1);
               } else {
@@ -244,8 +253,7 @@ class _CookerWastProductPageState extends State<CookerWastProductPage> {
           setState(() {});
         }
       },
-      locale: LocaleType.en,
+      locale: LocaleType.uz,
     );
   }
-
- }
+}

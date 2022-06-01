@@ -322,11 +322,10 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
         if (isNet) {
           if (__ == 0) {
             Provider.of<FilterToBuyPageProvider>(context, listen: false)
+                .clearFromTo();
+            Provider.of<FilterToBuyPageProvider>(context, listen: false)
                 .changeCurrentFilterIndex(0);
-            setState(() {
-              Provider.of<FilterToBuyPageProvider>(context, listen: false)
-                  .changeCurrentFilterIndex(0);
-            });
+            setState(() {});
           } else if (__ == 1) {
             _showDialogDate(context);
           }
@@ -534,6 +533,7 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
   }
 
   Future<dynamic> _showDialogSend(Product data, BuildContext context) {
+    Provider.of<ToBuyProductPageProvider>(context, listen: false).initNumber(data.numberPack!);
     return showDialog(
       useSafeArea: true,
       context: context,
@@ -555,7 +555,11 @@ class _ToBuyProductsPageState extends State<ToBuyProductsPage> {
       builder: (BuildContext alertContext) {
         return _ShowDialogDateContent(
           widget.dataw,
-          toSetState: () => setState(() {}),
+          toSetState: () {
+            setState(
+              () {},
+            );
+          },
         );
       },
     );
@@ -839,7 +843,7 @@ class _SendProductShowDialogContentWidget extends StatelessWidget {
       keyboardType: TextInputType.text,
       controller: context.read<ToBuyProductPageProvider>().commentController,
       decoration: DecorationMy.inputDecoration(
-        "Comment...",
+        "Izoh...",
         null,
       ),
     );
@@ -874,7 +878,7 @@ class _ShowDialogDateContentState extends State<_ShowDialogDateContent> {
           top: gH(250.0),
           left: gW(10.0),
           right: gW(10.0),
-          bottom: gH(350.0),
+          bottom: gH(320.0),
         ),
         decoration: BoxDecoration(
           color: whiteColor,
@@ -1033,7 +1037,7 @@ class _ShowDialogDateContentState extends State<_ShowDialogDateContent> {
           setState(() {});
         }
       },
-      locale: LocaleType.en,
+      locale: LocaleType.uz,
     );
   }
 }

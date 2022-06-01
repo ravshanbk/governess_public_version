@@ -50,29 +50,52 @@ class CookerShowProductExpansionTileWidget extends StatelessWidget {
     );
   }
 
-  Row _subtitle() {
-    return Row(
+  _subtitle() {
+    return Column(
       children: [
-        Text(
-          "Holati:",
-          style: TextStyle(color: greyColor, fontSize: gW(14.0)),
+        Row(
+          children: [
+            Text(
+              "Miqdori:",
+              style: TextStyle(color: greyColor, fontSize: gW(14.0)),
+            ),
+            SizedBox(
+              width: gW(5.0),
+            ),
+            Text(
+              data.sendNumberPack!,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: gW(14.0),
+                color:mainColor,
+              ),
+            ),
+          ],
         ),
-        SizedBox(
-          width: gW(5.0),
-        ),
-        Text(
-          data.status!.length > 19
-              ? data.status!.substring(0, 18).replaceRange(18, 18, "..")
-              : data.status!,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: gW(14.0),
-            color: data.status == "YANGI"
-                ? Colors.green
-                : (data.status == "QISMAN QABUL QILINDI"
-                    ? Colors.orange
-                    : Colors.black),
-          ),
+         Row(
+          children: [
+            Text(
+              "Holati:",
+              style: TextStyle(color: greyColor, fontSize: gW(14.0)),
+            ),
+            SizedBox(
+              width: gW(5.0),
+            ),
+            Text(
+              data.status!.length > 19
+                  ? data.status!.substring(0, 18).replaceRange(18, 18, "..")
+                  : data.status!,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: gW(14.0),
+                color: data.status == "YANGI"
+                    ? Colors.green
+                    : (data.status == "QISMAN QABUL QILINDI"
+                        ? Colors.orange
+                        : Colors.black),
+              ),
+            ),
+          ],
         ),
       ],
     );

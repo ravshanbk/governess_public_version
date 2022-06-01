@@ -66,11 +66,25 @@ class _GetShippedProductPageState extends State<GetShippedProductPage> {
                     } else {}
                     return _body(context, snap.data!);
                   } else {
+                       String text;
+                    switch (snap.connectionState) {
+                      case ConnectionState.none:
+
+                      case ConnectionState.waiting:
+
+                      case ConnectionState.active:
+                        text = "Kuting...";
+                        break;
+                      case ConnectionState.done:
+                        text = "Bajarildi...";
+                        break;
+                    }
+
                     return Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(snap.connectionState.name),
+                          Text(text),
                           CupertinoActivityIndicator(
                             radius: gW(50.0),
                           ),
@@ -421,7 +435,7 @@ class _ShowDialogDateContentState extends State<_ShowDialogDateContent> {
           setState(() {});
         }
       },
-      locale: LocaleType.en,
+      locale: LocaleType.uz,
     );
   }
 }

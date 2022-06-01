@@ -43,6 +43,9 @@ class _CookerShowDailyMenuPageState extends State<CookerShowDailyMenuPage> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => CookerMealInfoPage(
+                     
+                          data:  snap.data!.mealTimeStandardResponseSaveDtoList![__]
+                          .mealAgeStandardResponseSaveDtoList![n],
                           mealAgeStandartId: snap
                               .data!
                               .mealTimeStandardResponseSaveDtoList![__]
@@ -111,7 +114,7 @@ class _CookerShowDailyMenuPageState extends State<CookerShowDailyMenuPage> {
         when = date;
         setState(() {});
       },
-      locale: LocaleType.en,
+      locale: LocaleType.uz,
     );
   }
 }

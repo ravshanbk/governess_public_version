@@ -9,18 +9,17 @@ import 'package:governess/models/nurse_models/number_of_children_model.dart';
 import 'package:governess/models/nurse_models/age_group_id_and_number_model.dart';
 import 'package:governess/models/other/post_res_model.dart';
 import 'package:governess/providers/nurse/editing_children_page_provider.dart';
+import 'package:governess/providers/nurse/enter_daily_children_page_provider.dart';
 import 'package:governess/services/nurse_service.dart';
 import 'package:governess/ui/widgets/cancel_button_widget.dart';
 import 'package:provider/provider.dart';
 
 class NurseEditDailyChildrenPage extends StatelessWidget {
   final NumberOfChildren data;
-  File? image;
 
   NurseEditDailyChildrenPage(
     this.data, {
     Key? key,
-    this.image,
   }) : super(key: key);
 
   @override
@@ -171,14 +170,23 @@ class NurseEditDailyChildrenPage extends StatelessWidget {
               ).toJson();
             },
           );
-          String fileName = image!.path.split('/').last;
+          String fileName = Provider.of<NurseEnterChildrenNumberPageProvider>(
+                  context,
+                  listen: false)
+              .file!
+              .path
+              .split('/')
+              .last;
           FormData form = FormData.fromMap(
             {
               'jsonString': {
                 "numberOfChildrenDTOList": v,
               }.toString(),
               'files': await MultipartFile.fromFile(
-                image!.path,
+                Provider.of<NurseEnterChildrenNumberPageProvider>(context,
+                        listen: false)
+                    .file!
+                    .path,
                 filename: fileName,
               ),
             },
@@ -189,6 +197,7 @@ class NurseEditDailyChildrenPage extends StatelessWidget {
             (ResModel value) {
               if (value.success!) {
                 showToast(value.text!, true, false);
+       
                 context
                     .read<NurseChangeChildrenNumberPageProvider>()
                     .clearControllers();

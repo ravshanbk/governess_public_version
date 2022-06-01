@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
@@ -14,25 +12,27 @@ import 'package:governess/ui/widgets/future_builder_of_no_data_widget.dart';
 import 'package:governess/ui/widgets/indicator_widget.dart';
 import 'package:provider/provider.dart';
 
-// ignore: must_be_immutable
+
 class NurseEnterDailyChildrenPage extends StatelessWidget {
-  int kGId;
-  int? id;
-  File? image;
-  NurseEnterDailyChildrenPage(
-      {required this.kGId, this.id, this.image, Key? key})
+final int kGId;
+
+
+ const  NurseEnterDailyChildrenPage({required this.kGId, Key? key})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
+        context.read<NurseEnterChildrenNumberPageProvider>().clearControllers();
+
         Navigator.pop(
           context,
         );
         return Future.value(true);
       },
       child: Scaffold(
+        resizeToAvoidBottomInset: true,
         appBar: AppBar(
           title: Text(
             DTFM.maker(context
@@ -66,6 +66,7 @@ class NurseEnterDailyChildrenPage extends StatelessWidget {
   _body(BuildContext context, List<AgeGroup> data) {
     return context.watch<NurseEnterChildrenNumberPageProvider>().idf
         ? SingleChildScrollView(
+            scrollDirection: Axis.vertical,
             padding: EdgeInsets.symmetric(
               horizontal: gW(10.0),
               vertical: gH(20.0),
@@ -91,7 +92,6 @@ class NurseEnterDailyChildrenPage extends StatelessWidget {
                 _enterButton(
                   context: context,
                   onPressed: () async {
-                  
                     List<Map<String, dynamic>> v = List.generate(
                       data.length,
                       (index) => AgeGroupIdAndNumber(
@@ -99,18 +99,29 @@ class NurseEnterDailyChildrenPage extends StatelessWidget {
                         ageGroupId: data[index].ageGroupId,
                         number: int.parse(
                           Provider.of<NurseEnterChildrenNumberPageProvider>(
-                                  context,
-                                  listen: false)
-                              .controllers![index]
-                              .text.isEmpty? '0': Provider.of<NurseEnterChildrenNumberPageProvider>(
-                                  context,
-                                  listen: false)
-                              .controllers![index]
-                              .text,
+                                      context,
+                                      listen: false)
+                                  .controllers![index]
+                                  .text
+                                  .isEmpty
+                              ? '0'
+                              : Provider.of<
+                                          NurseEnterChildrenNumberPageProvider>(
+                                      context,
+                                      listen: false)
+                                  .controllers![index]
+                                  .text,
                         ),
                       ).toJson(),
                     );
-                    String fileName = image!.path.split('/').last;
+                    String fileName =
+                        Provider.of<NurseEnterChildrenNumberPageProvider>(
+                                context,
+                                listen: false)
+                            .file!
+                            .path
+                            .split('/')
+                            .last;
                     FormData form = FormData.fromMap(
                       {
                         'jsonString': {
@@ -118,17 +129,15 @@ class NurseEnterDailyChildrenPage extends StatelessWidget {
                           "numberOfChildrenDTOList": v,
                         }.toString(),
                         'files': await MultipartFile.fromFile(
-                          image!.path,
+                          Provider.of<NurseEnterChildrenNumberPageProvider>(
+                                  context,
+                                  listen: false)
+                              .file!
+                              .path,
                           filename: fileName,
                         ),
                       },
                     );
-                    // Map<String, dynamic>? formData;
-                    // formData!['jsonString'] = {
-                    //   "kindergartenId": kGId,
-                    //   "numberOfChildrenDTOList": [v],
-                    // };
-                    // formData['files'] = image;
                     NurseService()
                         .enterDailyChildrenNumber(
                       formData: form,
@@ -148,6 +157,7 @@ class NurseEnterDailyChildrenPage extends StatelessWidget {
                           Navigator.pop(context);
                         } else {
                           showToast(value.text!, false, false);
+                          Navigator.pop(context);
                         }
                       },
                     );

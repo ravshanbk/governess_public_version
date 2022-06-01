@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -7,21 +8,25 @@ import 'package:governess/consts/strings.dart';
 import 'package:governess/models/nurse_models/number_of_children_model.dart';
 import 'package:governess/models/other/date_time_from_milliseconds_model.dart';
 import 'package:governess/providers/nurse/editing_children_page_provider.dart';
+import 'package:governess/providers/nurse/number_of_children_provider.dart';
 import 'package:governess/providers/nurse/enter_daily_children_page_provider.dart';
 import 'package:governess/services/network.dart';
+import 'package:governess/ui/nurse/nurse_home_page.dart';
 import 'package:governess/ui/nurse/sub_pages/camera_page.dart';
 import 'package:governess/ui/nurse/sub_pages/edit_daily_childred_page.dart';
 import 'package:governess/ui/nurse/sub_pages/enter_daily_children_page.dart';
+import 'package:governess/ui/nurse/sub_pages/global_photo_widget.dart';
+import 'package:governess/ui/nurse/sub_pages/media/hero_page.dart';
+import 'package:governess/ui/nurse/sub_pages/photo_widget_local.dart';
 import 'package:governess/ui/widgets/date_time_show_button_widget.dart';
 import 'package:governess/ui/widgets/indicator_widget.dart';
-import 'package:governess/ui/widgets/number_of_children_widget.dart';
 import 'package:governess/services/nurse_service.dart';
+import 'package:governess/ui/widgets/number_of_children_widget.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 class NurseShowNumberOfChildrenPage extends StatefulWidget {
-  File? file;
-  NurseShowNumberOfChildrenPage({this.file, Key? key}) : super(key: key);
+  NurseShowNumberOfChildrenPage({Key? key}) : super(key: key);
 
   @override
   State<NurseShowNumberOfChildrenPage> createState() =>
@@ -31,12 +36,12 @@ class NurseShowNumberOfChildrenPage extends StatefulWidget {
 class _NurseShowNumberOfChildrenPageState
     extends State<NurseShowNumberOfChildrenPage> {
   dynamic _pickImageError;
-
+  bool hasData = false;
   final ImagePicker _picker = ImagePicker();
-  
 
   void _setImageFileListFromFile(XFile? value) {
-    widget.file = File(value!.path);
+    Provider.of<NurseEnterChildrenNumberPageProvider>(context, listen: false)
+        .intitFile(File(value!.path));
   }
 
   Future<void> _onImageButtonPressed({BuildContext? context}) async {
@@ -59,41 +64,72 @@ class _NurseShowNumberOfChildrenPageState
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
-    return Scaffold(
-      body: FutureBuilder<NumberOfChildren>(
-        future: NurseService().getDailyChildrenNumber(
-            Provider.of<NurseEnterChildrenNumberPageProvider>(context,
-                    listen: false)
-                .when),
-        builder: (context, AsyncSnapshot<NumberOfChildren> snap) {
-          if (snap.connectionState == ConnectionState.done && snap.hasData) {
-            return _body(snap.data!, context);
-          } else if (snap.connectionState == ConnectionState.done &&
-              !snap.hasData) {
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                    onPressed: () {
-                      setState(() {});
-                    },
-                    icon: const Icon(
-                      Icons.refresh,
-                    )),
-                Text(
-                  "Bu Kunga Hali Bolalar Soni Kiritilmagan!",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: mainColor,
-                    fontSize: gW(20.0),
+    return WillPopScope(
+      onWillPop: () {
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const NurseHomePage(),
+            ),
+            (route) => false);
+        return Future.value(true);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          elevation: 0,
+          backgroundColor: mainColor,
+          actions: [
+            _dateTimeShowButton(context),
+          ],
+        ),
+        body: FutureBuilder<NumberOfChildren>(
+          future: NurseService().getDailyChildrenNumber(
+              Provider.of<NurseEnterChildrenNumberPageProvider>(context,
+                      listen: false)
+                  .when),
+          builder: (context, AsyncSnapshot<NumberOfChildren> snap) {
+            if (snap.connectionState == ConnectionState.done && snap.hasData) {
+              hasData = true;
+              return _body(snap.data!, context);
+            } else if (snap.connectionState == ConnectionState.done &&
+                !snap.hasData) {
+              hasData = false;
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                      onPressed: () {
+                        setState(() {});
+                      },
+                      icon: const Icon(
+                        Icons.refresh,
+                      )),
+                  Text(
+                    "Bu Kunga Hali Bolalar Soni Kiritilmagan!",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: mainColor,
+                      fontSize: gW(20.0),
+                    ),
                   ),
-                ),
-              ],
-            );
-          } else {
-            return IndicatorWidget(snap);
-          }
-        },
+                ],
+              );
+            } else {
+              return IndicatorWidget(snap);
+            }
+          },
+        ),
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: mainColor,
+          onPressed: () {
+            _onImageButtonPressed(context: context);
+          },
+          child: Icon(
+            Icons.camera_alt_outlined,
+            size: gW(30.0),
+          ),
+        ),
       ),
     );
   }
@@ -101,16 +137,9 @@ class _NurseShowNumberOfChildrenPageState
   _body(NumberOfChildren data, BuildContext context) {
     bool isSubmitted = data.perDayList![0].status.toString() == 'TASDIQLANDI' ||
         data.perDayList![0].id == null;
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        elevation: 0,
-        backgroundColor: mainColor,
-        actions: [
-          _dateTimeShowButton(context),
-        ],
-      ),
-      body: Padding(
+    return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      child: Padding(
         padding: EdgeInsets.only(
           left: gW(20.0),
           right: gW(20.0),
@@ -127,7 +156,12 @@ class _NurseShowNumberOfChildrenPageState
                 ElevatedButton(
                   child: _buttonChild("O'zgartirish"),
                   style: _buttonStyle(),
-                  onPressed: isSubmitted || widget.file == null
+                  onPressed: isSubmitted ||
+                          Provider.of<NurseEnterChildrenNumberPageProvider>(
+                                      context,
+                                      listen: false)
+                                  .file ==
+                              null
                       ? null
                       : () async {
                           bool isEnabledInternet = await checkConnectivity();
@@ -154,14 +188,18 @@ class _NurseShowNumberOfChildrenPageState
                                     listen: false)
                                 .initControllersAndNodes(value),
                           );
-                          if (isEnabledInternet) {
+                          if (isEnabledInternet &&
+                              Provider.of<NurseEnterChildrenNumberPageProvider>(
+                                          context,
+                                          listen: false)
+                                      .file !=
+                                  null) {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) =>
                                     NurseEditDailyChildrenPage(
                                   data,
-                                  image: widget.file,
                                 ),
                               ),
                             ).then((value) {
@@ -185,7 +223,11 @@ class _NurseShowNumberOfChildrenPageState
                 ElevatedButton(
                   child: _buttonChild("Kiritish"),
                   style: _buttonStyle(),
-                  onPressed: !isSubmitted || widget.file == null
+                  onPressed: !isSubmitted ||
+                          context
+                                  .watch<NurseEnterChildrenNumberPageProvider>()
+                                  .file ==
+                              null
                       ? null
                       : () async {
                           bool isEnabledInternet = await checkConnectivity();
@@ -196,8 +238,6 @@ class _NurseShowNumberOfChildrenPageState
                                 builder: (context) =>
                                     NurseEnterDailyChildrenPage(
                                   kGId: data.perDayList![0].kindergartenId!,
-                                  id: data.perDayList![0].id,
-                                  image: widget.file!,
                                 ),
                               ),
                             ).then((value) {
@@ -211,47 +251,111 @@ class _NurseShowNumberOfChildrenPageState
               ],
             ),
             SizedBox(
-              height: gH(20),
+              height: gH(20.0),
             ),
-            widget.file == null && _pickImageError == null
-                ? const SizedBox()
-                : (_pickImageError != null
-                    ? Center(
-                        child: Text(_pickImageError.toString()),
-                      )
-                    : Ink(
-                        height: gH(350),
-                        width: gW(220.0),
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: FileImage(
-                              widget.file!,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                    onPressed: () {
+                      if (Provider.of<NurseEnterChildrenNumberPageProvider>(
+                                  context,
+                                  listen: false)
+                              .file !=
+                          null) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => HeroPage(
+                              image: Image.file(
+                                context
+                                    .watch<
+                                        NurseEnterChildrenNumberPageProvider>()
+                                    .file!,
+                                fit: BoxFit.contain,
+                              ),
                             ),
-                            fit: BoxFit.cover,
                           ),
-                          borderRadius: BorderRadius.circular(gW(5.0)),
-                          border: Border.all(
-                            color: mainColor,
-                            width: gW(
-                              2.0,
+                        );
+                      }
+                    },
+                    child: _imageBoxLocal(context)),
+                TextButton(
+                  onPressed: () {
+                    if (Provider.of<NurseNumberOfChildrenProvider>(context,
+                                listen: false)
+                            .bytes !=
+                        null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => HeroPage(
+                            image: Image.memory(
+                              base64.decode(
+                                  Provider.of<NurseNumberOfChildrenProvider>(
+                                          context,
+                                          listen: false)
+                                      .bytes!),
+                              fit: BoxFit.cover,
                             ),
                           ),
                         ),
-                      )),
+                      );
+                    }
+                  },
+                  child: data.perDayList[0].attachmentId != null
+                      ? GlobalPhotoWidget(data.perDayList[0].attachmentId)
+                      : const Text(" "),
+                ),
+              ],
+            ),
+            Container(
+              width: gW(250.0),
+              margin: EdgeInsets.only(top: gH(30.0)),
+              height: gH(50.0),
+              child:
+                  context.watch<NurseEnterChildrenNumberPageProvider>().file ==
+                          null
+                      ? const Text(
+                          "Bolalar sonini o'zgartirish yoki kiritish uchun rasm kiriting 👉🏾",
+                          style: TextStyle(color: Colors.red),
+                        )
+                      : const SizedBox(),
+            ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: mainColor,
-        onPressed: () {
-          _onImageButtonPressed(context: context);
-        },
-        // onPressed: () => getImage(ImageSource.camera),
-        child: Icon(
-          Icons.camera_alt_outlined,
-          size: gW(30.0),
-        ),
-      ),
+    );
+  }
+
+  SizedBox _imageBoxLocal(BuildContext context) {
+    return SizedBox(
+      height: gH(250),
+      width: gW(150.0),
+      child: context.watch<NurseEnterChildrenNumberPageProvider>().file == null
+          ? Ink(
+              height: gH(250),
+              width: gW(150.0),
+              decoration: BoxDecoration(
+                image: const DecorationImage(
+                  image: AssetImage("assets/images/placeholder.jpeg"),
+                  fit: BoxFit.cover,
+                ),
+                borderRadius: BorderRadius.circular(gW(5.0)),
+                border: Border.all(
+                  color: mainColor,
+                  width: gW(
+                    2.0,
+                  ),
+                ),
+              ),
+              child: const Text(
+                "Rasm mavjud emas",
+                textAlign: TextAlign.center,
+                style: TextStyle(),
+              ),
+            )
+          : const PhotoWidget(),
     );
   }
 
@@ -303,7 +407,7 @@ class _NurseShowNumberOfChildrenPageState
       showTitleActions: true,
       theme: DatePickerTheme(
         backgroundColor: lightGreyColor,
-        containerHeight: gH(200.0),
+        containerHeight: gH(380.0),
         headerColor: mainColor,
         itemStyle: const TextStyle(
           color: Colors.black,
@@ -322,9 +426,15 @@ class _NurseShowNumberOfChildrenPageState
         Provider.of<NurseEnterChildrenNumberPageProvider>(context,
                 listen: false)
             .changeWhen(date);
+        Provider.of<NurseEnterChildrenNumberPageProvider>(context,
+                listen: false)
+            .clearFile();
+
+        Provider.of<NurseNumberOfChildrenProvider>(context, listen: false)
+            .clearBytes();
         setState(() {});
       },
-      locale: LocaleType.en,
+      locale: LocaleType.uz,
     );
   }
 
@@ -336,7 +446,6 @@ class _NurseShowNumberOfChildrenPageState
         return AlertDialog(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          // clipBehavior: Clip.hardEdge,
           title: const Text('Add optional parameters'),
           content: Column(
             mainAxisAlignment: MainAxisAlignment.end,
@@ -363,12 +472,12 @@ class _NurseShowNumberOfChildrenPageState
                   ],
                 ),
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const CameraPage(),
-                    ),
-                  );
+                  Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const CameraPage(),
+                      ),
+                      (route) => false);
                 },
                 style: ElevatedButton.styleFrom(
                   fixedSize: const Size(250.0, 62),
