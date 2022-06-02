@@ -4,17 +4,11 @@ A new Flutter project.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+This project is a mobile part of an automatization project of outsorce feeding kindergartens.
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-
+- [The project used provider for state managment](https://pub.dev/packages/provider)
+__________________________
 
 - [Supplier pages:](https://github.com/ravshanbk/yengil_yechim_0_governess/tree/master/lib/ui/supplier)
 <tr>
@@ -29,7 +23,7 @@ samples, guidance on mobile development, and a full API reference.
 <img class="padded"  width="230" src="https://user-images.githubusercontent.com/88109580/171401655-3f8ae1ba-5e95-4e27-bdc1-26adbaf74708.jpg" />l
 <img class="padded"  width="230" src="https://user-images.githubusercontent.com/88109580/171401658-c833c4c7-379e-4df9-b9eb-71bb892e383f.jpg" />z
 
-		
+__________________________
 - [Nurse pages:](https://github.com/ravshanbk/yengil_yechim_0_governess/tree/master/lib/ui/nurse)
 
 <img class="padded"  width="230" src="https://user-images.githubusercontent.com/88109580/171405915-0943f5ee-b1c1-4fdf-a7bc-bae849d4a10e.jpg" />|
@@ -41,7 +35,7 @@ samples, guidance on mobile development, and a full API reference.
 <img class="padded"  width="230" src="https://user-images.githubusercontent.com/88109580/171409150-80de4f82-9aa4-46db-91bc-76621d3a5c66.jpg" />(
 <img class="padded"  width="230" src="https://user-images.githubusercontent.com/88109580/171405927-4c7a0e87-2a0b-4b40-9e87-8f0393f2c14c.jpg" /><
 		
-		
+__________________________		
 - [Manager pages:](https://github.com/ravshanbk/yengil_yechim_0_governess/tree/master/lib/ui/manager)
 																		  
 																		  
@@ -51,7 +45,7 @@ samples, guidance on mobile development, and a full API reference.
 <img class="padded"  width="230" src="https://user-images.githubusercontent.com/88109580/171384761-ec0dfb9d-efd5-494f-a759-09e203c5aaec.jpg" />3
 <img class="padded"  width="230" src="https://user-images.githubusercontent.com/88109580/171384811-e5feab58-1826-4458-a32d-8bae1e16e2a8.jpg" />s
 				
-		
+__________________________	
 - [Cooker pages:](https://github.com/ravshanbk/yengil_yechim_0_governess/tree/master/lib/ui/manager)
 		
 
@@ -75,7 +69,7 @@ samples, guidance on mobile development, and a full API reference.
 <img class="padded"  width="230" src="https://user-images.githubusercontent.com/88109580/171596097-d114b84e-1930-4b65-9fea-f6a19cbef227.jpg" />
 <img class="padded"  width="230" src="https://user-images.githubusercontent.com/88109580/171384767-fe192a9c-9839-40d5-9721-1a565e4140cc.jpg" />7
 		
-
+__________________________
 - [General pages:](https://github.com/ravshanbk/yengil_yechim_0_governess/tree/master/lib/ui/widgets)
 		
 		
