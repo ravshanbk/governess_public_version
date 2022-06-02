@@ -6,7 +6,7 @@ A new Flutter project.
 
 This project is a mobile part of an automatization project of outsorce feeding kindergartens.
 
-
+- [Download the apk of the app](https://github.com/ravshanbk/governess_public_version/raw/master/app-release.apk)
 - [The project used provider for state managment](https://pub.dev/packages/provider)
 __________________________
 
