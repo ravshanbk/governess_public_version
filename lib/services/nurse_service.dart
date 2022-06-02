@@ -9,6 +9,7 @@ import 'package:governess/models/nurse_models/daily_menu_model.dart';
 import 'package:governess/models/nurse_models/number_of_children_model.dart';
 import 'package:governess/models/other/post_res_model.dart';
 import 'package:governess/services/auth_service.dart';
+// https://user-images.githubusercontent.com/88109580/171384811-e5feab58-1826-4458-a32d-8bae1e16e2a8.jpgs
 
 class NurseService {
   Future<MenuInfo> getDailyMenu(DateTime date) async {
@@ -263,32 +264,16 @@ class NurseService {
     };
 
     try {
-      Response res = await Dio().get(
-        "${AuthService.localhost}/out/api/multiMenu/getMenuKin?date=${date.millisecondsSinceEpoch}",
-        options: Options(headers: {
-          "Authorization": Boxes.getUser().values.first.token,
-        }),
-      );
+      // Response res = await Dio().get(
+      //   "${AuthService.localhost}/out/api/multiMenu/getMenuKin?date=${date.millisecondsSinceEpoch}",
+      //   options: Options(headers: {
+      //     "Authorization": Boxes.getUser().values.first.token,
+      //   }),
+      // );
 
-      MenuInfo d = MenuInfo.fromJson(res.data);
-      return d;
-      // return MenuInfo.fromJson(hardData);
-    } catch (e) {
-      throw Exception("Daily Menu Service: " + e.toString());
-    }
-  }
-
-  Future<MenuInfo> tajribaDailyMenu(DateTime date) async {
-    try {
-      Response res = await Dio().get(
-        "${AuthService.localhost}/out/api/multiMenu/getMenuKin?date=${date.millisecondsSinceEpoch}",
-        options: Options(headers: {
-          "Authorization": Boxes.getUser().values.first.token,
-        }),
-      );
-
-      MenuInfo d = MenuInfo.fromJson(res.data);
-      return d;
+      // MenuInfo d = MenuInfo.fromJson(res.data);
+      // return d;
+      return MenuInfo.fromJson(hardData);
     } catch (e) {
       throw Exception("Daily Menu Service: " + e.toString());
     }
@@ -299,18 +284,19 @@ class NurseService {
     required DateTime date,
   }) async {
     try {
-      Response res = await Dio().post(
-        "${AuthService.localhost}/out/api/perDay?date=${DateTime(
-          date.year,
-          date.month,
-          date.day,
-        ).millisecondsSinceEpoch}",
-        options: Options(headers: {
-          "Authorization": Boxes.getUser().values.first.token,
-        }),
-        data: formData,
-      );
-      return ResModel.fromJson(res.data);
+      // Response res = await Dio().post(
+      //   "${AuthService.localhost}/out/api/perDay?date=${DateTime(
+      //     date.year,
+      //     date.month,
+      //     date.day,
+      //   ).millisecondsSinceEpoch}",
+      //   options: Options(headers: {
+      //     "Authorization": Boxes.getUser().values.first.token,
+      //   }),
+      //   data: formData,
+      // );
+      return ResModel(
+          object: {}, success: true, text: "Muvaffaqiyatli kiritildi");
     } on DioError catch (e) {
       return ResModel(success: false, object: {}, text: e.error!);
     }
@@ -323,123 +309,90 @@ class NurseService {
     var client = http.Client();
 
     try {
-      var aaa = await http.get(
-        Uri.parse(
-            "${AuthService.localhost}/out/api/perDay?date=${thisDay.millisecondsSinceEpoch}"),
-        headers: {
-          "Authorization": Boxes.getUser().values.first.token,
-        },
-      );
-      // print(aaa.body.toString());
-      Map<String, dynamic> data1 = jsonDecode(aaa.body);
-      print(data1.toString());
-      return NumberOfChildren.fromJson(data1);
+      // var aaa = await http.get(
+      //   Uri.parse(
+      //       "${AuthService.localhost}/out/api/perDay?date=${thisDay.millisecondsSinceEpoch}"),
+      //   headers: {
+      //     "Authorization": Boxes.getUser().values.first.token,
+      //   },
+      // );
+      // print(Boxes.getUser().values.first.token);
+      // print(
+      //     "${AuthService.localhost}/out/api/perDay?date=${thisDay.millisecondsSinceEpoch}");
+
+      // Map<String, dynamic> data1 = jsonDecode(aaa.body);
+      // print(data1.toString());
+      // return NumberOfChildren.fromJson(data1);
+      return NumberOfChildren.fromJson({
+        "district": {"id": 141, "name": "Bo‘stonliq tumani", "district": []},
+        "perDayList": [
+          {
+            "id": 435,
+            "createDate": 1653719686903,
+            "date": null,
+            "updateDate": 1653724240540,
+            "createdBy": 62,
+            "updateBy": 62,
+            "status": "QABUL QILINDI",
+            "attachmentId": 494,
+            "numberOfChildrenDTOList": [
+              {
+                "id": 1737,
+                "number": 10,
+                "createDate": 1653719686904,
+                "updateDate": 1653719686904,
+                "ageGroupId": 1,
+                "ageGroupName": "3-4"
+              },
+              {
+                "id": 1738,
+                "number": 10,
+                "createDate": 1653719686905,
+                "updateDate": 1653719686905,
+                "ageGroupId": 2,
+                "ageGroupName": "4-7"
+              },
+              {
+                "id": 1739,
+                "number": 10,
+                "createDate": 1653719686905,
+                "updateDate": 1653719686905,
+                "ageGroupId": 3,
+                "ageGroupName": "Qisqa muddatli"
+              },
+              {
+                "id": 1740,
+                "number": 10,
+                "createDate": 1653719686906,
+                "updateDate": 1653719686906,
+                "ageGroupId": 4,
+                "ageGroupName": "Xodim"
+              }
+            ],
+            "kindergartenId": 13,
+            "kindergartenName": "16-DMTT"
+          }
+        ]
+      });
     } catch (e) {
       client.close();
       throw Exception(e);
-    }
-    // try {
-    //   res = await Dio().get(
-    //     "${AuthService.localhost}/out/api/perDay?date=${thisDay.millisecondsSinceEpoch}",
-    //     options: Options(headers: {
-    //       "Authorization": Boxes.getUser().values.first.token,
-    //     }),
-    //   );
-    //   try {
-    //     dataa = NumberOfChildren.fromJson(res.data);
-    //   } catch (e) {
-    //     throw Exception("ffff: "+e.toString());
-    //   }
-
-    //   print(res.data);
-    //   return dataa;
-    // return NumberOfChildren(
-    //   district: District(id: 1, name: ""),
-    //   perDayList: List.generate(
-    //     4,
-    //     (index) => PerDaryList(
-    //       status: "",
-    //       updateBy: 12,
-    //       updateDate: 1,
-    //       createDate: 23423,
-    //       createdBy: 234,
-    //       id: 1,
-    //       kindergartenId: 1,
-    //       kindergartenName: "",
-    //       numberOfChildrenDtoList: List.generate(
-    //         4,
-    //         (index) => NumberOfChildrenDtoList(
-    //           ageGroupId: 1,
-    //           ageGroupName: "",
-    //           createDate: 12,
-    //           id: 1,
-    //           number: 1,
-    //           updateDate: 12,
-    //         ),
-    //       ),
-    //     ),
-    //   ),
-    // );
-    // } catch (e) {
-    //   throw Exception("getChildrenNumber: " + e.toString());
-    // }
-  }
-
-  Future testgetDailyChildrenNumber(DateTime date) async {
-    DateTime thisDay = DateTime(date.year, date.month, date.day);
-
-    try {
-      Response res = await Dio().get(
-        "${AuthService.localhost}/out/api/perDay?date=${thisDay.millisecondsSinceEpoch}",
-        options: Options(headers: {
-          "Authorization": Boxes.getUser().values.first.token,
-        }),
-      );
-
-      return res.data;
-      // return NumberOfChildren(
-      //   district: District(id: 1, name: ""),
-      //   perDayList: List.generate(
-      //     4,
-      //     (index) => PerDaryList(
-      //       status: "",
-      //       updateBy: 12,
-      //       updateDate: 1,
-      //       createDate: 23423,
-      //       createdBy: 234,
-      //       id: 1,
-      //       kindergartenId: 1,
-      //       kindergartenName: "",
-      //       numberOfChildrenDtoList: List.generate(
-      //         4,
-      //         (index) => NumberOfChildrenDtoList(
-      //           ageGroupId: 1,
-      //           ageGroupName: "",
-      //           createDate: 12,
-      //           id: 1,
-      //           number: 1,
-      //           updateDate: 12,
-      //         ),
-      //       ),
-      //     ),
-      //   ),
-      // );
-    } catch (e) {
-      throw Exception("getChildrenNumber: " + e.toString());
     }
   }
 
   Future<ResModel> changeDailyChildrenNumber(
       FormData formData, int gardenId) async {
     try {
-      Response res = await Dio().patch(
-        "${AuthService.localhost}/out/api/perDay/$gardenId",
-        data: formData,
-        options: Options(headers: {
-          "Authorization": Boxes.getUser().values.first.token,
-        }),
-      );
-      return ResModel.fromJson(res.data);
+      // Response res = await Dio().patch(
+      //   "${AuthService.localhost}/out/api/perDay/$gardenId",
+      //   data: formData,
+      //   options: Options(headers: {
+      //     "Authorization": Boxes.getUser().values.first.token,
+      //   }),
+      // );
+      // return ResModel.fromJson(res.data);
+      return ResModel(
+          object: {}, success: true, text: "Muvaffaqiyatli o'zgartirildi");
     } on DioError catch (e) {
       return ResModel(object: {}, success: false, text: e.message);
     }
@@ -447,14 +400,20 @@ class NurseService {
 
   Future<List<AgeGroup>> getAgeGroupList() async {
     try {
-      Response res = await Dio().get(
-        "${AuthService.localhost}/out/api/ageGroup",
-        options: Options(headers: {
-          "Authorization": Boxes.getUser().values.first.token,
-        }),
-      );
+      // Response res = await Dio().get(
+      //   "${AuthService.localhost}/out/api/ageGroup",
+      //   options: Options(headers: {
+      //     "Authorization": Boxes.getUser().values.first.token,
+      //   }),
+      // );
 
-      return (res.data as List).map((e) => AgeGroup.fromJson(e)).toList();
+      // return (res.data as List).map((e) => AgeGroup.fromJson(e)).toList();
+      return List.generate(
+          15,
+          (index) => AgeGroup(
+                ageGroupId: index,
+                name: "name$index",
+              ));
     } catch (e) {
       throw Exception("NurseService / getAgeGroupList" + e.toString());
     }

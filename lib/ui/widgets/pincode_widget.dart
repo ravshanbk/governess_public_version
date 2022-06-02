@@ -9,16 +9,19 @@ class PinCodeWidget extends StatelessWidget {
       {required this.controller, required this.onComplete, Key? key})
       : super(key: key);
 
+
+
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: gW(80.0)),
       child: PinCodeTextField(
+        
       keyboardType: TextInputType.datetime,
         onChanged:( onComplete){},
         appContext: context,
         length: 4,
-        obscureText: false,
+        obscureText:true,
         animationType: AnimationType.fade,
         pinTheme: PinTheme(
           selectedFillColor: whiteColor,

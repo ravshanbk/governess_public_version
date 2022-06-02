@@ -55,7 +55,7 @@ class DrawerWidgetMy extends StatelessWidget {
             _divider(),
             _richText("Familya:  ", data.surname),
             _divider(),
-            _richText("Lavozimi:  ", data.role.substring(5)),
+            _richText("Lavozimi:  ", data.role.substring(0)),
             _divider(),
             SizedBox(height: gH(20.0)),
             _button(

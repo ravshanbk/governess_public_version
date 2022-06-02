@@ -10,45 +10,55 @@ class AuthService {
     "Authorization": Boxes.getUser().values.first.token,
   });
 
-  static String localhost = "http://185.217.131.117:7788";
-  // static String localhost = "http://192.168.250.248:7788";
-
+ 
   Future<GetUserModel> getUser(String login, String password) async {
     User decodedUser;
 
     try {
-      Response user = await Dio().post(
-        "${AuthService.localhost}/out/api/user/signIn",
-        data: {"login": login, "password": password},
-      );
+      //   Response user = await Dio().post(
+      //     "${AuthService.localhost}/out/api/user/signIn",
+      //     data: {"login": login, "password": password},
+      //   );
 
-      decodedUser = User.fromJson(user.data);
+      //   decodedUser = User.fromJson(user.data);
 
       return GetUserModel(
-        success: user.statusCode == 200,
-        user: decodedUser,
+        success: true,
+        user: User(
+          fatherName: "fatherName",
+          id: 1,
+          name: "name",
+          role: "role",
+          success: true,
+          surname: "surname",
+          token: "token",
+          username: "username",
+        ),
       );
     } on DioError catch (e) {
-      return GetUserModel(success: false, user: User(), text: "Parol yoki login xato!");
+      return GetUserModel(
+          success: false, user: User(), text: "Parol yoki login xato!");
     }
   }
 
   Future<ResModel> changeLoginPassword({required ChangUserInfo info}) async {
     try {
-      Response res = await Dio().patch(
-        "${AuthService.localhost}/out/api/user",
-        options: Options(
-          headers: {
-            "Authorization": Boxes.getUser().values.first.token,
-          },
-        ),
-        data: {
-          "newPassword": info.newPassword,
-          "oldPassword": info.oldPassword,
-          "username": info.username
-        },
-      );
-      return ResModel.fromJson(res.data);
+      // Response res = await Dio().patch(
+      //   "${AuthService.localhost}/out/api/user",
+      //   options: Options(
+      //     headers: {
+      //       "Authorization": Boxes.getUser().values.first.token,
+      //     },
+      //   ),
+      //   data: {
+      //     "newPassword": info.newPassword,
+      //     "oldPassword": info.oldPassword,
+      //     "username": info.username
+      //   },
+      // );
+      // return ResModel.fromJson(res.data);
+       return ResModel(object: {},success: true,text: "Muvafaqiyatli o'zgartirildi");
+
     } on DioError catch (e) {
       return ResModel.fromJson(e.response!.data);
     }

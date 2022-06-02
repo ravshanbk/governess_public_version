@@ -86,6 +86,10 @@ class _CookerAcceptProductDefaultPageState
     );
   }
 
+
+  
+
+
   _body({required BuildContext context, required List<CookerProduct> dataa}) {
     dataa.sort(
       (a, b) => a.productName!.compareTo(b.productName!),
@@ -123,7 +127,7 @@ class _CookerAcceptProductDefaultPageState
         separatorBuilder: (context, index) {
           return SizedBox(
             height: gH(20.0),
-            child: Text(index.toString()),
+         
           );
         },
         itemCount: dataa.length,

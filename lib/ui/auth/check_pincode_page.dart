@@ -2,23 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:governess/consts/size_config.dart';
 import 'package:governess/consts/strings.dart';
 import 'package:governess/local_storage/boxes.dart';
+import 'package:governess/models/cooker/to_accept_product_model.dart';
 import 'package:governess/models/hive_models/pin_hive_model.dart';
+import 'package:governess/select_page.dart';
 import 'package:governess/ui/cooker/home_cooker_page.dart';
 import 'package:governess/ui/manager/home_manager_page.dart';
 import 'package:governess/ui/nurse/nurse_home_page.dart';
 import 'package:governess/ui/supplier/home_supplier_page.dart';
 import 'package:governess/ui/widgets/governess_app_bar.dart';
 import 'package:governess/ui/widgets/pincode_widget.dart';
+import 'package:governess/ui/widgets/send_button_widger.dart.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 // ignore: must_be_immutable
 class CheckingPinCodePage extends StatelessWidget {
   CheckingPinCodePage({Key? key}) : super(key: key);
-  TextEditingController controller = TextEditingController( );
+  TextEditingController controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-     SizeConfig().init(context);
+    SizeConfig().init(context);
     return Scaffold(
       appBar: governessAppBar,
       body: _checkPinCodeBody(context),
@@ -45,23 +48,31 @@ class CheckingPinCodePage extends StatelessWidget {
               onComplete: (String v) {
                 if (box.values.toList().cast<PinHive>()[0].pinUser == v) {
                   showToast("Muvaffaqiyat !!!", true, false);
+                
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>const  SelectPage()
+                    ),
+                  );
+                  //   showToast("Muvaffaqiyat !!!", true, false);
 
-                  Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
-                    builder: (context) {
-                      switch (Boxes.getUser().values.first.role) {
-                        case "ROLE_HAMSHIRA":
-                          return const NurseHomePage();
-                        case "ROLE_BOG`CHA MUDIRASI":
-                          return const ManagerHomePage();
-                        case "ROLE_TA`MINOTCHI":
-                          return const SupplierHomePage();
-                        case "ROLE_OSHPAZ":
-                          return const CookerHomePage();
-                        default:
-                          return CheckingPinCodePage();
-                      }
-                    },
-                  ), (route) => false);
+                  //   Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
+                  //     builder: (context) {
+                  //       switch (Boxes.getUser().values.first.role) {
+                  //         case "ROLE_HAMSHIRA":
+                  //           return const NurseHomePage();
+                  //         case "ROLE_BOG`CHA MUDIRASI":
+                  //           return const ManagerHomePage();
+                  //         case "ROLE_TA`MINOTCHI":
+                  //           return const SupplierHomePage();
+                  //         case "ROLE_OSHPAZ":
+                  //           return const CookerHomePage();
+                  //         default:
+                  //           return CheckingPinCodePage();
+                  //       }
+                  //     },
+                  //   ), (route) => false);
                 } else {
                   controller.clear();
                   showToast(

@@ -11,13 +11,12 @@ import 'package:governess/models/tajriba_model.dart';
 import 'package:governess/services/auth_service.dart';
 
 class SupplierService {
-  Dio client = Dio();
   ////////////////////////////////////////////////////////////////////
   Future<ProductWithAvailableCompnayNames> getToBuyProducts({
     DateTime? start,
     DateTime? end,
   }) async {
-   
+    print("object");
     List<Map<String, dynamic>> hardData = [
       {
         "id": "68ad3f27-b496-4cf5-9992-5b2791bc5aa0",
@@ -1030,26 +1029,29 @@ class SupplierService {
     ];
 
     try {
-      Response res = await Dio().get(
-        (start == null || end == null)
-            ? "${AuthService.localhost}/out/api/supplier/getRequiredProduct"
-            : "${AuthService.localhost}/out/api/supplier/getRequiredProduct?start=${start.millisecondsSinceEpoch}&end=${end.millisecondsSinceEpoch}",
-        options: Options(
-          headers: {
-            "Authorization": Boxes.getUser().values.first.token,
-          },
-        ),
-      );
-      List<String> availables = <String>[];
-      List<Product> product =
-          (res.data as List).map((e) => Product.fromJson(e)).toList();
-      for (int i = 0; i < product.length; i++) {
-        if (!availables.contains(product[i].companyName)) {
-          availables.add(product[i].companyName!);
-        }
-      }
+      // Response res = await Dio().get(
+      //   (start == null || end == null)
+      //       ? "${AuthService.localhost}/out/api/supplier/getRequiredProduct"
+      //       : "${AuthService.localhost}/out/api/supplier/getRequiredProduct?start=${start.millisecondsSinceEpoch}&end=${end.millisecondsSinceEpoch}",
+      //   options: Options(
+      //     headers: {
+      //       "Authorization": Boxes.getUser().values.first.token,
+      //     },
+      //   ),
+      // );
+      List<String> availables = List.generate(6, (index) => "Governess Business");
+      // List<Product> product =
+      //     (res.data as List).map((e) => Product.fromJson(e)).toList();
+      // for (int i = 0; i < hardData.length; i++) {
+      //   if (!availables.contains(product[i].companyName)) {
+      //     availables.add(product[i].companyName!);
+      //   }
+      // }
+      // return ProductWithAvailableCompnayNames(
+      //     availables: availables, product: product);
       return ProductWithAvailableCompnayNames(
-          availables: availables, product: product);
+          availables: availables,
+          product: hardData.map((e) => Product.fromJson(e)).toList());
     } catch (e) {
       throw Exception("SupplierService / getToBuyProducts: " + e.toString());
     }
@@ -1058,15 +1060,15 @@ class SupplierService {
 ////////////////////////////////////////////////////////////////
   Future<List<Tajriba>> getToBuyProductsT() async {
     try {
-      Response res = await client.get(
-        // "http://192.168.68.115:7788/out/api/supplier/getRequiredProduct",
-        "${AuthService.localhost}/out/api/supplier/getRequiredProduct",
-        options: Options(
-          headers: {
-            "Authorization": Boxes.getUser().values.first.token,
-          },
-        ),
-      );
+      // Response res = await Dio().get(
+      //   // "http://192.168.68.115:7788/out/api/supplier/getRequiredProduct",
+      //   "${AuthService.localhost}/out/api/supplier/getRequiredProduct",
+      //   options: Options(
+      //     headers: {
+      //       "Authorization": Boxes.getUser().values.first.token,
+      //     },
+      //   ),
+      // );
 
       return List.generate(
           12,
@@ -1097,21 +1099,23 @@ class SupplierService {
   Future<ResModel> sendProduct(
       {required SendProduct v, required String id}) async {
     try {
-      var res = await Dio().post(
-        "${AuthService.localhost}/out/api/supplier/addShippedProduct/$id",
-        data: {
-          "price": v.price,
-          "numberPack": v.numberPack,
-          "weight": v.weight,
-          "comment": v.comment,
-          "paymentStatus": v.paymentStatus,
-          "typeOfPayment": v.typeOfPayment,
-        },
-        options: Options(headers: {
-          "Authorization": Boxes.getUser().values.first.token,
-        }),
-      );
-      return ResModel.fromJson(res.data);
+      // var res = await Dio().post(
+      //   "${AuthService.localhost}/out/api/supplier/addShippedProduct/$id",
+      //   data: {
+      //     "price": v.price,
+      //     "numberPack": v.numberPack,
+      //     "weight": v.weight,
+      //     "comment": v.comment,
+      //     "paymentStatus": v.paymentStatus,
+      //     "typeOfPayment": v.typeOfPayment,
+      //   },
+      //   options: Options(headers: {
+      //     "Authorization": Boxes.getUser().values.first.token,
+      //   }),
+      // );
+      // return ResModel.fromJson(res.data);
+      return ResModel(
+          object: {}, success: true, text: "Muvaffaqiyatli Yuborildi");
     } on DioError catch (e) {
       return ResModel(
           object: {}, success: false, text: e.response!.data.toString());
@@ -1124,16 +1128,43 @@ class SupplierService {
     DateTime? end,
   }) async {
     try {
-      Response res = await Dio().get(
-        // "${AuthService.localhost}/out/api/supplier/getShippedProduct?start=1653678000000&end=1653937200000",
-        (start == null || end == null)
-            ? "${AuthService.localhost}/out/api/supplier/getShippedProduct"
-            : "${AuthService.localhost}/out/api/supplier/getShippedProduct?start=${start.millisecondsSinceEpoch}&end=${end.millisecondsSinceEpoch}",
-        options: Options(headers: {
-          "Authorization": Boxes.getUser().values.first.token,
-        }),
-      );
-         return (res.data as List).map((e) => ShippedProduct.fromJson(e)).toList();
+      // Response res = await Dio().get(
+      //   // "${AuthService.localhost}/out/api/supplier/getShippedProduct?start=1653678000000&end=1653937200000",
+      //   (start == null || end == null)
+      //       ? "${AuthService.localhost}/out/api/supplier/getShippedProduct"
+      //       : "${AuthService.localhost}/out/api/supplier/getShippedProduct?start=${start.millisecondsSinceEpoch}&end=${end.millisecondsSinceEpoch}",
+      //   options: Options(headers: {
+      //     "Authorization": Boxes.getUser().values.first.token,
+      //   }),
+      // );
+      // return (res.data as List).map((e) => ShippedProduct.fromJson(e)).toList();
+      return List.generate(
+          15,
+          (index) => ShippedProduct(
+                comment: "comment",
+                companyId: "123",
+                companyName: "companyName $index",
+                id: "$index",
+                measurementType: "gramm",
+                orderId: "$index",
+                orderNumber: "$index",
+                pack: "123",
+                paymentStatus: "paymentStatus",
+                price: "123",
+                productId: index.toString(),
+                productName: "Name $index",
+                receiver: "receiver $index",
+                sendNumberPack: "123",
+                sendWeight: "123",
+                status: "status",
+                successNumberPack: "123",
+                successWeight: "123",
+                supplier: "supplier",
+                theSender: "theSender",
+                timeOfShipment: "123456778909",
+                timeTaken: "123456778909",
+                typeOfPayment: "true",
+              ));
     } catch (e) {
       throw Exception("SupplierService / getShippedProduct: " + e.toString());
     }
